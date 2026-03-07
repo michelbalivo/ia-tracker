@@ -494,6 +494,27 @@
   .adm-addrow:hover { color: var(--black); background: var(--gray-50); }
   .adm-empty { text-align: center; padding: 48px; font-size: 12px; color: var(--gray-400); }
 
+  /* Search box */
+  .adm-header-right { display: flex; align-items: center; gap: 10px; }
+  .adm-search-wrap {
+    display: flex; align-items: center; gap: 6px;
+    border: 1px solid var(--gray-200); background: var(--white);
+    padding: 0 10px; height: 34px; transition: border-color .15s;
+  }
+  .adm-search-wrap:focus-within { border-color: var(--black); }
+  .adm-search-icon { color: var(--gray-400); flex-shrink: 0; }
+  .adm-search-input {
+    border: none; outline: none; font-family: inherit; font-size: 13px;
+    color: var(--gray-900); width: 200px; background: transparent;
+  }
+  .adm-search-input::placeholder { color: var(--gray-400); }
+  .adm-search-clear {
+    background: none; border: none; cursor: pointer; color: var(--gray-400);
+    font-size: 12px; padding: 0; line-height: 1; flex-shrink: 0;
+  }
+  .adm-search-clear:hover { color: var(--black); }
+  .adm-highlight { background: #fef9c3; }
+
   /* Actions column */
   .adm-col-actions { width: 48px; }
   .adm-del-btn {
@@ -1053,9 +1074,14 @@
       <span class="adm-header-count" id="admCount">—</span>
     </div>
     <div class="adm-header-right">
+      <div class="adm-search-wrap">
+        <svg class="adm-search-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <input class="adm-search-input" id="admSearch" type="text" placeholder="Buscar..." oninput="admOnSearch()" autocomplete="off">
+        <button class="adm-search-clear" id="admSearchClear" onclick="admClearSearch()" style="display:none">✕</button>
+      </div>
       <button class="adm-btn-new" onclick="adminShowAddRow()">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-        Nueva iniciativa
+        Nueva
       </button>
     </div>
   </div>
@@ -2553,16 +2579,52 @@ var admStatusColors = {
 };
 var admAllStatuses = ['Pendiente','Priorización','Análisis','Diseño','Piloto','Iteración','Mantenimiento','Descartada'];
 
+function admOnSearch() {
+  var q = (document.getElementById('admSearch').value || '').trim();
+  var clearBtn = document.getElementById('admSearchClear');
+  if (clearBtn) clearBtn.style.display = q ? 'block' : 'none';
+  renderAdminTable();
+}
+
+function admClearSearch() {
+  var el = document.getElementById('admSearch');
+  if (el) { el.value = ''; el.focus(); }
+  var clearBtn = document.getElementById('admSearchClear');
+  if (clearBtn) clearBtn.style.display = 'none';
+  renderAdminTable();
+}
+
+function admHighlight(text, q) {
+  if (!q || !text) return text || '';
+  var escaped = q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  return String(text).replace(new RegExp('(' + escaped + ')', 'gi'),
+    '<mark class="adm-highlight">$1</mark>');
+}
+
 function renderAdminTable() {
   var tbody = document.getElementById('admTableBody');
   var countEl = document.getElementById('admCount');
   if (!tbody) return;
 
+  var q = ((document.getElementById('admSearch') || {}).value || '').trim().toLowerCase();
   var all = initiatives.slice().sort(function(a,b){ return a.id - b.id; });
-  if (countEl) countEl.textContent = all.length + ' iniciativas';
+
+  if (q) {
+    all = all.filter(function(i) {
+      return (i.name||'').toLowerCase().includes(q) ||
+             (i.dept||'').toLowerCase().includes(q) ||
+             (i.estado||'').toLowerCase().includes(q) ||
+             (i.equipo||'').toLowerCase().includes(q) ||
+             (i.responsable||'').toLowerCase().includes(q) ||
+             (i.dominio||'').toLowerCase().includes(q) ||
+             String(i.id).includes(q);
+    });
+  }
+  var total = initiatives.length;
+  if (countEl) countEl.textContent = q ? (all.length + ' de ' + total) : (total + ' iniciativas');
 
   if (!all.length) {
-    tbody.innerHTML = '<tr><td colspan="8" class="adm-empty">No hay iniciativas. Crea la primera.</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="9" class="adm-empty">' + (q ? 'Sin resultados para "' + q + '"' : 'No hay iniciativas. Crea la primera.') + '</td></tr>';
     return;
   }
 
@@ -2574,10 +2636,13 @@ function renderAdminTable() {
     var retornoShort = ini.retorno ? ini.retorno.replace('Incremento ','').replace('Reducción ','Red. ').replace('Retorno no financiero','No financiero') : '';
     var nameEsc = (ini.name||'').replace(/'/g,"\\'");
 
+    var nameHtml = ini.name ? admHighlight(ini.name, q) : '<span style="color:var(--gray-300)">—</span>';
+    var deptHtml = ini.dept ? admHighlight(ini.dept, q) : '<span style="color:var(--gray-300)">—</span>';
+
     return '<tr class="adm-tr" onclick="admRowClick(event,' + ini.id + ')">' +
       '<td class="adm-td adm-td-id">' + String(ini.id).padStart(3,'0') + '</td>' +
-      '<td class="adm-td adm-td-name adm-td-editable" onclick="event.stopPropagation();admEditCell(this,' + ini.id + ',\'name\',\'' + nameEsc + '\',\'text\')">' + (ini.name || '<span style="color:var(--gray-300)">—</span>') + '</td>' +
-      '<td class="adm-td adm-td-muted adm-td-editable" onclick="event.stopPropagation();admEditCell(this,' + ini.id + ',\'dept\',\'' + (ini.dept||'').replace(/'/g,"\\'") + '\',\'text\')">' + (ini.dept || '<span style="color:var(--gray-300)">—</span>') + '</td>' +
+      '<td class="adm-td adm-td-name adm-td-editable" onclick="event.stopPropagation();admEditCell(this,' + ini.id + ',\'name\',\'' + nameEsc + '\',\'text\')">' + nameHtml + '</td>' +
+      '<td class="adm-td adm-td-muted adm-td-editable" onclick="event.stopPropagation();admEditCell(this,' + ini.id + ',\'dept\',\'' + (ini.dept||'').replace(/'/g,"\\'") + '\',\'text\')">' + deptHtml + '</td>' +
       '<td class="adm-td" onclick="event.stopPropagation()">' +
         '<div class="adm-status" style="background:' + sc.bg + ';border-color:' + sc.border + ';color:' + sc.text + '" onclick="admToggleStatusMenu(this,' + ini.id + ')">' +
           '<span class="adm-status-dot" style="background:' + sc.dot + '"></span>' + estado +
