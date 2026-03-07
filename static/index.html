@@ -1608,7 +1608,7 @@ function openDetail(id) {
     `<div class="comp-card ${comps[k]?'comp-active':''}">
       <div class="comp-icon">${compIcons[k]}</div>
       <div class="comp-name">${compLabels[k]}</div>
-      <div class="comp-status">${comps[k]?'Activo':'--'}</div>
+      <div class="comp-status">${comps[k]||'--'}</div>
     </div>`
   ).join('');
 
