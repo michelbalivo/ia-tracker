@@ -3,7 +3,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
-<title>Oficina IA Corporativo SSCC — Inditex</title>
+<title>IA Tracker</title>
 <!-- SheetJS for Excel parsing -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
@@ -568,8 +568,8 @@
 
 <header class="header">
   <div class="header-left">
-    <a class="header-brand" onclick="switchView('portfolio',document.querySelector('.header-nav-btn'));showGroupsHome();" style="cursor:pointer;text-decoration:none;color:inherit;">INDITEX</a>
-    <span class="header-brand-sub">IA Corporativo - SSCC</span>
+    <a class="header-brand" onclick="switchView('portfolio',document.querySelector('.header-nav-btn'));showGroupsHome();" style="cursor:pointer;text-decoration:none;color:inherit;">IA TRACKER</a>
+    <span class="header-brand-sub">Portfolio de Iniciativas</span>
   </div>
   <nav class="header-nav">
     <button class="header-nav-btn active" onclick="switchView('portfolio',this)">Portfolio</button>
@@ -902,7 +902,7 @@
 </div>
 
 <footer>
-  <strong>Oficina IA Corporativo SSCC — Inditex</strong>
+  <strong>IA Tracker</strong>
   Datos actualizados el 6/3/2026 · Portfolio de 57 iniciativas identificadas en áreas corporativas
 </footer>
 
@@ -1041,7 +1041,7 @@ async function loadFromAPI(manual = false) {
     var footer = document.querySelector('footer');
     if (footer) {
       var now = new Date();
-      footer.innerHTML = '<strong>Oficina IA Corporativo SSCC</strong> · ' +
+      footer.innerHTML = '<strong>IA Tracker</strong> · ' +
         now.toLocaleDateString('es-ES') + ' ' + now.toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'}) +
         ' · ' + initiatives.length + ' iniciativas';
     }
