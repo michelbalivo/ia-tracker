@@ -1299,6 +1299,7 @@ function updateHeroStats() {
 
 // ── DATA (fallback / initial) ──
 let initiatives = [];
+var _dataDirty = false; // true cuando hay cambios pendientes de reflejar en otras vistas
 
 // ── HELPERS ──
 function getEstadoClass(estado) {
@@ -1733,6 +1734,24 @@ function switchView(view, btn) {
     target.classList.add('active');
   }
 
+  // Persist view in URL hash siempre (independientemente del reload)
+  if (window.history && window.history.replaceState) {
+    window.history.replaceState(null, '', '#' + view);
+  } else {
+    window.location.hash = view;
+  }
+
+  // Si hay cambios en BBDD pendientes, recarga datos antes de renderizar
+  if (_dataDirty && view !== 'admin') {
+    _dataDirty = false;
+    loadFromAPI().then(function() { _renderView(view); });
+    return;
+  }
+
+  _renderView(view);
+}
+
+function _renderView(view) {
   // Render Gantt when switching to seguimiento
   if (view === 'seguimiento') { setTimeout(function() { renderGantt(); }, 50); }
 
@@ -1745,13 +1764,6 @@ function switchView(view, btn) {
   }
   if (view === 'admin') {
     setTimeout(function() { renderAdminTable(); }, 50);
-  }
-
-  // Persist view in URL hash
-  if (window.history && window.history.replaceState) {
-    window.history.replaceState(null, '', '#' + view);
-  } else {
-    window.location.hash = view;
   }
 
   // Scroll to top
@@ -2692,6 +2704,7 @@ async function admSetStatus(id, newEstado) {
     if (!resp.ok) throw new Error('Error ' + resp.status);
     var ini = initiatives.find(function(i){ return i.id === id; });
     if (ini) ini.estado = newEstado;
+    _dataDirty = true;
     renderAdminTable();
   } catch(err) { console.error('Error cambiando estado:', err); }
 }
@@ -2747,6 +2760,7 @@ function admEditCell(td, id, field, currentVal, type) {
       if (!resp.ok) throw new Error('Error ' + resp.status);
       var ini = initiatives.find(function(i){ return i.id === id; });
       if (ini) ini[field] = newVal;
+      _dataDirty = true;
       renderAdminTable();
     } catch(err) {
       td.innerHTML = original;
@@ -2853,6 +2867,7 @@ async function admDeleteRow(e, id, name) {
     var resp = await fetch('/api/initiatives/' + id, { method: 'DELETE' });
     if (!resp.ok) throw new Error('Error ' + resp.status);
     initiatives = initiatives.filter(function(i){ return i.id !== id; });
+    _dataDirty = true;
     renderAdminTable();
   } catch(err) {
     alert('Error al eliminar: ' + err.message);
