@@ -374,32 +374,125 @@
   .seg-summary-item .s-num { font-size: 24px; font-weight: 300; }
   .seg-summary-item .s-label { font-size: 10px; font-weight: 500; color: var(--gray-500); text-transform: uppercase; letter-spacing: 1px; margin-top: 2px; }
 
-  /* ── ADMIN VIEW ── */
-  .admin-wrap { max-width: 800px; margin: 0 auto; padding: 40px 24px 80px; }
-  .admin-title { font-size: 11px; font-weight: 500; letter-spacing: 1.5px; text-transform: uppercase; color: var(--gray-400); margin-bottom: 32px; }
-  .admin-form { display: flex; flex-direction: column; gap: 0; border: 1px solid var(--gray-200); }
-  .admin-section { padding: 24px; border-bottom: 1px solid var(--gray-100); }
-  .admin-section:last-of-type { border-bottom: none; }
-  .admin-section-title { font-size: 10px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: var(--gray-400); margin-bottom: 16px; }
-  .admin-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-  .admin-grid.cols-3 { grid-template-columns: 1fr 1fr 1fr; }
-  .admin-grid.cols-1 { grid-template-columns: 1fr; }
-  .admin-field { display: flex; flex-direction: column; gap: 6px; }
-  .admin-field label { font-size: 10px; font-weight: 500; letter-spacing: 0.8px; text-transform: uppercase; color: var(--gray-500); }
-  .admin-field input, .admin-field select, .admin-field textarea {
-    font-family: inherit; font-size: 12px; color: var(--black);
-    border: 1px solid var(--gray-200); background: var(--white);
-    padding: 8px 10px; outline: none; transition: border-color .15s;
+  /* ── ADMIN VIEW (GitHub Projects style) ── */
+  #view-admin { display: flex; flex-direction: column; height: calc(100vh - 56px); overflow: hidden; }
+
+  /* Header bar */
+  .adm-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 16px 24px; border-bottom: 1px solid var(--gray-200);
+    background: var(--white); flex-shrink: 0;
   }
-  .admin-field input:focus, .admin-field select:focus, .admin-field textarea:focus { border-color: var(--black); }
-  .admin-field textarea { resize: vertical; min-height: 72px; }
-  .admin-actions { padding: 20px 24px; display: flex; align-items: center; gap: 12px; background: var(--gray-50); border-top: 1px solid var(--gray-200); }
-  .admin-btn-submit { background: var(--black); color: var(--white); border: none; padding: 10px 28px; font-family: inherit; font-size: 11px; font-weight: 500; letter-spacing: 1px; text-transform: uppercase; cursor: pointer; transition: opacity .15s; }
-  .admin-btn-submit:hover { opacity: 0.8; }
-  .admin-btn-submit:disabled { opacity: 0.4; cursor: not-allowed; }
-  .admin-btn-reset { background: none; color: var(--gray-500); border: 1px solid var(--gray-200); padding: 10px 20px; font-family: inherit; font-size: 11px; cursor: pointer; }
-  .admin-btn-reset:hover { border-color: var(--gray-400); color: var(--black); }
-  .admin-feedback { font-size: 11px; letter-spacing: 0.5px; }
+  .adm-header-left { display: flex; align-items: center; gap: 10px; }
+  .adm-header-title { font-size: 14px; font-weight: 600; color: var(--gray-900); }
+  .adm-header-count { font-size: 12px; color: var(--gray-400); background: var(--gray-100); padding: 2px 8px; border-radius: 10px; }
+  .adm-btn-new {
+    display: flex; align-items: center; gap: 6px;
+    background: var(--black); color: var(--white); border: none;
+    padding: 8px 16px; font-family: inherit; font-size: 12px; font-weight: 500;
+    cursor: pointer; transition: opacity .15s; letter-spacing: 0.3px;
+  }
+  .adm-btn-new:hover { opacity: 0.75; }
+
+  /* Quick-add row */
+  .adm-quickadd {
+    border-bottom: 2px solid var(--blue);
+    background: var(--blue-light);
+    padding: 12px 24px;
+    flex-shrink: 0;
+  }
+  .adm-quickadd-inner { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .adm-qa-input {
+    font-family: inherit; font-size: 13px; color: var(--black);
+    border: 1px solid var(--gray-300); background: var(--white);
+    padding: 7px 10px; outline: none; transition: border-color .15s;
+  }
+  .adm-qa-input:focus { border-color: var(--blue); }
+  .adm-qa-name { flex: 2; min-width: 200px; }
+  .adm-qa-input:not(.adm-qa-name) { flex: 1; min-width: 120px; }
+  .adm-qa-actions { display: flex; gap: 6px; flex-shrink: 0; }
+  .adm-qa-save {
+    background: var(--black); color: var(--white); border: none;
+    padding: 7px 18px; font-family: inherit; font-size: 12px; font-weight: 500;
+    cursor: pointer; transition: opacity .15s;
+  }
+  .adm-qa-save:hover { opacity: 0.75; }
+  .adm-qa-cancel {
+    background: none; color: var(--gray-500); border: 1px solid var(--gray-300);
+    padding: 7px 10px; font-family: inherit; font-size: 12px; cursor: pointer;
+  }
+  .adm-qa-cancel:hover { border-color: var(--gray-500); color: var(--black); }
+  .adm-qa-feedback { font-size: 11px; margin-top: 6px; }
+
+  /* Table wrapper */
+  .adm-table-wrap { flex: 1; overflow-y: auto; overflow-x: auto; }
+
+  /* Table */
+  .adm-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .adm-th {
+    position: sticky; top: 0; z-index: 10;
+    background: var(--gray-50); border-bottom: 1px solid var(--gray-200);
+    padding: 10px 14px; text-align: left;
+    font-size: 10px; font-weight: 600; letter-spacing: 1.2px;
+    text-transform: uppercase; color: var(--gray-400);
+    white-space: nowrap; user-select: none;
+  }
+  .adm-col-id   { width: 60px; }
+  .adm-col-name { min-width: 280px; }
+  .adm-col-dept { width: 150px; }
+  .adm-col-estado { width: 130px; }
+  .adm-col-equipo { width: 140px; }
+  .adm-col-resp { width: 140px; }
+  .adm-col-prio { width: 100px; }
+  .adm-col-retorno { width: 160px; }
+
+  .adm-tr { border-bottom: 1px solid var(--gray-100); cursor: pointer; transition: background .1s; }
+  .adm-tr:hover { background: var(--gray-50); }
+  .adm-td { padding: 10px 14px; vertical-align: middle; color: var(--gray-700); }
+  .adm-td-id { font-size: 11px; color: var(--gray-400); font-weight: 500; font-family: monospace; }
+  .adm-td-name { font-weight: 500; color: var(--gray-900); line-height: 1.4; }
+  .adm-td-muted { font-size: 12px; color: var(--gray-500); }
+
+  /* Inline status pill (clickable) */
+  .adm-status {
+    display: inline-flex; align-items: center; gap: 5px;
+    font-size: 10px; font-weight: 600; padding: 3px 9px;
+    border: 1px solid; letter-spacing: 0.8px; text-transform: uppercase;
+    cursor: pointer; position: relative; transition: opacity .15s; white-space: nowrap;
+  }
+  .adm-status:hover { opacity: 0.75; }
+  .adm-status-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+
+  /* Status dropdown */
+  .adm-status-menu {
+    display: none; position: absolute; top: calc(100% + 4px); left: 0;
+    background: var(--white); border: 1px solid var(--gray-200);
+    box-shadow: 0 6px 20px rgba(0,0,0,.1); z-index: 100; min-width: 160px;
+  }
+  .adm-status-menu.open { display: block; }
+  .adm-status-opt {
+    display: flex; align-items: center; gap: 8px;
+    padding: 9px 14px; font-size: 12px; cursor: pointer;
+    color: var(--gray-700); transition: background .1s;
+  }
+  .adm-status-opt:hover { background: var(--gray-50); }
+  .adm-status-opt-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+
+  /* Priority pill */
+  .adm-prio { display: inline-block; font-size: 10px; font-weight: 500; padding: 2px 8px; letter-spacing: 0.5px; text-transform: uppercase; }
+  .adm-prio-alta  { background: #fef2f2; color: var(--red); }
+  .adm-prio-media { background: #fffbeb; color: var(--amber); }
+  .adm-prio-baja  { background: var(--gray-100); color: var(--gray-500); }
+
+  /* Add row trigger */
+  .adm-addrow {
+    display: flex; align-items: center; gap: 8px;
+    padding: 12px 24px; font-size: 12px; color: var(--gray-400);
+    cursor: pointer; border-top: 1px solid var(--gray-100);
+    transition: color .15s; user-select: none;
+  }
+  .adm-addrow:hover { color: var(--black); background: var(--gray-50); }
+  .adm-empty { text-align: center; padding: 48px; font-size: 12px; color: var(--gray-400); }
 
   .seg-filters { display: flex; gap: 20px; padding: 16px 40px; border-bottom: 1px solid var(--gray-200); align-items: center; flex-wrap: wrap; }
   .seg-filter-group { display: flex; align-items: center; gap: 8px; }
@@ -903,157 +996,67 @@
 <!-- DETAIL OVERLAY -->
 <!-- ADMIN VIEW -->
 <div id="view-admin" class="view-section" style="display:none">
-  <div class="admin-wrap">
-    <div class="admin-title">Nueva Iniciativa IA</div>
-    <form class="admin-form" id="adminForm" onsubmit="adminSubmit(event)">
+  <div class="adm-header">
+    <div class="adm-header-left">
+      <span class="adm-header-title">Iniciativas</span>
+      <span class="adm-header-count" id="admCount">—</span>
+    </div>
+    <div class="adm-header-right">
+      <button class="adm-btn-new" onclick="adminShowAddRow()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Nueva iniciativa
+      </button>
+    </div>
+  </div>
 
-      <div class="admin-section">
-        <div class="admin-section-title">Identificación</div>
-        <div class="admin-grid">
-          <div class="admin-field" style="grid-column:1/-1">
-            <label>Nombre de la iniciativa *</label>
-            <input type="text" name="name" required placeholder="Descripción resumida de la iniciativa">
-          </div>
-          <div class="admin-field">
-            <label>Departamento</label>
-            <input type="text" name="dept" placeholder="Ej. Finanzas, RRHH...">
-          </div>
-          <div class="admin-field">
-            <label>Dominio funcional IA</label>
-            <input type="text" name="dominio" placeholder="Ej. Computer Vision, NLP...">
-          </div>
-          <div class="admin-field">
-            <label>Proceso impactado</label>
-            <input type="text" name="proceso" placeholder="Proceso de negocio afectado">
-          </div>
-          <div class="admin-field">
-            <label>Estado</label>
-            <select name="estado">
-              <option value="Pendiente">Pendiente</option>
-              <option value="Análisis">Análisis</option>
-              <option value="Priorización">Priorización</option>
-              <option value="Diseño">Diseño</option>
-              <option value="Piloto">Piloto</option>
-              <option value="Iteración">Iteración</option>
-              <option value="Mantenimiento">Mantenimiento</option>
-              <option value="Descartada">Descartada</option>
-            </select>
-          </div>
-        </div>
+  <!-- QUICK-ADD ROW (hidden by default) -->
+  <div class="adm-quickadd" id="admQuickAdd" style="display:none">
+    <div class="adm-quickadd-inner">
+      <input class="adm-qa-input adm-qa-name" id="qaName" type="text" placeholder="Nombre de la iniciativa *" autocomplete="off">
+      <input class="adm-qa-input" id="qaDept" type="text" placeholder="Departamento">
+      <select class="adm-qa-input" id="qaEstado">
+        <option value="Pendiente">Pendiente</option>
+        <option value="Análisis">Análisis</option>
+        <option value="Priorización">Priorización</option>
+        <option value="Diseño">Diseño</option>
+        <option value="Piloto">Piloto</option>
+        <option value="Iteración">Iteración</option>
+        <option value="Mantenimiento">Mantenimiento</option>
+        <option value="Descartada">Descartada</option>
+      </select>
+      <input class="adm-qa-input" id="qaResponsable" type="text" placeholder="Responsable">
+      <div class="adm-qa-actions">
+        <button class="adm-qa-save" onclick="adminQuickSave()">Crear</button>
+        <button class="adm-qa-cancel" onclick="adminHideAddRow()">✕</button>
       </div>
+    </div>
+    <div class="adm-qa-feedback" id="admQaFeedback"></div>
+  </div>
 
-      <div class="admin-section">
-        <div class="admin-section-title">Descripción y retorno</div>
-        <div class="admin-grid cols-1">
-          <div class="admin-field">
-            <label>Descripción ejecutiva</label>
-            <textarea name="desc" placeholder="Descripción detallada de la iniciativa, objetivo y alcance..."></textarea>
-          </div>
-        </div>
-        <div class="admin-grid" style="margin-top:16px">
-          <div class="admin-field">
-            <label>Tipo de retorno</label>
-            <select name="tipo_retorno">
-              <option value="">-- Sin definir --</option>
-              <option value="Incremento Eficiencia">Incremento Eficiencia</option>
-              <option value="Incremento Beneficios">Incremento Beneficios</option>
-              <option value="Reducción Costes">Reducción Costes</option>
-              <option value="Gestión del riesgo">Gestión del riesgo</option>
-              <option value="Retorno no financiero">Retorno no financiero</option>
-            </select>
-          </div>
-          <div class="admin-field">
-            <label>Objetivo estratégico</label>
-            <input type="text" name="objetivo" placeholder="Ej. Eficiencia operativa">
-          </div>
-          <div class="admin-field">
-            <label>Ahorro estimado (€/año)</label>
-            <input type="number" name="ahorro" placeholder="0" min="0">
-          </div>
-          <div class="admin-field">
-            <label>Usuarios impactados</label>
-            <input type="text" name="usuarios" placeholder="Ej. 200 operarios logística">
-          </div>
-        </div>
-      </div>
-
-      <div class="admin-section">
-        <div class="admin-section-title">Equipo y modelo</div>
-        <div class="admin-grid">
-          <div class="admin-field">
-            <label>Equipo IA asignado</label>
-            <input type="text" name="equipo" placeholder="Nombre del equipo">
-          </div>
-          <div class="admin-field">
-            <label>Responsable</label>
-            <input type="text" name="responsable" placeholder="Nombre del responsable">
-          </div>
-          <div class="admin-field">
-            <label>Modelo / Proveedor IA</label>
-            <input type="text" name="modelo_ia" placeholder="Ej. GPT-4, Azure ML...">
-          </div>
-          <div class="admin-field">
-            <label>Prioridad</label>
-            <select name="prioridad">
-              <option value="">-- Sin definir --</option>
-              <option value="Alta">Alta</option>
-              <option value="Media">Media</option>
-              <option value="Baja">Baja</option>
-            </select>
-          </div>
-        </div>
-      </div>
-
-      <div class="admin-section">
-        <div class="admin-section-title">Scoring (0 – 10)</div>
-        <div class="admin-grid cols-3">
-          <div class="admin-field">
-            <label>Reach</label>
-            <input type="number" name="reach" min="0" max="10" step="0.1" placeholder="0-10">
-          </div>
-          <div class="admin-field">
-            <label>Impact</label>
-            <input type="number" name="impact" min="0" max="10" step="0.1" placeholder="0-10">
-          </div>
-          <div class="admin-field">
-            <label>Confidence</label>
-            <input type="number" name="confidence" min="0" max="10" step="0.1" placeholder="0-10">
-          </div>
-          <div class="admin-field">
-            <label>Effort</label>
-            <input type="number" name="effort" min="0" max="10" step="0.1" placeholder="0-10">
-          </div>
-          <div class="admin-field">
-            <label>AI Complexity</label>
-            <input type="number" name="ai_complexity" min="0" max="10" step="0.1" placeholder="0-10">
-          </div>
-          <div class="admin-field">
-            <label>TIER (0 – 1)</label>
-            <input type="number" name="tier" min="0" max="1" step="0.01" placeholder="0.00">
-          </div>
-        </div>
-      </div>
-
-      <div class="admin-section">
-        <div class="admin-section-title">Planificación (fechas)</div>
-        <div class="admin-grid cols-3">
-          <div class="admin-field"><label>Inicio</label><input type="date" name="fase_inicio"></div>
-          <div class="admin-field"><label>Análisis</label><input type="date" name="fase_analisis"></div>
-          <div class="admin-field"><label>Priorización</label><input type="date" name="fase_priorizacion"></div>
-          <div class="admin-field"><label>Diseño</label><input type="date" name="fase_diseno"></div>
-          <div class="admin-field"><label>Piloto</label><input type="date" name="fase_piloto"></div>
-          <div class="admin-field"><label>Iteración / Pruebas</label><input type="date" name="fase_iteracion"></div>
-          <div class="admin-field"><label>Mantenimiento</label><input type="date" name="fase_mantenimiento"></div>
-          <div class="admin-field"><label>Fin estimado</label><input type="date" name="fecha_fin"></div>
-        </div>
-      </div>
-
-      <div class="admin-actions">
-        <button type="submit" class="admin-btn-submit" id="adminSubmitBtn">Crear iniciativa</button>
-        <button type="reset" class="admin-btn-reset">Limpiar</button>
-        <span class="admin-feedback" id="adminFeedback"></span>
-      </div>
-    </form>
+  <!-- TABLE -->
+  <div class="adm-table-wrap">
+    <table class="adm-table" id="admTable">
+      <thead>
+        <tr>
+          <th class="adm-th adm-col-id">#</th>
+          <th class="adm-th adm-col-name">Iniciativa</th>
+          <th class="adm-th adm-col-dept">Departamento</th>
+          <th class="adm-th adm-col-estado">Estado</th>
+          <th class="adm-th adm-col-equipo">Equipo</th>
+          <th class="adm-th adm-col-resp">Responsable</th>
+          <th class="adm-th adm-col-prio">Prioridad</th>
+          <th class="adm-th adm-col-retorno">Retorno</th>
+        </tr>
+      </thead>
+      <tbody id="admTableBody">
+        <tr><td colspan="8" class="adm-empty">Cargando iniciativas...</td></tr>
+      </tbody>
+    </table>
+    <!-- Add row trigger -->
+    <div class="adm-addrow" onclick="adminShowAddRow()">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      Agregar iniciativa
+    </div>
   </div>
 </div>
 
@@ -1671,7 +1674,10 @@ function switchView(view, btn) {
   var views = document.querySelectorAll('.view-section');
   for (var i = 0; i < views.length; i++) { views[i].style.display = 'none'; views[i].classList.remove('active'); }
   var target = document.getElementById('view-' + view);
-  if (target) { target.style.display = 'block'; target.classList.add('active'); }
+  if (target) {
+    target.style.display = view === 'admin' ? 'flex' : 'block';
+    target.classList.add('active');
+  }
 
   // Render Gantt when switching to seguimiento
   if (view === 'seguimiento') { setTimeout(function() { renderGantt(); }, 50); }
@@ -1682,6 +1688,9 @@ function switchView(view, btn) {
   }
   if (view === 'insights') {
     setTimeout(function() { renderInsights(); }, 50);
+  }
+  if (view === 'admin') {
+    setTimeout(function() { renderAdminTable(); }, 50);
   }
 
   // Persist view in URL hash
@@ -2502,46 +2511,139 @@ function renderGantt() {
 }
 
 // ── ADMIN: CREAR INICIATIVA ────────────────────────────────────────
-async function adminSubmit(e) {
-  e.preventDefault();
-  var btn = document.getElementById('adminSubmitBtn');
-  var fb  = document.getElementById('adminFeedback');
-  var fd  = new FormData(e.target);
+// ── ADMIN TABLE (GitHub Projects style) ──────────────────────────────
 
-  btn.disabled = true;
-  fb.style.color = 'var(--gray-400)';
-  fb.textContent = 'Guardando...';
+var admStatusColors = {
+  'Mantenimiento': { bg: '#eff6ff', border: 'var(--blue)', text: 'var(--blue)', dot: 'var(--blue)' },
+  'Piloto':        { bg: '#f0fdf4', border: '#16a34a',     text: '#16a34a',     dot: '#16a34a' },
+  'Iteración':     { bg: '#f5f5f5', border: '#737373',     text: '#737373',     dot: '#737373' },
+  'Diseño':        { bg: '#f5f5f5', border: '#a3a3a3',     text: '#525252',     dot: '#93b4e8' },
+  'Análisis':      { bg: '#fafafa', border: '#d4d4d4',     text: '#525252',     dot: '#d4d4d4' },
+  'Priorización':  { bg: '#fef3c7', border: '#d97706',     text: '#d97706',     dot: '#d97706' },
+  'Pendiente':     { bg: '#fafafa', border: '#e5e5e5',     text: '#a3a3a3',     dot: '#d4d4d4' },
+  'Descartada':    { bg: '#fef2f2', border: '#dc2626',     text: '#dc2626',     dot: '#dc2626' },
+};
+var admAllStatuses = ['Pendiente','Priorización','Análisis','Diseño','Piloto','Iteración','Mantenimiento','Descartada'];
+
+function renderAdminTable() {
+  var tbody = document.getElementById('admTableBody');
+  var countEl = document.getElementById('admCount');
+  if (!tbody) return;
+
+  var all = initiatives.slice().sort(function(a,b){ return a.id - b.id; });
+  if (countEl) countEl.textContent = all.length + ' iniciativas';
+
+  if (!all.length) {
+    tbody.innerHTML = '<tr><td colspan="8" class="adm-empty">No hay iniciativas. Crea la primera.</td></tr>';
+    return;
+  }
+
+  tbody.innerHTML = all.map(function(ini) {
+    var estado = getEstadoClass(ini.estado) || 'Pendiente';
+    var sc = admStatusColors[estado] || admStatusColors['Pendiente'];
+    var prioClass = ini.prioridad === 'Alta' ? 'adm-prio-alta' : ini.prioridad === 'Media' ? 'adm-prio-media' : ini.prioridad === 'Baja' ? 'adm-prio-baja' : '';
+    var prioHtml = ini.prioridad ? '<span class="adm-prio ' + prioClass + '">' + ini.prioridad + '</span>' : '<span style="color:var(--gray-300);font-size:11px">—</span>';
+    var retornoShort = ini.retorno ? ini.retorno.replace('Incremento ','').replace('Reducción ','Red. ').replace('Retorno no financiero','No financiero') : '';
+
+    return '<tr class="adm-tr" onclick="admRowClick(event,' + ini.id + ')">' +
+      '<td class="adm-td adm-td-id">' + String(ini.id).padStart(3,'0') + '</td>' +
+      '<td class="adm-td adm-td-name">' + (ini.name || '—') + '</td>' +
+      '<td class="adm-td adm-td-muted">' + (ini.dept || '<span style="color:var(--gray-300)">—</span>') + '</td>' +
+      '<td class="adm-td" onclick="event.stopPropagation()">' +
+        '<div class="adm-status" style="background:' + sc.bg + ';border-color:' + sc.border + ';color:' + sc.text + '" onclick="admToggleStatusMenu(this,' + ini.id + ',\'' + estado + '\')">' +
+          '<span class="adm-status-dot" style="background:' + sc.dot + '"></span>' + estado +
+          '<div class="adm-status-menu" id="adm-smenu-' + ini.id + '">' +
+            admAllStatuses.map(function(s) {
+              var ssc = admStatusColors[s] || admStatusColors['Pendiente'];
+              return '<div class="adm-status-opt" onclick="admSetStatus(' + ini.id + ',\'' + s + '\')">' +
+                '<span class="adm-status-opt-dot" style="background:' + ssc.dot + '"></span>' + s + '</div>';
+            }).join('') +
+          '</div>' +
+        '</div>' +
+      '</td>' +
+      '<td class="adm-td adm-td-muted">' + (ini.equipo || '<span style="color:var(--gray-300)">—</span>') + '</td>' +
+      '<td class="adm-td adm-td-muted">' + (ini.responsable || '<span style="color:var(--gray-300)">—</span>') + '</td>' +
+      '<td class="adm-td">' + prioHtml + '</td>' +
+      '<td class="adm-td adm-td-muted" style="font-size:11px">' + (retornoShort || '<span style="color:var(--gray-300)">—</span>') + '</td>' +
+    '</tr>';
+  }).join('');
+}
+
+function admRowClick(e, id) {
+  // Don't open detail if clicking the status cell
+  openDetail(id);
+}
+
+function admToggleStatusMenu(el, id, current) {
+  // Close all other open menus first
+  document.querySelectorAll('.adm-status-menu.open').forEach(function(m) {
+    if (m.id !== 'adm-smenu-' + id) m.classList.remove('open');
+  });
+  var menu = document.getElementById('adm-smenu-' + id);
+  if (menu) menu.classList.toggle('open');
+}
+
+async function admSetStatus(id, newEstado) {
+  // Close menu
+  var menu = document.getElementById('adm-smenu-' + id);
+  if (menu) menu.classList.remove('open');
+
+  try {
+    var resp = await fetch('/api/initiatives/' + id + '/status', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ status: newEstado })
+    });
+    if (!resp.ok) throw new Error('Error ' + resp.status);
+    // Update local data
+    var ini = initiatives.find(function(i){ return i.id === id; });
+    if (ini) ini.estado = newEstado;
+    renderAdminTable();
+  } catch(err) {
+    console.error('Error cambiando estado:', err);
+  }
+}
+
+// Close status menus when clicking outside
+document.addEventListener('click', function(e) {
+  if (!e.target.closest('.adm-status')) {
+    document.querySelectorAll('.adm-status-menu.open').forEach(function(m){ m.classList.remove('open'); });
+  }
+});
+
+function adminShowAddRow() {
+  var row = document.getElementById('admQuickAdd');
+  if (!row) return;
+  row.style.display = 'block';
+  var nameInput = document.getElementById('qaName');
+  if (nameInput) { nameInput.value = ''; nameInput.focus(); }
+  document.getElementById('qaDept').value = '';
+  document.getElementById('qaEstado').value = 'Pendiente';
+  document.getElementById('qaResponsable').value = '';
+  document.getElementById('admQaFeedback').textContent = '';
+}
+
+function adminHideAddRow() {
+  var row = document.getElementById('admQuickAdd');
+  if (row) row.style.display = 'none';
+}
+
+async function adminQuickSave() {
+  var nameEl = document.getElementById('qaName');
+  var fb = document.getElementById('admQaFeedback');
+  var name = nameEl ? nameEl.value.trim() : '';
+  if (!name) { nameEl.focus(); nameEl.style.borderColor = '#dc2626'; return; }
+  nameEl.style.borderColor = '';
 
   var body = {
-    name:           fd.get('name')         || null,
-    dept:           fd.get('dept')         || null,
-    proceso:        fd.get('proceso')      || null,
-    dominio:        fd.get('dominio')      || null,
-    estado:         fd.get('estado')       || 'Pendiente',
-    desc:           fd.get('desc')         || null,
-    tipo_retorno:   fd.get('tipo_retorno') || null,
-    objetivo:       fd.get('objetivo')     || null,
-    ahorro:         parseFloat(fd.get('ahorro')) || 0,
-    usuarios:       fd.get('usuarios')     || null,
-    equipo:         fd.get('equipo')       || null,
-    responsable:    fd.get('responsable')  || null,
-    modelo_ia:      fd.get('modelo_ia')    || null,
-    prioridad:      fd.get('prioridad')    || null,
-    reach:          parseFloat(fd.get('reach'))        || null,
-    impact:         parseFloat(fd.get('impact'))       || null,
-    confidence:     parseFloat(fd.get('confidence'))   || null,
-    effort:         parseFloat(fd.get('effort'))       || null,
-    ai_complexity:  parseFloat(fd.get('ai_complexity'))|| null,
-    tier:           parseFloat(fd.get('tier'))         || null,
-    fase_inicio:        fd.get('fase_inicio')        || null,
-    fase_analisis:      fd.get('fase_analisis')      || null,
-    fase_priorizacion:  fd.get('fase_priorizacion')  || null,
-    fase_diseno:        fd.get('fase_diseno')         || null,
-    fase_piloto:        fd.get('fase_piloto')         || null,
-    fase_iteracion:     fd.get('fase_iteracion')      || null,
-    fase_mantenimiento: fd.get('fase_mantenimiento')  || null,
-    fecha_fin:          fd.get('fecha_fin')           || null,
+    name:        name,
+    dept:        document.getElementById('qaDept').value.trim() || null,
+    estado:      document.getElementById('qaEstado').value || 'Pendiente',
+    responsable: document.getElementById('qaResponsable').value.trim() || null,
   };
+
+  fb.style.color = 'var(--gray-400)';
+  fb.textContent = 'Guardando...';
 
   try {
     var resp = await fetch('/api/initiatives', {
@@ -2555,17 +2657,34 @@ async function adminSubmit(e) {
     }
     var created = await resp.json();
     fb.style.color = '#16a34a';
-    fb.textContent = '✓ Iniciativa ITX-' + String(created.id).padStart(3,'0') + ' creada correctamente';
-    e.target.reset();
-    // Recargar datos para que aparezca en el portfolio
+    fb.textContent = '✓ ITX-' + String(created.id).padStart(3,'0') + ' creada';
     await loadFromAPI();
+    renderAdminTable();
+    // Reset & keep open for another entry
+    nameEl.value = '';
+    document.getElementById('qaDept').value = '';
+    document.getElementById('qaResponsable').value = '';
+    document.getElementById('qaEstado').value = 'Pendiente';
+    nameEl.focus();
+    setTimeout(function(){ fb.textContent = ''; }, 3000);
   } catch(err) {
     fb.style.color = '#dc2626';
     fb.textContent = '✕ ' + err.message;
-  } finally {
-    btn.disabled = false;
   }
 }
+
+// Keep Enter key working in quick-add
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Enter' && document.getElementById('admQuickAdd') &&
+      document.getElementById('admQuickAdd').style.display !== 'none' &&
+      document.activeElement && document.activeElement.closest('#admQuickAdd')) {
+    adminQuickSave();
+  }
+  if (e.key === 'Escape' && document.getElementById('admQuickAdd') &&
+      document.getElementById('admQuickAdd').style.display !== 'none') {
+    adminHideAddRow();
+  }
+});
 
 // ── MÉTRICAS DE SEGUIMIENTO: activar filtro al hacer click ─────────
 // Renderiza el summary siempre con conteos del total global (no del filtro activo)
