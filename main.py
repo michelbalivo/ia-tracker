@@ -106,13 +106,16 @@ def row_to_initiative(row: dict) -> dict:
 
     # comp_* son ahora TEXT con el nombre real de la herramienta (o None)
     componentes = {
-        "ocr":      safe_get(row, "comp_ocr"),
-        "frontend": safe_get(row, "comp_frontend"),
-        "modelo":   safe_get(row, "comp_modelo"),
-        "bbdd":     safe_get(row, "comp_bbdd"),
-        "api":      safe_get(row, "comp_api"),
-        "cluster":  safe_get(row, "comp_cluster"),
-        "backend":  safe_get(row, "comp_backend"),
+        "ocr":       safe_get(row, "comp_ocr"),
+        "frontend":  safe_get(row, "comp_frontend"),
+        "modelo":    safe_get(row, "comp_modelo"),
+        "bbdd":      safe_get(row, "comp_bbdd"),
+        "api":       safe_get(row, "comp_api"),
+        "cluster":   safe_get(row, "comp_cluster"),
+        "backend":   safe_get(row, "comp_backend"),
+        "mcp":       safe_get(row, "comp_mcp"),
+        "rag":       safe_get(row, "comp_rag"),
+        "prompting": safe_get(row, "comp_prompting"),
     }
 
     def fmt_date(d):
@@ -145,6 +148,7 @@ def row_to_initiative(row: dict) -> dict:
         # ── Proceso ─────────────────────────────────────────────────
         "proceso":                row["proceso"],
         "clasificacion_proceso":  safe_get(row, "clasificacion_proceso"),
+        "criticidad_proceso":     safe_get(row, "criticidad_proceso"),
         "volumen_proceso":        float(safe_get(row, "volumen_proceso") or 0) or None,
 
         # ── Tipología IA ────────────────────────────────────────────
@@ -161,6 +165,7 @@ def row_to_initiative(row: dict) -> dict:
         "viabilidad_puntos":      float(safe_get(row, "viabilidad_puntos") or 0) or None,
         "datos_requeridos":       safe_get(row, "datos_requeridos"),
         "disponibilidad":         row["disponibilidad"],
+        "madurez_funcional":      safe_get(row, "madurez_funcional"),
 
         # ── Complejidad ─────────────────────────────────────────────
         "time_to_value":          safe_get(row, "time_to_value"),
@@ -195,6 +200,7 @@ def row_to_initiative(row: dict) -> dict:
         "fecha":                  fmt_date(row["fecha_fin"]),
         "fecha_inicio":           fmt_date(row["fecha_inicio"]),
         "fecha_registro":         fmt_date(safe_get(row, "fecha_registro")),
+        "powerapps_id":           safe_get(row, "powerapps_id"),
         "fases":                  fases,
 
         # ── Equipo ──────────────────────────────────────────────────
