@@ -887,6 +887,95 @@
     .ins-kpi-row { grid-template-columns: repeat(2, 1fr); }
     .ins-estado-bar { grid-template-columns: repeat(2, 1fr); }
   }
+
+  /* ── EDIT MODAL ─────────────────────────────────────────────────── */
+  .edit-overlay {
+    display: none; position: fixed; inset: 0; z-index: 600;
+    background: rgba(0,0,0,0.35); backdrop-filter: blur(2px);
+    justify-content: center; align-items: center;
+  }
+  .edit-overlay.open { display: flex; }
+  .edit-modal {
+    background: var(--white); width: 95%; max-width: 860px;
+    max-height: calc(100vh - 60px); display: flex; flex-direction: column;
+    border: 1px solid var(--gray-200); animation: slideUp .22s ease-out;
+  }
+  .edit-header {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 20px 28px 16px; border-bottom: 1px solid var(--gray-200); flex-shrink: 0;
+  }
+  .edit-header-left { display: flex; flex-direction: column; gap: 2px; }
+  .edit-header-id { font-size: 10px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: var(--gray-400); }
+  .edit-header-name { font-size: 18px; font-weight: 300; letter-spacing: -0.3px; color: var(--black); max-width: 600px; }
+  .edit-close {
+    width: 36px; height: 36px; border: 1px solid var(--gray-200); background: none;
+    cursor: pointer; font-size: 18px; color: var(--gray-400); display: flex;
+    align-items: center; justify-content: center; flex-shrink: 0; transition: all .15s;
+  }
+  .edit-close:hover { border-color: var(--black); color: var(--black); }
+  .edit-tabs {
+    display: flex; border-bottom: 1px solid var(--gray-200); flex-shrink: 0;
+    padding: 0 28px; gap: 0; overflow-x: auto;
+  }
+  .edit-tab {
+    padding: 10px 16px; font-size: 10px; font-weight: 600; letter-spacing: 1.5px;
+    text-transform: uppercase; color: var(--gray-400); background: none; border: none;
+    border-bottom: 2px solid transparent; cursor: pointer; font-family: inherit;
+    white-space: nowrap; margin-bottom: -1px; transition: all .15s;
+  }
+  .edit-tab.active { color: var(--black); border-bottom-color: var(--black); }
+  .edit-tab:hover:not(.active) { color: var(--gray-700); }
+  .edit-body { flex: 1; overflow-y: auto; padding: 24px 28px; }
+  .edit-tab-content { display: none; }
+  .edit-tab-content.active { display: block; }
+  .edit-section-title {
+    font-size: 9px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+    color: var(--gray-400); margin: 20px 0 12px; padding-bottom: 6px;
+    border-bottom: 1px solid var(--gray-100);
+  }
+  .edit-section-title:first-child { margin-top: 0; }
+  .edit-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 20px; }
+  .edit-grid-3 { grid-template-columns: 1fr 1fr 1fr; }
+  .edit-field { display: flex; flex-direction: column; gap: 5px; }
+  .edit-field.full { grid-column: 1 / -1; }
+  .edit-label {
+    font-size: 9px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase;
+    color: var(--gray-500);
+  }
+  .edit-input, .edit-select, .edit-textarea {
+    padding: 7px 10px; border: 1px solid var(--gray-200); font-size: 12px;
+    font-family: inherit; color: var(--gray-900); background: var(--white);
+    outline: none; transition: border-color .15s; border-radius: 0;
+  }
+  .edit-input:focus, .edit-select:focus, .edit-textarea:focus { border-color: var(--black); }
+  .edit-textarea { resize: vertical; min-height: 70px; line-height: 1.5; }
+  .edit-checkbox-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 2px; }
+  .edit-checkbox-item {
+    display: flex; align-items: center; gap: 6px; padding: 6px 10px;
+    border: 1px solid var(--gray-200); cursor: pointer; font-size: 11px;
+    color: var(--gray-600); user-select: none; transition: all .15s;
+  }
+  .edit-checkbox-item:hover { border-color: var(--gray-400); }
+  .edit-checkbox-item input[type=checkbox] { width: 13px; height: 13px; cursor: pointer; accent-color: var(--blue); }
+  .edit-footer {
+    display: flex; justify-content: flex-end; gap: 10px; padding: 16px 28px;
+    border-top: 1px solid var(--gray-200); flex-shrink: 0; background: var(--gray-50);
+  }
+  .edit-cancel-btn {
+    padding: 8px 20px; font-size: 11px; font-weight: 500; letter-spacing: 1px;
+    text-transform: uppercase; border: 1px solid var(--gray-200); background: var(--white);
+    cursor: pointer; font-family: inherit; color: var(--gray-600); transition: all .15s;
+  }
+  .edit-cancel-btn:hover { border-color: var(--gray-400); color: var(--black); }
+  .edit-save-btn {
+    padding: 8px 24px; font-size: 11px; font-weight: 600; letter-spacing: 1px;
+    text-transform: uppercase; border: 1px solid var(--black); background: var(--black);
+    color: var(--white); cursor: pointer; font-family: inherit; transition: all .15s;
+  }
+  .edit-save-btn:hover { background: var(--gray-800); }
+  .edit-save-btn:disabled { opacity: .5; cursor: wait; }
+  .edit-num { -moz-appearance: textfield; }
+  .edit-num::-webkit-outer-spin-button, .edit-num::-webkit-inner-spin-button { -webkit-appearance: none; }
 </style>
 </head>
 <body>
@@ -2682,7 +2771,7 @@ function renderAdminTable() {
 }
 
 function admRowClick(e, id) {
-  openDetail(id);
+  openEditModal(id);
 }
 
 function admToggleStatusMenu(el, id) {
@@ -2947,6 +3036,635 @@ loadFromAPI().then(function() {
     switchView(hash, targetBtn);
   }
 });
+
+/* ═══════════════════════════════════════════════════════
+   ADMIN EDIT MODAL  — abre al pinchar en fila de admin
+   ═══════════════════════════════════════════════════════ */
+
+function openEditModal(id) {
+  fetch('/api/initiatives/' + id)
+    .then(function(r){ return r.json(); })
+    .then(function(d) {
+      var m = document.getElementById('editModal');
+      if (!m) return;
+
+      // Guardar id
+      m.dataset.id = id;
+
+      // ── TAB 1: Identificación ──────────────────────────────
+      _setVal('edt-name',            d.name || '');
+      _setVal('edt-dept',            d.dept || '');
+      _setVal('edt-desc',            d.desc_ejecutiva || '');
+      _setVal('edt-objetivo',        d.objetivo || '');
+      _setVal('edt-dominio',         d.dominio || '');
+      _setVal('edt-proceso',         d.proceso || '');
+      _setVal('edt-clasificacion',   d.clasificacion_proceso || '');
+      _setVal('edt-criticidad',      d.criticidad_proceso || '');
+      _setVal('edt-volumen',         d.volumen_proceso != null ? d.volumen_proceso : '');
+      _setVal('edt-tipo-ia',         d.tipo_ia || '');
+      _setBool('edt-tip-ocr',        d.tip_ocr);
+      _setBool('edt-tip-gen',        d.tip_generativa);
+      _setBool('edt-tip-anal',       d.tip_analitica);
+      _setBool('edt-tip-pred',       d.tip_predictiva);
+      _setVal('edt-modelo-ia',       d.modelo_ia || '');
+      _setVal('edt-usuarios',        d.usuarios || '');
+      _setVal('edt-powerapps-id',    d.powerapps_id || '');
+      _setVal('edt-link-devhub',     d.link_devhub || '');
+
+      // ── TAB 2: Evaluación ──────────────────────────────────
+      _setVal('edt-viabilidad',      d.viabilidad || '');
+      _setVal('edt-score-viab',      d.score_viabilidad != null ? d.score_viabilidad : '');
+      _setVal('edt-viab-puntos',     d.viabilidad_puntos != null ? d.viabilidad_puntos : '');
+      _setVal('edt-datos-req',       d.datos_requeridos || '');
+      _setVal('edt-disponibilidad',  d.disponibilidad || '');
+      _setVal('edt-madurez',         d.madurez_funcional || '');
+      _setVal('edt-ttv',             d.time_to_value || '');
+      _setVal('edt-complejidad',     d.complejidad || '');
+      _setVal('edt-score-comp',      d.score_complejidad != null ? d.score_complejidad : '');
+      _setVal('edt-comp-tecnica',    d.complejidad_tecnica || '');
+      _setVal('edt-comp-org',        d.complejidad_organizativa || '');
+      _setVal('edt-riesgos',         d.riesgos || '');
+      _setVal('edt-compliance',      d.compliance || '');
+
+      // ── TAB 3: ROI & Prioridad ─────────────────────────────
+      _setVal('edt-retorno',         d.retorno || '');
+      _setVal('edt-tipo-retorno',    d.tipo_retorno || '');
+      _setVal('edt-impacto-neg',     d.impacto_negocio || '');
+      _setVal('edt-ahorro',          d.ahorro != null ? d.ahorro : '');
+      _setVal('edt-prioridad',       d.prioridad || '');
+      _setVal('edt-roi',             d.roi_business_case != null ? d.roi_business_case : '');
+      _setVal('edt-reach',           d.reach != null ? d.reach : '');
+      _setVal('edt-impact',          d.impact != null ? d.impact : '');
+      _setVal('edt-confidence',      d.confidence != null ? d.confidence : '');
+      _setVal('edt-effort',          d.effort != null ? d.effort : '');
+      _setVal('edt-ai-complexity',   d.ai_complexity != null ? d.ai_complexity : '');
+      _setVal('edt-ric',             d.ric != null ? d.ric : '');
+      _setVal('edt-tier',            d.tier != null ? d.tier : '');
+
+      // ── TAB 4: Seguimiento & Técnica ───────────────────────
+      _setVal('edt-estado',          d.estado || '');
+      _setBool('edt-alerta',         d.alerta);
+      _setVal('edt-equipo',          d.equipo || '');
+      _setVal('edt-responsable',     d.responsable || '');
+      _setVal('edt-fecha-registro',  d.fecha_registro || '');
+      _setVal('edt-fecha-inicio',    d.fecha_inicio || '');
+      _setVal('edt-fecha-fin',       d.fecha_fin || '');
+
+      // Fases (claves con nombres reales de la API)
+      var fases = d.fases || {};
+      _setVal('edt-fase-inicio',     fases['Inicio'] || '');
+      _setVal('edt-fase-analisis',   fases['An\u00e1lisis'] || '');
+      _setVal('edt-fase-prio',       fases['Priorizaci\u00f3n'] || '');
+      _setVal('edt-fase-piloto',     fases['Piloto'] || '');
+      _setVal('edt-fase-diseno',     fases['Dise\u00f1o'] || '');
+      _setVal('edt-fase-iter',       fases['Iteraci\u00f3n / Pruebas'] || '');
+      _setVal('edt-fase-mant',       fases['Mantenimiento'] || '');
+
+      // Componentes técnicos
+      var comp = d.componentes || {};
+      _setVal('edt-comp-bbdd',       comp.bbdd || '');
+      _setVal('edt-comp-ocr',        comp.ocr || '');
+      _setVal('edt-comp-cluster',    comp.cluster || '');
+      _setVal('edt-comp-api',        comp.api || '');
+      _setVal('edt-comp-backend',    comp.backend || '');
+      _setVal('edt-comp-modelo',     comp.modelo || '');
+      _setVal('edt-comp-mcp',        comp.mcp || '');
+      _setVal('edt-comp-rag',        comp.rag || '');
+      _setVal('edt-comp-prompting',  comp.prompting || '');
+      _setVal('edt-comp-frontend',   comp.frontend || '');
+
+      // Mostrar modal en tab 1
+      m.querySelectorAll('.edit-tab').forEach(function(t){ t.classList.remove('active'); });
+      m.querySelectorAll('.edit-tab-content').forEach(function(t){ t.classList.remove('active'); });
+      m.querySelector('.edit-tab[data-tab="1"]').classList.add('active');
+      m.querySelector('.edit-tab-content[data-tab="1"]').classList.add('active');
+      m.style.display = 'flex';
+    });
+}
+
+function closeEditModal() {
+  var m = document.getElementById('editModal');
+  if (m) m.style.display = 'none';
+}
+
+function switchEditTab(tab) {
+  var m = document.getElementById('editModal');
+  if (!m) return;
+  m.querySelectorAll('.edit-tab').forEach(function(t){ t.classList.remove('active'); });
+  m.querySelectorAll('.edit-tab-content').forEach(function(t){ t.classList.remove('active'); });
+  m.querySelector('.edit-tab[data-tab="' + tab + '"]').classList.add('active');
+  m.querySelector('.edit-tab-content[data-tab="' + tab + '"]').classList.add('active');
+}
+
+function saveEditModal() {
+  var m = document.getElementById('editModal');
+  if (!m) return;
+  var id = m.dataset.id;
+
+  function gv(eid) { var el = document.getElementById(eid); return el ? el.value : null; }
+  function gb(eid) { var el = document.getElementById(eid); return el ? el.checked : false; }
+  function gn(eid) { var v = gv(eid); return (v === '' || v === null) ? null : parseFloat(v); }
+  function gd(eid) { var v = gv(eid); return (v === '' || v === null) ? null : v; }
+
+  var payload = {
+    name:                    gv('edt-name'),
+    dept:                    gv('edt-dept'),
+    desc_ejecutiva:          gv('edt-desc'),
+    objetivo:                gv('edt-objetivo'),
+    dominio:                 gv('edt-dominio'),
+    proceso:                 gv('edt-proceso'),
+    clasificacion_proceso:   gv('edt-clasificacion'),
+    criticidad_proceso:      gv('edt-criticidad'),
+    volumen_proceso:         gn('edt-volumen'),
+    tipo_ia:                 gv('edt-tipo-ia'),
+    tip_ocr:                 gb('edt-tip-ocr'),
+    tip_generativa:          gb('edt-tip-gen'),
+    tip_analitica:           gb('edt-tip-anal'),
+    tip_predictiva:          gb('edt-tip-pred'),
+    modelo_ia:               gv('edt-modelo-ia'),
+    usuarios:                gv('edt-usuarios'),
+    powerapps_id:            gv('edt-powerapps-id'),
+    link_devhub:             gv('edt-link-devhub'),
+    viabilidad:              gv('edt-viabilidad'),
+    score_viabilidad:        gn('edt-score-viab'),
+    viabilidad_puntos:       gn('edt-viab-puntos'),
+    datos_requeridos:        gv('edt-datos-req'),
+    disponibilidad:          gv('edt-disponibilidad'),
+    madurez_funcional:       gv('edt-madurez'),
+    time_to_value:           gv('edt-ttv'),
+    complejidad:             gv('edt-complejidad'),
+    score_complejidad:       gn('edt-score-comp'),
+    complejidad_tecnica:     gv('edt-comp-tecnica'),
+    complejidad_organizativa:gv('edt-comp-org'),
+    riesgos:                 gv('edt-riesgos'),
+    compliance:              gv('edt-compliance'),
+    retorno:                 gv('edt-retorno'),
+    tipo_retorno:            gv('edt-tipo-retorno'),
+    impacto_negocio:         gv('edt-impacto-neg'),
+    ahorro:                  gn('edt-ahorro'),
+    prioridad:               gv('edt-prioridad'),
+    roi_business_case:       gn('edt-roi'),
+    reach:                   gn('edt-reach'),
+    impact:                  gn('edt-impact'),
+    confidence:              gn('edt-confidence'),
+    effort:                  gn('edt-effort'),
+    ai_complexity:           gn('edt-ai-complexity'),
+    ric:                     gn('edt-ric'),
+    tier:                    gn('edt-tier'),
+    estado:                  gv('edt-estado'),
+    alerta:                  gb('edt-alerta'),
+    equipo:                  gv('edt-equipo'),
+    responsable:             gv('edt-responsable'),
+    fecha_registro:          gd('edt-fecha-registro'),
+    fecha_inicio:            gd('edt-fecha-inicio'),
+    fecha_fin:               gd('edt-fecha-fin'),
+    fase_inicio:             gd('edt-fase-inicio'),
+    fase_analisis:           gd('edt-fase-analisis'),
+    fase_priorizacion:       gd('edt-fase-prio'),
+    fase_piloto:             gd('edt-fase-piloto'),
+    fase_diseno:             gd('edt-fase-diseno'),
+    fase_iteracion:          gd('edt-fase-iter'),
+    fase_mantenimiento:      gd('edt-fase-mant'),
+    comp_bbdd:               gv('edt-comp-bbdd'),
+    comp_ocr:                gv('edt-comp-ocr'),
+    comp_cluster:            gv('edt-comp-cluster'),
+    comp_api:                gv('edt-comp-api'),
+    comp_backend:            gv('edt-comp-backend'),
+    comp_modelo:             gv('edt-comp-modelo'),
+    comp_mcp:                gv('edt-comp-mcp'),
+    comp_rag:                gv('edt-comp-rag'),
+    comp_prompting:          gv('edt-comp-prompting'),
+    comp_frontend:           gv('edt-comp-frontend')
+  };
+
+  fetch('/api/initiatives/' + id, {
+    method: 'PATCH',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify(payload)
+  })
+  .then(function(r){
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    return r.json();
+  })
+  .then(function(updated) {
+    // Actualizar en memoria
+    var idx = allInitiatives.findIndex(function(x){ return x.id == id; });
+    if (idx >= 0) {
+      var merged = Object.assign({}, allInitiatives[idx], updated);
+      allInitiatives[idx] = merged;
+    }
+    closeEditModal();
+    renderAdminTable();
+    renderGroupCards();
+    showToast('Iniciativa actualizada ✓');
+  })
+  .catch(function(err){
+    alert('Error al guardar: ' + err.message);
+  });
+}
+
+function _setVal(id, val) {
+  var el = document.getElementById(id);
+  if (!el) return;
+  if (el.tagName === 'SELECT') {
+    // Intentar encontrar option con ese valor; si no, dejar el primero
+    var found = false;
+    for (var i = 0; i < el.options.length; i++) {
+      if (el.options[i].value === String(val)) { el.selectedIndex = i; found = true; break; }
+    }
+    if (!found) el.selectedIndex = 0;
+  } else {
+    el.value = val != null ? val : '';
+  }
+}
+
+function _setBool(id, val) {
+  var el = document.getElementById(id);
+  if (el) el.checked = !!val;
+}
 </script>
+
+
+
+<!-- ═══════════════════════ EDIT MODAL (Admin) ═══════════════════════ -->
+<div id="editModal" style="display:none;" class="edit-overlay" onclick="if(event.target===this)closeEditModal()">
+  <div class="edit-modal">
+    <div class="edit-header">
+      <span class="edit-title">Editar iniciativa</span>
+      <button class="modal-close" onclick="closeEditModal()">✕</button>
+    </div>
+
+    <div class="edit-tabs">
+      <button class="edit-tab active"  data-tab="1" onclick="switchEditTab(1)">Identificación</button>
+      <button class="edit-tab"         data-tab="2" onclick="switchEditTab(2)">Evaluación</button>
+      <button class="edit-tab"         data-tab="3" onclick="switchEditTab(3)">ROI &amp; Prioridad</button>
+      <button class="edit-tab"         data-tab="4" onclick="switchEditTab(4)">Seguimiento &amp; Técnica</button>
+    </div>
+
+    <div class="edit-body">
+
+      <!-- ── TAB 1: Identificación ─────────────────────────────── -->
+      <div class="edit-tab-content active" data-tab="1">
+        <div class="edit-section-title">Datos básicos</div>
+        <div class="edit-grid">
+          <div class="edit-field" style="grid-column:1/-1">
+            <label class="edit-label">Nombre de la iniciativa</label>
+            <input id="edt-name" class="edit-input" type="text" placeholder="Descripción resumida">
+          </div>
+          <div class="edit-field">
+            <label class="edit-label">Departamento</label>
+            <input id="edt-dept" class="edit-input" type="text">
+          </div>
+          <div class="edit-field">
+            <label class="edit-label">Dominio funcional IA</label>
+            <input id="edt-dominio" class="edit-input" type="text">
+          </div>
+          <div class="edit-field" style="grid-column:1/-1">
+            <label class="edit-label">Descripción ejecutiva</label>
+            <textarea id="edt-desc" class="edit-textarea" rows="3" placeholder="Descripción ejecutiva…"></textarea>
+          </div>
+          <div class="edit-field" style="grid-column:1/-1">
+            <label class="edit-label">Objetivo estratégico</label>
+            <textarea id="edt-objetivo" class="edit-textarea" rows="2"></textarea>
+          </div>
+        </div>
+
+        <div class="edit-section-title">Proceso</div>
+        <div class="edit-grid edit-grid-3">
+          <div class="edit-field">
+            <label class="edit-label">Proceso impactado</label>
+            <input id="edt-proceso" class="edit-input" type="text">
+          </div>
+          <div class="edit-field">
+            <label class="edit-label">Clasificación proceso</label>
+            <input id="edt-clasificacion" class="edit-input" type="text">
+          </div>
+          <div class="edit-field">
+            <label class="edit-label">Criticidad proceso</label>
+            <input id="edt-criticidad" class="edit-input" type="text">
+          </div>
+          <div class="edit-field">
+            <label class="edit-label">Volumen proceso (M€)</label>
+            <input id="edt-volumen" class="edit-input edit-num" type="number" step="0.01">
+          </div>
+          <div class="edit-field">
+            <label class="edit-label">Usuarios impactados</label>
+            <input id="edt-usuarios" class="edit-input" type="text">
+          </div>
+        </div>
+
+        <div class="edit-section-title">Tipo de IA</div>
+        <div class="edit-grid edit-grid-3">
+          <div class="edit-field">
+            <label class="edit-label">Tipo IA general</label>
+            <input id="edt-tipo-ia" class="edit-input" type="text">
+          </div>
+          <div class="edit-field">
+            <label class="edit-label">Modelo / Proveedor IA</label>
+            <input id="edt-modelo-ia" class="edit-input" type="text">
+          </div>
+        </div>
+        <div class="edit-checkbox-row">
+          <label class="edit-checkbox-item"><input id="edt-tip-ocr"  type="checkbox"> Procesamiento de documentos / Visión</label>
+          <label class="edit-checkbox-item"><input id="edt-tip-gen"  type="checkbox"> IA Generativa / Conversacional</label>
+          <label class="edit-checkbox-item"><input id="edt-tip-anal" type="checkbox"> Analítica / Diagnóstica / Recomendación</label>
+          <label class="edit-checkbox-item"><input id="edt-tip-pred" type="checkbox"> Predictiva / Forecasting</label>
+        </div>
+
+        <div class="edit-section-title">Referencias</div>
+        <div class="edit-grid">
+          <div class="edit-field">
+            <label class="edit-label">PowerApps ID</label>
+            <input id="edt-powerapps-id" class="edit-input" type="text">
+          </div>
+          <div class="edit-field">
+            <label class="edit-label">Link DevHub</label>
+            <input id="edt-link-devhub" class="edit-input" type="text">
+          </div>
+        </div>
+      </div>
+
+      <!-- ── TAB 2: Evaluación ──────────────────────────────────── -->
+      <div class="edit-tab-content" data-tab="2">
+        <div class="edit-section-title">Viabilidad</div>
+        <div class="edit-grid edit-grid-3">
+          <div class="edit-field">
+            <label class="edit-label">Viabilidad</label>
+            <select id="edt-viabilidad" class="edit-select">
+              <option value="">—</option>
+              <option value="Alta">Alta</option>
+              <option value="Media">Media</option>
+              <option value="Baja">Baja</option>
+            </select>
+          </div>
+          <div class="edit-field">
+            <label class="edit-label">Score viabilidad</label>
+            <input id="edt-score-viab" class="edit-input edit-num" type="number" step="0.1">
+          </div>
+          <div class="edit-field">
+            <label class="edit-label">Viabilidad puntos</label>
+            <input id="edt-viab-puntos" class="edit-input edit-num" type="number" step="0.1">
+          </div>
+          <div class="edit-field">
+            <label class="edit-label">Datos requeridos</label>
+            <input id="edt-datos-req" class="edit-input" type="text">
+          </div>
+          <div class="edit-field">
+            <label class="edit-label">Disponibilidad de datos</label>
+            <input id="edt-disponibilidad" class="edit-input" type="text">
+          </div>
+          <div class="edit-field">
+            <label class="edit-label">Madurez funcional</label>
+            <input id="edt-madurez" class="edit-input" type="text">
+          </div>
+          <div class="edit-field">
+            <label class="edit-label">Time to value</label>
+            <input id="edt-ttv" class="edit-input" type="text">
+          </div>
+        </div>
+
+        <div class="edit-section-title">Complejidad</div>
+        <div class="edit-grid edit-grid-3">
+          <div class="edit-field">
+            <label class="edit-label">Complejidad</label>
+            <select id="edt-complejidad" class="edit-select">
+              <option value="">—</option>
+              <option value="Alta">Alta</option>
+              <option value="Media">Media</option>
+              <option value="Baja">Baja</option>
+            </select>
+          </div>
+          <div class="edit-field">
+            <label class="edit-label">Score complejidad</label>
+            <input id="edt-score-comp" class="edit-input edit-num" type="number" step="0.1">
+          </div>
+          <div class="edit-field">
+            <label class="edit-label">Complejidad técnica</label>
+            <input id="edt-comp-tecnica" class="edit-input" type="text">
+          </div>
+          <div class="edit-field">
+            <label class="edit-label">Complejidad organizativa</label>
+            <input id="edt-comp-org" class="edit-input" type="text">
+          </div>
+        </div>
+
+        <div class="edit-section-title">Riesgos &amp; Compliance</div>
+        <div class="edit-grid">
+          <div class="edit-field" style="grid-column:1/-1">
+            <label class="edit-label">Principales riesgos</label>
+            <textarea id="edt-riesgos" class="edit-textarea" rows="2"></textarea>
+          </div>
+          <div class="edit-field" style="grid-column:1/-1">
+            <label class="edit-label">Impacto en compliance</label>
+            <textarea id="edt-compliance" class="edit-textarea" rows="2"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── TAB 3: ROI & Prioridad ─────────────────────────────── -->
+      <div class="edit-tab-content" data-tab="3">
+        <div class="edit-section-title">Retorno</div>
+        <div class="edit-grid edit-grid-3">
+          <div class="edit-field">
+            <label class="edit-label">Retorno esperado</label>
+            <input id="edt-retorno" class="edit-input" type="text">
+          </div>
+          <div class="edit-field">
+            <label class="edit-label">Tipo de retorno</label>
+            <select id="edt-tipo-retorno" class="edit-select">
+              <option value="">—</option>
+              <option value="Ahorro">Ahorro</option>
+              <option value="Ingresos">Ingresos</option>
+              <option value="Eficiencia">Eficiencia</option>
+              <option value="Calidad">Calidad</option>
+              <option value="Compliance">Compliance</option>
+              <option value="Mixto">Mixto</option>
+            </select>
+          </div>
+          <div class="edit-field">
+            <label class="edit-label">Impacto en negocio</label>
+            <input id="edt-impacto-neg" class="edit-input" type="text">
+          </div>
+          <div class="edit-field">
+            <label class="edit-label">Ahorro estimado (€/año)</label>
+            <input id="edt-ahorro" class="edit-input edit-num" type="number" step="100">
+          </div>
+          <div class="edit-field">
+            <label class="edit-label">ROI Business Case</label>
+            <input id="edt-roi" class="edit-input edit-num" type="number" step="0.1">
+          </div>
+        </div>
+
+        <div class="edit-section-title">Scoring RICE</div>
+        <div class="edit-grid edit-grid-3">
+          <div class="edit-field">
+            <label class="edit-label">Reach</label>
+            <input id="edt-reach" class="edit-input edit-num" type="number" step="0.1">
+          </div>
+          <div class="edit-field">
+            <label class="edit-label">Impact</label>
+            <input id="edt-impact" class="edit-input edit-num" type="number" step="0.1">
+          </div>
+          <div class="edit-field">
+            <label class="edit-label">Confidence</label>
+            <input id="edt-confidence" class="edit-input edit-num" type="number" step="0.1">
+          </div>
+          <div class="edit-field">
+            <label class="edit-label">Effort</label>
+            <input id="edt-effort" class="edit-input edit-num" type="number" step="0.1">
+          </div>
+          <div class="edit-field">
+            <label class="edit-label">AI Complexity</label>
+            <input id="edt-ai-complexity" class="edit-input edit-num" type="number" step="0.1">
+          </div>
+          <div class="edit-field">
+            <label class="edit-label">RIC</label>
+            <input id="edt-ric" class="edit-input edit-num" type="number" step="0.1">
+          </div>
+          <div class="edit-field">
+            <label class="edit-label">TIER</label>
+            <input id="edt-tier" class="edit-input edit-num" type="number" step="1">
+          </div>
+          <div class="edit-field">
+            <label class="edit-label">Prioridad sugerida</label>
+            <select id="edt-prioridad" class="edit-select">
+              <option value="">—</option>
+              <option value="Alta">Alta</option>
+              <option value="Media">Media</option>
+              <option value="Baja">Baja</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── TAB 4: Seguimiento & Técnica ──────────────────────── -->
+      <div class="edit-tab-content" data-tab="4">
+        <div class="edit-section-title">Estado y equipo</div>
+        <div class="edit-grid edit-grid-3">
+          <div class="edit-field">
+            <label class="edit-label">Estado</label>
+            <select id="edt-estado" class="edit-select">
+              <option value="Pendiente">Pendiente</option>
+              <option value="En progreso">En progreso</option>
+              <option value="Completado">Completado</option>
+              <option value="Pausado">Pausado</option>
+              <option value="Cancelado">Cancelado</option>
+            </select>
+          </div>
+          <div class="edit-field">
+            <label class="edit-label">Equipo IA asignado</label>
+            <input id="edt-equipo" class="edit-input" type="text">
+          </div>
+          <div class="edit-field">
+            <label class="edit-label">Responsable</label>
+            <input id="edt-responsable" class="edit-input" type="text">
+          </div>
+        </div>
+        <div class="edit-checkbox-row">
+          <label class="edit-checkbox-item"><input id="edt-alerta" type="checkbox"> ⚠️ Alerta activa</label>
+        </div>
+
+        <div class="edit-section-title">Fechas</div>
+        <div class="edit-grid edit-grid-3">
+          <div class="edit-field">
+            <label class="edit-label">Fecha registro</label>
+            <input id="edt-fecha-registro" class="edit-input" type="date">
+          </div>
+          <div class="edit-field">
+            <label class="edit-label">Fecha inicio real</label>
+            <input id="edt-fecha-inicio" class="edit-input" type="date">
+          </div>
+          <div class="edit-field">
+            <label class="edit-label">Fecha fin estimada</label>
+            <input id="edt-fecha-fin" class="edit-input" type="date">
+          </div>
+        </div>
+
+        <div class="edit-section-title">Fases del proyecto</div>
+        <div class="edit-grid edit-grid-3">
+          <div class="edit-field">
+            <label class="edit-label">Inicio</label>
+            <input id="edt-fase-inicio" class="edit-input" type="date">
+          </div>
+          <div class="edit-field">
+            <label class="edit-label">Análisis</label>
+            <input id="edt-fase-analisis" class="edit-input" type="date">
+          </div>
+          <div class="edit-field">
+            <label class="edit-label">Priorización</label>
+            <input id="edt-fase-prio" class="edit-input" type="date">
+          </div>
+          <div class="edit-field">
+            <label class="edit-label">Piloto</label>
+            <input id="edt-fase-piloto" class="edit-input" type="date">
+          </div>
+          <div class="edit-field">
+            <label class="edit-label">Diseño</label>
+            <input id="edt-fase-diseno" class="edit-input" type="date">
+          </div>
+          <div class="edit-field">
+            <label class="edit-label">Iteración / Pruebas</label>
+            <input id="edt-fase-iter" class="edit-input" type="date">
+          </div>
+          <div class="edit-field">
+            <label class="edit-label">Mantenimiento</label>
+            <input id="edt-fase-mant" class="edit-input" type="date">
+          </div>
+        </div>
+
+        <div class="edit-section-title">Componentes técnicos</div>
+        <div class="edit-grid edit-grid-3">
+          <div class="edit-field">
+            <label class="edit-label">BBDD</label>
+            <input id="edt-comp-bbdd" class="edit-input" type="text">
+          </div>
+          <div class="edit-field">
+            <label class="edit-label">OCR</label>
+            <input id="edt-comp-ocr" class="edit-input" type="text">
+          </div>
+          <div class="edit-field">
+            <label class="edit-label">Cluster</label>
+            <input id="edt-comp-cluster" class="edit-input" type="text">
+          </div>
+          <div class="edit-field">
+            <label class="edit-label">API</label>
+            <input id="edt-comp-api" class="edit-input" type="text">
+          </div>
+          <div class="edit-field">
+            <label class="edit-label">Back End</label>
+            <input id="edt-comp-backend" class="edit-input" type="text">
+          </div>
+          <div class="edit-field">
+            <label class="edit-label">Modelo IA</label>
+            <input id="edt-comp-modelo" class="edit-input" type="text">
+          </div>
+          <div class="edit-field">
+            <label class="edit-label">MCP</label>
+            <input id="edt-comp-mcp" class="edit-input" type="text">
+          </div>
+          <div class="edit-field">
+            <label class="edit-label">RAG</label>
+            <input id="edt-comp-rag" class="edit-input" type="text">
+          </div>
+          <div class="edit-field">
+            <label class="edit-label">Prompting</label>
+            <input id="edt-comp-prompting" class="edit-input" type="text">
+          </div>
+          <div class="edit-field">
+            <label class="edit-label">Front End</label>
+            <input id="edt-comp-frontend" class="edit-input" type="text">
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /.edit-body -->
+
+    <div class="edit-footer">
+      <button class="edit-cancel-btn" onclick="closeEditModal()">Cancelar</button>
+      <button class="edit-save-btn"   onclick="saveEditModal()">Guardar cambios</button>
+    </div>
+  </div>
+</div>
+<!-- ═════════════════════════════════════════════════════ -->
 
 </body></html>

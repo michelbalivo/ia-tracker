@@ -318,16 +318,80 @@ def create_initiative(body: InitiativeCreate):
 
 
 class InitiativeUpdate(BaseModel):
-    name:        str | None = None
-    dept:        str | None = None
-    estado:      str | None = None
-    equipo:      str | None = None
-    responsable: str | None = None
-    prioridad:   str | None = None
-    tipo_retorno: str | None = None
-    dominio:     str | None = None
-    proceso:     str | None = None
-    desc:        str | None = None
+    # Identificación
+    name:                     str | None = None
+    dept:                     str | None = None
+    desc:                     str | None = None   # → desc_ejecutiva
+    objetivo:                 str | None = None
+    dominio:                  str | None = None
+    proceso:                  str | None = None
+    clasificacion_proceso:    str | None = None
+    criticidad_proceso:       str | None = None
+    volumen_proceso:          float | None = None
+    tipo_ia:                  str | None = None
+    tip_ocr:                  bool | None = None
+    tip_generativa:           bool | None = None
+    tip_analitica:            bool | None = None
+    tip_predictiva:           bool | None = None
+    modelo_ia:                str | None = None
+    usuarios:                 str | None = None
+    powerapps_id:             str | None = None
+    link_devhub:              str | None = None
+    # Evaluación
+    viabilidad:               str | None = None
+    score_viabilidad:         float | None = None
+    viabilidad_puntos:        float | None = None
+    datos_requeridos:         str | None = None
+    disponibilidad:           str | None = None
+    madurez_funcional:        str | None = None
+    time_to_value:            str | None = None
+    complejidad:              str | None = None
+    score_complejidad:        float | None = None
+    complejidad_tecnica:      str | None = None
+    complejidad_organizativa: str | None = None
+    riesgos:                  str | None = None
+    compliance:               str | None = None
+    # ROI & Prioridad
+    retorno:                  str | None = None
+    tipo_retorno:             str | None = None
+    impacto_negocio:          str | None = None
+    ahorro:                   float | None = None
+    prioridad:                str | None = None
+    roi_business_case:        float | None = None
+    reach:                    float | None = None
+    impact:                   float | None = None
+    confidence:               float | None = None
+    effort:                   float | None = None
+    ai_complexity:            float | None = None
+    ric:                      float | None = None
+    tier:                     float | None = None
+    # Seguimiento
+    estado:                   str | None = None   # → estado_override
+    alerta:                   bool | None = None
+    equipo:                   str | None = None
+    responsable:              str | None = None
+    fecha_registro:           str | None = None
+    fecha_inicio:             str | None = None
+    fecha_fin:                str | None = None
+    # Fases
+    fase_inicio:              str | None = None
+    fase_analisis:            str | None = None
+    fase_priorizacion:        str | None = None
+    fase_piloto:              str | None = None
+    fase_diseno:              str | None = None
+    fase_iteracion:           str | None = None
+    fase_mantenimiento:       str | None = None
+    # Componentes técnicos
+    comp_bbdd:                str | None = None
+    comp_ocr:                 str | None = None
+    comp_cluster:             str | None = None
+    comp_api:                 str | None = None
+    comp_backend:             str | None = None
+    comp_modelo:              str | None = None
+    comp_mcp:                 str | None = None
+    comp_rag:                 str | None = None
+    comp_prompting:           str | None = None
+    comp_frontend:            str | None = None
 
 @app.patch("/api/initiatives/{iid}")
 def update_initiative(iid: int, body: InitiativeUpdate):
@@ -337,7 +401,11 @@ def update_initiative(iid: int, body: InitiativeUpdate):
         fields = []
         values = []
         data = body.dict(exclude_none=True)
-        col_map = {"desc": "desc_ejecutiva", "estado": "estado_override", "tipo_retorno": "tipo_retorno"}
+        # Mapeo de nombres de payload → columnas reales en DB
+        col_map = {
+            "desc":     "desc_ejecutiva",
+            "estado":   "estado_override",
+        }
         for k, v in data.items():
             col = col_map.get(k, k)
             fields.append(f"{col} = %s")
@@ -352,8 +420,11 @@ def update_initiative(iid: int, body: InitiativeUpdate):
             cur.close(); conn.close()
             raise HTTPException(status_code=404, detail="No encontrado")
         conn.commit()
+        # Devolver la iniciativa actualizada completa
+        cur.execute("SELECT * FROM initiatives WHERE id = %s", (iid,))
+        updated = cur.fetchone()
         cur.close(); conn.close()
-        return {"ok": True, "id": iid}
+        return row_to_initiative(dict(updated))
     except HTTPException:
         raise
     except Exception as e:
