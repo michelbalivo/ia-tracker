@@ -239,6 +239,65 @@ def create_initiative(body: InitiativeCreate):
         raise HTTPException(status_code=500, detail=str(e))
 
 
+class InitiativeUpdate(BaseModel):
+    name:        str | None = None
+    dept:        str | None = None
+    estado:      str | None = None
+    equipo:      str | None = None
+    responsable: str | None = None
+    prioridad:   str | None = None
+    tipo_retorno: str | None = None
+    dominio:     str | None = None
+    proceso:     str | None = None
+    desc:        str | None = None
+
+@app.patch("/api/initiatives/{iid}")
+def update_initiative(iid: int, body: InitiativeUpdate):
+    try:
+        conn = get_conn()
+        cur  = conn.cursor()
+        fields = []
+        values = []
+        data = body.dict(exclude_none=True)
+        col_map = {"desc": "desc_ejecutiva", "estado": "estado_override", "tipo_retorno": "tipo_retorno"}
+        for k, v in data.items():
+            col = col_map.get(k, k)
+            fields.append(f"{col} = %s")
+            values.append(v)
+        if not fields:
+            cur.close(); conn.close()
+            return {"ok": True, "id": iid}
+        fields.append("updated_at = NOW()")
+        values.append(iid)
+        cur.execute(f"UPDATE initiatives SET {', '.join(fields)} WHERE id = %s", values)
+        if cur.rowcount == 0:
+            cur.close(); conn.close()
+            raise HTTPException(status_code=404, detail="No encontrado")
+        conn.commit()
+        cur.close(); conn.close()
+        return {"ok": True, "id": iid}
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.delete("/api/initiatives/{iid}")
+def delete_initiative(iid: int):
+    try:
+        conn = get_conn()
+        cur  = conn.cursor()
+        cur.execute("DELETE FROM initiatives WHERE id = %s", (iid,))
+        if cur.rowcount == 0:
+            cur.close(); conn.close()
+            raise HTTPException(status_code=404, detail="No encontrado")
+        conn.commit()
+        cur.close(); conn.close()
+        return {"ok": True, "id": iid}
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
 class StatusUpdate(BaseModel):
     status: str
 

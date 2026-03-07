@@ -494,6 +494,57 @@
   .adm-addrow:hover { color: var(--black); background: var(--gray-50); }
   .adm-empty { text-align: center; padding: 48px; font-size: 12px; color: var(--gray-400); }
 
+  /* Actions column */
+  .adm-col-actions { width: 48px; }
+  .adm-del-btn {
+    display: none; width: 28px; height: 28px; border: 1px solid var(--gray-200);
+    background: none; cursor: pointer; color: var(--gray-400);
+    align-items: center; justify-content: center; transition: all .15s; flex-shrink: 0;
+  }
+  .adm-tr:hover .adm-del-btn { display: flex; }
+  .adm-del-btn:hover { border-color: var(--red); color: var(--red); background: #fef2f2; }
+
+  /* Editable cell */
+  .adm-td-editable { cursor: text; }
+  .adm-td-editable:hover { background: var(--gray-50); outline: 1px solid var(--gray-300); outline-offset: -1px; }
+  .adm-cell-input {
+    width: 100%; font-family: inherit; font-size: 13px; color: var(--black);
+    border: none; outline: 2px solid var(--blue); background: var(--white);
+    padding: 6px 8px; box-sizing: border-box;
+  }
+  .adm-cell-select {
+    width: 100%; font-family: inherit; font-size: 12px; color: var(--black);
+    border: none; outline: 2px solid var(--blue); background: var(--white);
+    padding: 6px 8px; cursor: pointer;
+  }
+
+  /* New inline row */
+  .adm-tr-new { background: #f8faff; }
+  .adm-tr-new .adm-td { padding: 6px 6px; }
+  .adm-new-input {
+    width: 100%; font-family: inherit; font-size: 13px; color: var(--black);
+    border: 1px solid var(--gray-300); background: var(--white);
+    padding: 6px 8px; outline: none; box-sizing: border-box;
+  }
+  .adm-new-input:focus { border-color: var(--blue); }
+  .adm-new-select {
+    width: 100%; font-family: inherit; font-size: 12px; color: var(--black);
+    border: 1px solid var(--gray-300); background: var(--white);
+    padding: 6px 4px; cursor: pointer; outline: none;
+  }
+  .adm-new-select:focus { border-color: var(--blue); }
+  .adm-new-save {
+    background: var(--black); color: var(--white); border: none;
+    padding: 5px 12px; font-family: inherit; font-size: 11px; font-weight: 500;
+    cursor: pointer; white-space: nowrap;
+  }
+  .adm-new-save:hover { opacity: 0.75; }
+  .adm-new-cancel {
+    background: none; color: var(--gray-400); border: 1px solid var(--gray-200);
+    padding: 5px 8px; font-family: inherit; font-size: 11px; cursor: pointer;
+  }
+  .adm-new-cancel:hover { color: var(--black); }
+
   .seg-filters { display: flex; gap: 20px; padding: 16px 40px; border-bottom: 1px solid var(--gray-200); align-items: center; flex-wrap: wrap; }
   .seg-filter-group { display: flex; align-items: center; gap: 8px; }
   .seg-filter-label { font-size: 10px; font-weight: 500; letter-spacing: 1px; text-transform: uppercase; color: var(--gray-400); font-style: italic; }
@@ -1009,30 +1060,6 @@
     </div>
   </div>
 
-  <!-- QUICK-ADD ROW (hidden by default) -->
-  <div class="adm-quickadd" id="admQuickAdd" style="display:none">
-    <div class="adm-quickadd-inner">
-      <input class="adm-qa-input adm-qa-name" id="qaName" type="text" placeholder="Nombre de la iniciativa *" autocomplete="off">
-      <input class="adm-qa-input" id="qaDept" type="text" placeholder="Departamento">
-      <select class="adm-qa-input" id="qaEstado">
-        <option value="Pendiente">Pendiente</option>
-        <option value="Análisis">Análisis</option>
-        <option value="Priorización">Priorización</option>
-        <option value="Diseño">Diseño</option>
-        <option value="Piloto">Piloto</option>
-        <option value="Iteración">Iteración</option>
-        <option value="Mantenimiento">Mantenimiento</option>
-        <option value="Descartada">Descartada</option>
-      </select>
-      <input class="adm-qa-input" id="qaResponsable" type="text" placeholder="Responsable">
-      <div class="adm-qa-actions">
-        <button class="adm-qa-save" onclick="adminQuickSave()">Crear</button>
-        <button class="adm-qa-cancel" onclick="adminHideAddRow()">✕</button>
-      </div>
-    </div>
-    <div class="adm-qa-feedback" id="admQaFeedback"></div>
-  </div>
-
   <!-- TABLE -->
   <div class="adm-table-wrap">
     <table class="adm-table" id="admTable">
@@ -1046,14 +1073,15 @@
           <th class="adm-th adm-col-resp">Responsable</th>
           <th class="adm-th adm-col-prio">Prioridad</th>
           <th class="adm-th adm-col-retorno">Retorno</th>
+          <th class="adm-th adm-col-actions"></th>
         </tr>
       </thead>
       <tbody id="admTableBody">
-        <tr><td colspan="8" class="adm-empty">Cargando iniciativas...</td></tr>
+        <tr><td colspan="9" class="adm-empty">Cargando iniciativas...</td></tr>
       </tbody>
     </table>
     <!-- Add row trigger -->
-    <div class="adm-addrow" onclick="adminShowAddRow()">
+    <div class="adm-addrow" id="admAddRowBtn" onclick="adminAddInlineRow()">
       <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
       Agregar iniciativa
     </div>
@@ -2538,19 +2566,20 @@ function renderAdminTable() {
     return;
   }
 
-  tbody.innerHTML = all.map(function(ini) {
+  var html = all.map(function(ini) {
     var estado = getEstadoClass(ini.estado) || 'Pendiente';
     var sc = admStatusColors[estado] || admStatusColors['Pendiente'];
     var prioClass = ini.prioridad === 'Alta' ? 'adm-prio-alta' : ini.prioridad === 'Media' ? 'adm-prio-media' : ini.prioridad === 'Baja' ? 'adm-prio-baja' : '';
     var prioHtml = ini.prioridad ? '<span class="adm-prio ' + prioClass + '">' + ini.prioridad + '</span>' : '<span style="color:var(--gray-300);font-size:11px">—</span>';
     var retornoShort = ini.retorno ? ini.retorno.replace('Incremento ','').replace('Reducción ','Red. ').replace('Retorno no financiero','No financiero') : '';
+    var nameEsc = (ini.name||'').replace(/'/g,"\\'");
 
     return '<tr class="adm-tr" onclick="admRowClick(event,' + ini.id + ')">' +
       '<td class="adm-td adm-td-id">' + String(ini.id).padStart(3,'0') + '</td>' +
-      '<td class="adm-td adm-td-name">' + (ini.name || '—') + '</td>' +
-      '<td class="adm-td adm-td-muted">' + (ini.dept || '<span style="color:var(--gray-300)">—</span>') + '</td>' +
+      '<td class="adm-td adm-td-name adm-td-editable" onclick="event.stopPropagation();admEditCell(this,' + ini.id + ',\'name\',\'' + nameEsc + '\',\'text\')">' + (ini.name || '<span style="color:var(--gray-300)">—</span>') + '</td>' +
+      '<td class="adm-td adm-td-muted adm-td-editable" onclick="event.stopPropagation();admEditCell(this,' + ini.id + ',\'dept\',\'' + (ini.dept||'').replace(/'/g,"\\'") + '\',\'text\')">' + (ini.dept || '<span style="color:var(--gray-300)">—</span>') + '</td>' +
       '<td class="adm-td" onclick="event.stopPropagation()">' +
-        '<div class="adm-status" style="background:' + sc.bg + ';border-color:' + sc.border + ';color:' + sc.text + '" onclick="admToggleStatusMenu(this,' + ini.id + ',\'' + estado + '\')">' +
+        '<div class="adm-status" style="background:' + sc.bg + ';border-color:' + sc.border + ';color:' + sc.text + '" onclick="admToggleStatusMenu(this,' + ini.id + ')">' +
           '<span class="adm-status-dot" style="background:' + sc.dot + '"></span>' + estado +
           '<div class="adm-status-menu" id="adm-smenu-' + ini.id + '">' +
             admAllStatuses.map(function(s) {
@@ -2561,21 +2590,25 @@ function renderAdminTable() {
           '</div>' +
         '</div>' +
       '</td>' +
-      '<td class="adm-td adm-td-muted">' + (ini.equipo || '<span style="color:var(--gray-300)">—</span>') + '</td>' +
-      '<td class="adm-td adm-td-muted">' + (ini.responsable || '<span style="color:var(--gray-300)">—</span>') + '</td>' +
-      '<td class="adm-td">' + prioHtml + '</td>' +
+      '<td class="adm-td adm-td-muted adm-td-editable" onclick="event.stopPropagation();admEditCell(this,' + ini.id + ',\'equipo\',\'' + (ini.equipo||'').replace(/'/g,"\\'") + '\',\'text\')">' + (ini.equipo || '<span style="color:var(--gray-300)">—</span>') + '</td>' +
+      '<td class="adm-td adm-td-muted adm-td-editable" onclick="event.stopPropagation();admEditCell(this,' + ini.id + ',\'responsable\',\'' + (ini.responsable||'').replace(/'/g,"\\'") + '\',\'text\')">' + (ini.responsable || '<span style="color:var(--gray-300)">—</span>') + '</td>' +
+      '<td class="adm-td adm-td-editable" onclick="event.stopPropagation();admEditCell(this,' + ini.id + ',\'prioridad\',\'' + (ini.prioridad||'') + '\',\'select-prio\')">' + prioHtml + '</td>' +
       '<td class="adm-td adm-td-muted" style="font-size:11px">' + (retornoShort || '<span style="color:var(--gray-300)">—</span>') + '</td>' +
+      '<td class="adm-td" onclick="event.stopPropagation()">' +
+        '<button class="adm-del-btn" onclick="admDeleteRow(event,' + ini.id + ',\'' + nameEsc + '\')" title="Eliminar">' +
+          '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>' +
+        '</button>' +
+      '</td>' +
     '</tr>';
   }).join('');
+  tbody.innerHTML = html;
 }
 
 function admRowClick(e, id) {
-  // Don't open detail if clicking the status cell
   openDetail(id);
 }
 
-function admToggleStatusMenu(el, id, current) {
-  // Close all other open menus first
+function admToggleStatusMenu(el, id) {
   document.querySelectorAll('.adm-status-menu.open').forEach(function(m) {
     if (m.id !== 'adm-smenu-' + id) m.classList.remove('open');
   });
@@ -2584,23 +2617,180 @@ function admToggleStatusMenu(el, id, current) {
 }
 
 async function admSetStatus(id, newEstado) {
-  // Close menu
   var menu = document.getElementById('adm-smenu-' + id);
   if (menu) menu.classList.remove('open');
-
   try {
     var resp = await fetch('/api/initiatives/' + id + '/status', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ status: newEstado })
     });
     if (!resp.ok) throw new Error('Error ' + resp.status);
-    // Update local data
     var ini = initiatives.find(function(i){ return i.id === id; });
     if (ini) ini.estado = newEstado;
     renderAdminTable();
+  } catch(err) { console.error('Error cambiando estado:', err); }
+}
+
+// ── Inline cell editing ──────────────────────────────────────────────
+
+function admEditCell(td, id, field, currentVal, type) {
+  if (td.querySelector('input,select')) return; // already editing
+  var original = td.innerHTML;
+  var el;
+  if (type === 'select-estado') {
+    el = document.createElement('select');
+    el.className = 'adm-cell-select';
+    admAllStatuses.forEach(function(s) {
+      var o = document.createElement('option');
+      o.value = s; o.textContent = s;
+      if (s === currentVal) o.selected = true;
+      el.appendChild(o);
+    });
+  } else if (type === 'select-prio') {
+    el = document.createElement('select');
+    el.className = 'adm-cell-select';
+    ['','Alta','Media','Baja'].forEach(function(s) {
+      var o = document.createElement('option');
+      o.value = s; o.textContent = s || '—';
+      if (s === (currentVal||'')) o.selected = true;
+      el.appendChild(o);
+    });
+  } else {
+    el = document.createElement('input');
+    el.className = 'adm-cell-input';
+    el.type = 'text';
+    el.value = currentVal || '';
+  }
+
+  td.innerHTML = '';
+  td.appendChild(el);
+  el.focus();
+  if (el.tagName === 'INPUT') el.select();
+
+  var saved = false;
+  async function save() {
+    if (saved) return;
+    saved = true;
+    var newVal = el.value.trim() !== '' ? el.value : null;
+    var body = {};
+    body[field] = newVal;
+    try {
+      var resp = await fetch('/api/initiatives/' + id, {
+        method: 'PATCH', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      });
+      if (!resp.ok) throw new Error('Error ' + resp.status);
+      var ini = initiatives.find(function(i){ return i.id === id; });
+      if (ini) ini[field] = newVal;
+      renderAdminTable();
+    } catch(err) {
+      td.innerHTML = original;
+      console.error('Error guardando:', err);
+    }
+  }
+  function cancel() { if (!saved) { saved = true; td.innerHTML = original; } }
+
+  el.addEventListener('blur', save);
+  el.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') { e.preventDefault(); save(); }
+    if (e.key === 'Escape') { e.preventDefault(); cancel(); }
+  });
+}
+
+// ── Inline new row ───────────────────────────────────────────────────
+
+function adminShowAddRow() { adminAddInlineRow(); } // alias for header button
+
+function adminAddInlineRow() {
+  // Remove any existing new row
+  var existing = document.getElementById('adm-new-row');
+  if (existing) { existing.remove(); return; }
+
+  var tbody = document.getElementById('admTableBody');
+  if (!tbody) return;
+
+  var tr = document.createElement('tr');
+  tr.id = 'adm-new-row';
+  tr.className = 'adm-tr-new';
+  tr.innerHTML =
+    '<td class="adm-td adm-td-id" style="color:var(--gray-300);font-size:11px">nuevo</td>' +
+    '<td class="adm-td"><input id="newName" class="adm-new-input" type="text" placeholder="Nombre de la iniciativa *" autocomplete="off"></td>' +
+    '<td class="adm-td"><input id="newDept" class="adm-new-input" type="text" placeholder="Departamento"></td>' +
+    '<td class="adm-td"><select id="newEstado" class="adm-new-select">' +
+      admAllStatuses.map(function(s){ return '<option value="'+s+'">'+s+'</option>'; }).join('') +
+    '</select></td>' +
+    '<td class="adm-td"><input id="newEquipo" class="adm-new-input" type="text" placeholder="Equipo"></td>' +
+    '<td class="adm-td"><input id="newResponsable" class="adm-new-input" type="text" placeholder="Responsable"></td>' +
+    '<td class="adm-td"></td>' +
+    '<td class="adm-td"></td>' +
+    '<td class="adm-td" style="white-space:nowrap">' +
+      '<button class="adm-new-save" onclick="adminSaveNewRow()">Crear</button>' +
+      ' <button class="adm-new-cancel" onclick="adminCancelNewRow()">✕</button>' +
+    '</td>';
+
+  tbody.appendChild(tr);
+
+  // Scroll to new row and focus
+  tr.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  setTimeout(function(){ document.getElementById('newName').focus(); }, 100);
+}
+
+function adminCancelNewRow() {
+  var row = document.getElementById('adm-new-row');
+  if (row) row.remove();
+}
+
+async function adminSaveNewRow() {
+  var nameEl = document.getElementById('newName');
+  var name = nameEl ? nameEl.value.trim() : '';
+  if (!name) { nameEl.focus(); nameEl.style.outline = '2px solid #dc2626'; return; }
+
+  var body = {
+    name:        name,
+    dept:        document.getElementById('newDept').value.trim() || null,
+    estado:      document.getElementById('newEstado').value || 'Pendiente',
+    equipo:      document.getElementById('newEquipo').value.trim() || null,
+    responsable: document.getElementById('newResponsable').value.trim() || null,
+  };
+
+  var saveBtn = document.querySelector('#adm-new-row .adm-new-save');
+  if (saveBtn) { saveBtn.disabled = true; saveBtn.textContent = '...'; }
+
+  try {
+    var resp = await fetch('/api/initiatives', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    });
+    if (!resp.ok) {
+      var err = await resp.json();
+      throw new Error(err.detail || 'Error ' + resp.status);
+    }
+    adminCancelNewRow();
+    await loadFromAPI();
+    renderAdminTable();
+    // Scroll to bottom to show new row
+    var wrap = document.querySelector('.adm-table-wrap');
+    if (wrap) wrap.scrollTop = wrap.scrollHeight;
   } catch(err) {
-    console.error('Error cambiando estado:', err);
+    if (saveBtn) { saveBtn.disabled = false; saveBtn.textContent = 'Crear'; }
+    nameEl.style.outline = '2px solid #dc2626';
+    nameEl.title = err.message;
+    console.error('Error creando:', err);
+  }
+}
+
+// ── Delete row ───────────────────────────────────────────────────────
+
+async function admDeleteRow(e, id, name) {
+  e.stopPropagation();
+  if (!confirm('¿Eliminar "' + (name || 'esta iniciativa') + '"?\nEsta acción no se puede deshacer.')) return;
+  try {
+    var resp = await fetch('/api/initiatives/' + id, { method: 'DELETE' });
+    if (!resp.ok) throw new Error('Error ' + resp.status);
+    initiatives = initiatives.filter(function(i){ return i.id !== id; });
+    renderAdminTable();
+  } catch(err) {
+    alert('Error al eliminar: ' + err.message);
   }
 }
 
@@ -2611,78 +2801,13 @@ document.addEventListener('click', function(e) {
   }
 });
 
-function adminShowAddRow() {
-  var row = document.getElementById('admQuickAdd');
-  if (!row) return;
-  row.style.display = 'block';
-  var nameInput = document.getElementById('qaName');
-  if (nameInput) { nameInput.value = ''; nameInput.focus(); }
-  document.getElementById('qaDept').value = '';
-  document.getElementById('qaEstado').value = 'Pendiente';
-  document.getElementById('qaResponsable').value = '';
-  document.getElementById('admQaFeedback').textContent = '';
-}
-
-function adminHideAddRow() {
-  var row = document.getElementById('admQuickAdd');
-  if (row) row.style.display = 'none';
-}
-
-async function adminQuickSave() {
-  var nameEl = document.getElementById('qaName');
-  var fb = document.getElementById('admQaFeedback');
-  var name = nameEl ? nameEl.value.trim() : '';
-  if (!name) { nameEl.focus(); nameEl.style.borderColor = '#dc2626'; return; }
-  nameEl.style.borderColor = '';
-
-  var body = {
-    name:        name,
-    dept:        document.getElementById('qaDept').value.trim() || null,
-    estado:      document.getElementById('qaEstado').value || 'Pendiente',
-    responsable: document.getElementById('qaResponsable').value.trim() || null,
-  };
-
-  fb.style.color = 'var(--gray-400)';
-  fb.textContent = 'Guardando...';
-
-  try {
-    var resp = await fetch('/api/initiatives', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body)
-    });
-    if (!resp.ok) {
-      var err = await resp.json();
-      throw new Error(err.detail || 'Error ' + resp.status);
-    }
-    var created = await resp.json();
-    fb.style.color = '#16a34a';
-    fb.textContent = '✓ ITX-' + String(created.id).padStart(3,'0') + ' creada';
-    await loadFromAPI();
-    renderAdminTable();
-    // Reset & keep open for another entry
-    nameEl.value = '';
-    document.getElementById('qaDept').value = '';
-    document.getElementById('qaResponsable').value = '';
-    document.getElementById('qaEstado').value = 'Pendiente';
-    nameEl.focus();
-    setTimeout(function(){ fb.textContent = ''; }, 3000);
-  } catch(err) {
-    fb.style.color = '#dc2626';
-    fb.textContent = '✕ ' + err.message;
-  }
-}
-
-// Keep Enter key working in quick-add
+// Enter/Escape in new row
 document.addEventListener('keydown', function(e) {
-  if (e.key === 'Enter' && document.getElementById('admQuickAdd') &&
-      document.getElementById('admQuickAdd').style.display !== 'none' &&
-      document.activeElement && document.activeElement.closest('#admQuickAdd')) {
-    adminQuickSave();
-  }
-  if (e.key === 'Escape' && document.getElementById('admQuickAdd') &&
-      document.getElementById('admQuickAdd').style.display !== 'none') {
-    adminHideAddRow();
+  var newRow = document.getElementById('adm-new-row');
+  if (!newRow) return;
+  if (document.activeElement && document.activeElement.closest('#adm-new-row')) {
+    if (e.key === 'Enter') { e.preventDefault(); adminSaveNewRow(); }
+    if (e.key === 'Escape') { e.preventDefault(); adminCancelNewRow(); }
   }
 });
 
