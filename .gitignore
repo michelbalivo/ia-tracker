@@ -1,0 +1,19 @@
+# Secretos y configuración local
+.env
+status_overrides.json
+
+# Excel (solo para migración inicial, no necesario en producción)
+data.xlsx
+*.xlsx
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.venv/
+venv/
+env/
+
+# Sistema
+.DS_Store
+Thumbs.db
