@@ -8,8 +8,9 @@ Para poblar la base de datos desde Excel (primera vez):
     python migrate_from_excel.py
 """
 
-import os, math
+import os, math, threading
 from pathlib import Path
+from contextlib import asynccontextmanager
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
@@ -24,7 +25,27 @@ BASE        = Path(__file__).parent
 STATIC_PATH = BASE / "static"
 DB_URL      = os.environ.get("DATABASE_URL", "postgresql://postgres:postgres@localhost:5432/ia_tracker")
 
-app = FastAPI(title="IA Portfolio Tracker")
+
+def run_migration():
+    """Ejecuta la migración en un hilo separado para no bloquear el startup."""
+    try:
+        import migrate_from_excel
+        migrate_from_excel.migrate()
+        print("✅ Migración completada en background.")
+    except Exception as e:
+        print(f"⚠️  Error en migración background: {e}")
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Lanza la migración en background al arrancar — el servidor responde de inmediato
+    t = threading.Thread(target=run_migration, daemon=True)
+    t.start()
+    yield
+    # (shutdown — nada que limpiar)
+
+
+app = FastAPI(title="IA Portfolio Tracker", lifespan=lifespan)
 app.mount("/static", StaticFiles(directory=str(STATIC_PATH)), name="static")
 
 
