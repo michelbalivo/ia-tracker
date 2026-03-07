@@ -44,7 +44,15 @@ def normalize_10(v, scale=1.0):
 def to_bool(v):
     if isinstance(v, bool): return v
     if isinstance(v, (int, float)): return v > 0
+    if isinstance(v, str): return v.strip().lower() not in ("", "none", "false", "0", "nan")
     return False
+
+def safe_get(row, key, default=None):
+    """Lee un campo del row sin error si la columna aún no existe."""
+    try:
+        return row.get(key, default)
+    except Exception:
+        return default
 
 def row_to_initiative(row: dict) -> dict:
     """Convierte una fila de PostgreSQL al modelo que espera el frontend."""
@@ -75,13 +83,15 @@ def row_to_initiative(row: dict) -> dict:
                  normalize_10(10 - tier_raw * 10)]
     has_comp  = any(v > 0 for v in comp_bars)
 
+    # comp_* son ahora TEXT con el nombre real de la herramienta (o None)
     componentes = {
-        "ocr":      to_bool(row["comp_ocr"]),
-        "frontend": to_bool(row["comp_frontend"]),
-        "modelo":   to_bool(row["comp_modelo"]),
-        "bbdd":     to_bool(row["comp_bbdd"]),
-        "api":      to_bool(row["comp_api"]),
-        "cluster":  to_bool(row["comp_cluster"]),
+        "ocr":      safe_get(row, "comp_ocr"),
+        "frontend": safe_get(row, "comp_frontend"),
+        "modelo":   safe_get(row, "comp_modelo"),
+        "bbdd":     safe_get(row, "comp_bbdd"),
+        "api":      safe_get(row, "comp_api"),
+        "cluster":  safe_get(row, "comp_cluster"),
+        "backend":  safe_get(row, "comp_backend"),
     }
 
     def fmt_date(d):
@@ -103,38 +113,79 @@ def row_to_initiative(row: dict) -> dict:
     estado = row["estado_override"] or row["estado_excel"] or "Pendiente"
 
     return {
-        "id":             row["id"],
-        "name":           row["name"],
-        "dept":           row["dept"],
-        "proceso":        row["proceso"],
-        "dominio":        row["dominio"],
-        "estado":         estado,
-        "estado_excel":   row["estado_excel"],
-        "desc":           row["desc_ejecutiva"],
-        "retorno":        row["retorno"],
-        "tipo_retorno":   row["tipo_retorno"],
-        "modelo_ia":      row["modelo_ia"],
-        "equipo":         row["equipo"],
-        "responsable":    row["responsable"],
-        "disponibilidad": row["disponibilidad"],
-        "riesgos":        row["riesgos"],
-        "compliance":     row["compliance"],
-        "complejidad":    row["complejidad"],
-        "viabilidad":     row["viabilidad"],
-        "fecha":          fmt_date(row["fecha_fin"]),
-        "fecha_inicio":   fmt_date(row["fecha_inicio"]),
-        "tier":           tier_pct,
-        "prioridad":      row["prioridad"],
-        "ahorro":         float(row["ahorro"]) if row["ahorro"] else 0,
-        "usuarios":       row["usuarios"],
-        "objetivo":       row["objetivo"],
-        "alerta":         to_bool(row["alerta"]),
-        "link_devhub":    row["link_devhub"],
-        "fases":          fases,
-        "componentes":    componentes if any(componentes.values()) else None,
-        "radar":          radar if has_radar else None,
-        "viabilidadBars": viab_bars if has_viab else None,
-        "complejidadBars": comp_bars if has_comp else None,
+        # ── Identificación ──────────────────────────────────────────
+        "id":                     row["id"],
+        "name":                   row["name"],
+        "dept":                   row["dept"],
+        "estado":                 estado,
+        "estado_excel":           row["estado_excel"],
+        "desc":                   row["desc_ejecutiva"],
+
+        # ── Proceso ─────────────────────────────────────────────────
+        "proceso":                row["proceso"],
+        "clasificacion_proceso":  safe_get(row, "clasificacion_proceso"),
+        "volumen_proceso":        float(safe_get(row, "volumen_proceso") or 0) or None,
+
+        # ── Tipología IA ────────────────────────────────────────────
+        "dominio":                row["dominio"],
+        "tipo_ia":                safe_get(row, "tipo_ia"),
+        "tip_ocr":                to_bool(safe_get(row, "tip_ocr")),
+        "tip_generativa":         to_bool(safe_get(row, "tip_generativa")),
+        "tip_analitica":          to_bool(safe_get(row, "tip_analitica")),
+        "tip_predictiva":         to_bool(safe_get(row, "tip_predictiva")),
+        "modelo_ia":              row["modelo_ia"],
+
+        # ── Viabilidad ──────────────────────────────────────────────
+        "viabilidad":             row["viabilidad"],
+        "viabilidad_puntos":      float(safe_get(row, "viabilidad_puntos") or 0) or None,
+        "datos_requeridos":       safe_get(row, "datos_requeridos"),
+        "disponibilidad":         row["disponibilidad"],
+
+        # ── Complejidad ─────────────────────────────────────────────
+        "time_to_value":          safe_get(row, "time_to_value"),
+        "complejidad":            row["complejidad"],
+        "complejidad_tecnica":    safe_get(row, "complejidad_tecnica"),
+        "complejidad_organizativa": safe_get(row, "complejidad_organizativa"),
+
+        # ── Retorno / ROI ───────────────────────────────────────────
+        "retorno":                row["retorno"],
+        "tipo_retorno":           row["tipo_retorno"],
+        "impacto_negocio":        safe_get(row, "impacto_negocio"),
+        "ahorro":                 float(row["ahorro"]) if row["ahorro"] else 0,
+        "roi_business_case":      float(safe_get(row, "roi_business_case") or 0) or None,
+
+        # ── Priorización ────────────────────────────────────────────
+        "prioridad":              row["prioridad"],
+        "usuarios":               row["usuarios"],
+        "objetivo":               row["objetivo"],
+
+        # ── Scores y tier ───────────────────────────────────────────
+        "tier":                   tier_pct,
+        "ric":                    float(safe_get(row, "ric") or 0) or None,
+        "radar":                  radar if has_radar else None,
+        "viabilidadBars":         viab_bars if has_viab else None,
+        "complejidadBars":        comp_bars if has_comp else None,
+
+        # ── Riesgos / Compliance ────────────────────────────────────
+        "riesgos":                row["riesgos"],
+        "compliance":             row["compliance"],
+
+        # ── Fechas ──────────────────────────────────────────────────
+        "fecha":                  fmt_date(row["fecha_fin"]),
+        "fecha_inicio":           fmt_date(row["fecha_inicio"]),
+        "fecha_registro":         fmt_date(safe_get(row, "fecha_registro")),
+        "fases":                  fases,
+
+        # ── Equipo ──────────────────────────────────────────────────
+        "equipo":                 row["equipo"],
+        "responsable":            row["responsable"],
+
+        # ── Arquitectura (texto real de la herramienta) ─────────────
+        "componentes":            componentes if any(v for v in componentes.values()) else None,
+
+        # ── Misc ────────────────────────────────────────────────────
+        "alerta":                 to_bool(row["alerta"]),
+        "link_devhub":            row["link_devhub"],
     }
 
 
