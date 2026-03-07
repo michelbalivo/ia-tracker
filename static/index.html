@@ -3247,10 +3247,10 @@ function saveEditModal() {
   })
   .then(function(updated) {
     // Actualizar en memoria
-    var idx = allInitiatives.findIndex(function(x){ return x.id == id; });
+    var idx = initiatives.findIndex(function(x){ return x.id == id; });
     if (idx >= 0) {
-      var merged = Object.assign({}, allInitiatives[idx], updated);
-      allInitiatives[idx] = merged;
+      var merged = Object.assign({}, initiatives[idx], updated);
+      initiatives[idx] = merged;
     }
     closeEditModal();
     renderAdminTable();
