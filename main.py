@@ -209,8 +209,8 @@ def create_initiative(body: InitiativeCreate):
         conn = get_conn()
         cur  = conn.cursor()
         # Auto-asignar el siguiente ID
-        cur.execute("SELECT COALESCE(MAX(id), 0) + 1 FROM initiatives")
-        new_id = cur.fetchone()["coalesce"]
+        cur.execute("SELECT COALESCE(MAX(id), 0) + 1 AS next_id FROM initiatives")
+        new_id = cur.fetchone()["next_id"]
         cur.execute("""
             INSERT INTO initiatives (
                 id, name, dept, proceso, dominio, estado_excel,
