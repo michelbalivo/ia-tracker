@@ -2,9 +2,9 @@
 .env
 status_overrides.json
 
-# Excel (solo para migración inicial, no necesario en producción)
-data.xlsx
+# Excel - excluir otros xlsx pero incluir data.xlsx (necesario para migración en Railway)
 *.xlsx
+!data.xlsx
 
 # Python
 __pycache__/
