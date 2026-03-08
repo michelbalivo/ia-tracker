@@ -3168,7 +3168,7 @@ function saveEditModal() {
   var payload = {
     name:                    gv('edt-name'),
     dept:                    gv('edt-dept'),
-    desc_ejecutiva:          gv('edt-desc'),
+    desc:                    gv('edt-desc'),
     objetivo:                gv('edt-objetivo'),
     dominio:                 gv('edt-dominio'),
     proceso:                 gv('edt-proceso'),
@@ -3255,7 +3255,14 @@ function saveEditModal() {
     closeEditModal();
     renderAdminTable();
     renderGroupCards();
-    showToast('Iniciativa actualizada ✓');
+    // Notificación ligera sin librería externa
+    (function(){
+      var t = document.createElement('div');
+      t.textContent = 'Iniciativa actualizada ✓';
+      t.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#22c55e;color:#fff;padding:10px 24px;border-radius:8px;font-size:13px;font-weight:600;letter-spacing:0.4px;z-index:9999;box-shadow:0 4px 16px rgba(0,0,0,0.2);pointer-events:none;';
+      document.body.appendChild(t);
+      setTimeout(function(){ t.style.opacity='0'; t.style.transition='opacity 0.4s'; setTimeout(function(){ t.remove(); }, 400); }, 2000);
+    })();
   })
   .catch(function(err){
     alert('Error al guardar: ' + err.message);
