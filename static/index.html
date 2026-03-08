@@ -1006,15 +1006,16 @@
   /* ═══ Chat Widget ═══════════════════════════════════════════════ */
   .chat-fab {
     position: fixed; bottom: 28px; right: 28px; z-index: 8000;
-    width: 52px; height: 52px; border-radius: 50%;
-    background: #111; color: #fff; border: none; cursor: pointer;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.25);
+    width: 56px; height: 56px; border-radius: 50%;
+    background: #fff; color: #3333cc;
+    border: 2px solid #3333cc; cursor: pointer;
+    box-shadow: 0 4px 20px rgba(51,51,204,0.18);
     display: flex; align-items: center; justify-content: center;
     transition: transform 0.2s, box-shadow 0.2s;
   }
-  .chat-fab:hover { transform: scale(1.08); box-shadow: 0 6px 28px rgba(0,0,0,0.32); }
+  .chat-fab:hover { transform: scale(1.08); box-shadow: 0 6px 28px rgba(51,51,204,0.28); }
   .chat-fab .chat-fab-icon { transition: transform 0.25s; }
-  .chat-fab.open .chat-fab-icon { transform: rotate(45deg); }
+  .chat-fab.open .chat-fab-icon { transform: rotate(180deg); }
 
   .chat-panel {
     position: fixed; bottom: 92px; right: 28px; z-index: 8000;
@@ -4076,8 +4077,8 @@ function kanbanDrop(e, col) {
 <!-- ═══ Chat Widget ════════════════════════════════════════════════ -->
 <button class="chat-fab" id="chatFab" onclick="toggleChat()" title="Asistente IA">
   <span class="chat-fab-icon">
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+    <svg width="26" height="26" viewBox="0 0 26 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="13" cy="13" r="11" stroke="#3333cc" stroke-width="2" fill="none"/>
     </svg>
   </span>
 </button>
