@@ -269,7 +269,8 @@
   .detail-body {
     display: grid;
     grid-template-columns: 260px 1fr 1.4fr;
-    height: 480px;
+    min-height: 540px;
+    height: auto;
     overflow-y: auto;
   }
   .detail-col {
@@ -310,7 +311,7 @@
 
   /* Radar */
   .radar-container { display: flex; justify-content: center; align-items: center; }
-  .radar-container svg { width: 100%; max-width: 320px; }
+  .radar-container svg { width: 100%; max-width: 380px; overflow: visible; }
 
   /* Componentes grid */
   .comp-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
@@ -1748,12 +1749,12 @@ function applyFilters() {
 // ── RADAR CHART SVG ──
 function buildRadar(values) {
   const labels = ["ROI","Alcance","Impacto","Vel. retorno","Simplicidad","Madurez","Viabilidad","Imp. negocio"];
-  const cx=160, cy=160, maxR=120, n=labels.length;
+  const cx=190, cy=175, maxR=110, n=labels.length; // viewBox ampliado para labels
   const angle = (i) => (Math.PI*2*i/n) - Math.PI/2;
   const px = (i,r) => cx + Math.cos(angle(i))*r;
   const py = (i,r) => cy + Math.sin(angle(i))*r;
 
-  let svg = `<svg viewBox="0 0 320 320" xmlns="http://www.w3.org/2000/svg">`;
+  let svg = `<svg viewBox="0 0 380 350" xmlns="http://www.w3.org/2000/svg" overflow="visible">`;
   // Grid rings
   [0.25,0.5,0.75,1].forEach(s => {
     let pts = [];
@@ -1770,9 +1771,9 @@ function buildRadar(values) {
   for(let i=0;i<n;i++) svg += `<circle cx="${px(i,maxR*values[i]/10)}" cy="${py(i,maxR*values[i]/10)}" r="3" fill="#0047BB"/>`;
   // Labels
   for(let i=0;i<n;i++){
-    const lx=px(i,maxR+18), ly=py(i,maxR+18);
+    const lx=px(i,maxR+22), ly=py(i,maxR+22);
     const anchor = lx<cx-10?"end" : lx>cx+10?"start" : "middle";
-    svg += `<text x="${lx}" y="${ly}" text-anchor="${anchor}" dominant-baseline="middle" font-size="9" fill="#737373" font-family="Inter,sans-serif" letter-spacing="0.5">${labels[i]}</text>`;
+    svg += `<text x="${lx.toFixed(1)}" y="${ly.toFixed(1)}" text-anchor="${anchor}" dominant-baseline="middle" font-size="10" fill="#737373" font-family="Inter,sans-serif" letter-spacing="0.3">${labels[i]}</text>`;
   }
   svg += `</svg>`;
   return svg;
