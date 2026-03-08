@@ -1016,6 +1016,7 @@
   .chat-fab:hover { transform: scale(1.08); box-shadow: 0 6px 28px rgba(51,51,204,0.28); }
   .chat-fab .chat-fab-icon { transition: transform 0.25s; }
   .chat-fab.open .chat-fab-icon { transform: rotate(180deg); }
+  .chat-fab.open { opacity: 0; pointer-events: none; transform: scale(0.7); }
 
   .chat-panel {
     position: fixed; bottom: 92px; right: 28px; z-index: 8000;
