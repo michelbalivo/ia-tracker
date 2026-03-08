@@ -38,9 +38,10 @@ def run_migration():
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Lanza la migración en background al arrancar — el servidor responde de inmediato
-    t = threading.Thread(target=run_migration, daemon=True)
-    t.start()
+    # Migración automática DESACTIVADA — los datos ya están en PostgreSQL.
+    # Para resetear desde Excel ejecutar manualmente: python migrate_from_excel.py
+    # t = threading.Thread(target=run_migration, daemon=True)
+    # t.start()
     yield
     # (shutdown — nada que limpiar)
 
