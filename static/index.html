@@ -1125,59 +1125,62 @@
     outline-offset: -3px;
   }
 
+  
   /* ══════════════════════════════════════════════
-     HOME DASHBOARD
+     HOME — BRIEFING DE HOY
   ══════════════════════════════════════════════ */
   #view-home { background: var(--gray-50); }
-  .home-wrap { padding: 40px; max-width: 1400px; margin: 0 auto; }
+  .home-wrap { padding: 40px; max-width: 1360px; margin: 0 auto; }
 
-  .home-greeting { margin-bottom: 32px; }
-  .home-greeting-eyebrow { font-size: 10px; font-weight: 500; letter-spacing: 2.5px;
-    text-transform: uppercase; color: var(--gray-400); margin-bottom: 8px; }
-  .home-greeting-title { font-size: 30px; font-weight: 300; color: var(--black); line-height: 1.2; }
-  .home-greeting-title strong { font-weight: 700; }
+  /* ── Header briefing ── */
+  .home-header { margin-bottom: 36px; padding-bottom: 28px; border-bottom: 1px solid var(--gray-200); }
+  .home-header-eyebrow { font-size: 9px; font-weight: 500; letter-spacing: 2.5px; text-transform: uppercase; color: var(--gray-400); margin-bottom: 10px; }
+  .home-header-title { font-size: 26px; font-weight: 300; color: var(--black); margin-bottom: 6px; }
+  .home-header-title strong { font-weight: 700; }
+  .home-header-sub { font-size: 13px; color: var(--gray-400); }
+  .home-header-sub .hl { color: var(--black); font-weight: 600; }
 
-  .home-kpis { display: grid; grid-template-columns: repeat(4,1fr); gap: 1px;
-    background: var(--gray-200); border: 1px solid var(--gray-200); margin-bottom: 24px; }
-  .home-kpi { background: var(--white); padding: 28px 24px; }
-  .home-kpi-label { font-size: 9px; font-weight: 500; letter-spacing: 2.5px;
-    text-transform: uppercase; color: var(--gray-400); margin-bottom: 12px; }
-  .home-kpi-value { font-size: 40px; font-weight: 300; color: var(--black);
-    line-height: 1; margin-bottom: 6px; }
-  .home-kpi-value strong { font-weight: 800; }
-  .home-kpi-sub { font-size: 11px; color: var(--gray-400); }
+  /* ── Section titles ── */
+  .home-section { margin-bottom: 32px; }
+  .home-section-label { font-size: 9px; font-weight: 500; letter-spacing: 2.5px; text-transform: uppercase; color: var(--gray-400); margin-bottom: 16px; display: flex; align-items: center; gap: 10px; }
+  .home-section-label::after { content: ''; flex: 1; height: 1px; background: var(--gray-200); }
 
-  .home-mid { display: grid; grid-template-columns: 1fr 320px; gap: 24px; margin-bottom: 24px; }
-  .home-card { background: var(--white); border: 1px solid var(--gray-200); padding: 28px; }
-  .home-card-title { font-size: 9px; font-weight: 500; letter-spacing: 2.5px;
-    text-transform: uppercase; color: var(--gray-400); margin-bottom: 20px; }
+  /* ── Atencion cards ── */
+  .home-attn-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; }
+  .home-attn-col { display: flex; flex-direction: column; gap: 8px; }
+  .home-attn-col-title { font-size: 10px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; color: var(--gray-500); padding-bottom: 8px; border-bottom: 2px solid var(--gray-200); margin-bottom: 4px; display: flex; align-items: center; gap: 6px; }
+  .home-attn-col-title .dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+  .home-attn-card { background: var(--white); border: 1px solid var(--gray-200); padding: 14px 16px; cursor: pointer; transition: border-color 0.15s; }
+  .home-attn-card:hover { border-color: var(--gray-400); }
+  .home-attn-card-name { font-size: 13px; font-weight: 500; color: var(--black); margin-bottom: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .home-attn-card-meta { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .home-attn-badge { font-size: 9px; font-weight: 500; letter-spacing: 0.5px; padding: 2px 7px; border-radius: 2px; }
+  .home-attn-empty { font-size: 12px; color: var(--gray-400); padding: 12px 0; font-style: italic; }
 
-  .home-matrix-wrap { width: 100%; }
-  .home-matrix-svg { width: 100%; display: block; }
+  /* ── ROI Funnel ── */
+  .home-funnel { display: flex; flex-direction: column; gap: 10px; background: var(--white); border: 1px solid var(--gray-200); padding: 28px; }
+  .home-funnel-row { display: grid; grid-template-columns: 130px 1fr 80px 80px; gap: 12px; align-items: center; }
+  .home-funnel-label { font-size: 11px; font-weight: 500; color: var(--black); }
+  .home-funnel-track { height: 8px; background: var(--gray-100); overflow: hidden; }
+  .home-funnel-fill { height: 100%; transition: width 0.9s cubic-bezier(0.4,0,0.2,1); }
+  .home-funnel-count { font-size: 11px; color: var(--gray-400); text-align: right; }
+  .home-funnel-ahorro { font-size: 12px; font-weight: 600; color: var(--black); text-align: right; }
+  .home-funnel-divider { grid-column: 1/-1; height: 1px; background: var(--gray-100); margin: 4px 0; }
 
-  .home-status-bar { display: flex; flex-direction: column; gap: 14px; }
-  .home-sb-row { display: flex; flex-direction: column; gap: 5px; }
-  .home-sb-label { display: flex; justify-content: space-between; align-items: baseline; }
-  .home-sb-name { font-size: 12px; font-weight: 500; color: var(--black); }
-  .home-sb-count { font-size: 10px; color: var(--gray-400); }
-  .home-sb-track { height: 4px; background: var(--gray-100); overflow: hidden; }
-  .home-sb-fill { height: 100%; transition: width 0.9s cubic-bezier(0.4,0,0.2,1); }
+  /* ── Quick wins table ── */
+  .home-qw { background: var(--white); border: 1px solid var(--gray-200); }
+  .home-qw-table { width: 100%; border-collapse: collapse; }
+  .home-qw-table th { font-size: 9px; font-weight: 500; letter-spacing: 2px; text-transform: uppercase; color: var(--gray-400); padding: 20px 20px 14px; border-bottom: 1px solid var(--gray-200); text-align: left; }
+  .home-qw-table td { padding: 13px 20px; border-bottom: 1px solid var(--gray-100); font-size: 13px; color: var(--black); vertical-align: middle; }
+  .home-qw-table tr:last-child td { border-bottom: none; }
+  .home-qw-table tbody tr { cursor: pointer; }
+  .home-qw-table tbody tr:hover td { background: var(--gray-50); }
+  .home-qw-empty { padding: 24px 20px; font-size: 13px; color: var(--gray-400); font-style: italic; }
+  .home-tier-pill { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 700; color: var(--black); }
+  .home-tier-pip { width: 28px; height: 3px; background: var(--gray-100); }
+  .home-tier-pip-fill { height: 100%; background: var(--black); }
+  .home-badge { display: inline-block; padding: 3px 9px; font-size: 10px; font-weight: 500; border-radius: 2px; }
 
-  .home-top { background: var(--white); border: 1px solid var(--gray-200); padding: 28px; }
-  .home-top-table { width: 100%; border-collapse: collapse; }
-  .home-top-table th { font-size: 9px; font-weight: 500; letter-spacing: 2px;
-    text-transform: uppercase; color: var(--gray-400);
-    padding: 0 20px 14px 0; border-bottom: 1px solid var(--gray-200); text-align: left; }
-  .home-top-table td { padding: 14px 20px 14px 0; border-bottom: 1px solid var(--gray-100);
-    font-size: 13px; vertical-align: middle; color: var(--black); }
-  .home-top-table tr:last-child td { border-bottom: none; }
-  .home-top-table tbody tr { cursor: pointer; }
-  .home-top-table tbody tr:hover td { background: var(--gray-50); }
-  .home-tag { display: inline-block; padding: 3px 9px; font-size: 10px; font-weight: 500;
-    letter-spacing: 0.3px; border-radius: 2px; }
-  .home-tier-wrap { display: flex; align-items: center; gap: 8px; }
-  .home-tier-track { width: 72px; height: 3px; background: var(--gray-100); flex-shrink: 0; }
-  .home-tier-fill { height: 100%; background: var(--black); }
 </style>
 </head>
 <body>
@@ -1201,69 +1204,62 @@
 
 <!-- ═══ PORTFOLIO VIEW ═══ -->
 
-<!-- ═══════════════════════ HOME ═════════════════════════════════════════ -->
+
+<!-- ═══════════════════════ HOME — BRIEFING ═══════════════════════════════ -->
 <div id="view-home" class="view-section active" style="display:block">
   <div class="home-wrap">
 
-    <!-- Greeting -->
-    <div class="home-greeting">
-      <div class="home-greeting-eyebrow" id="homeGreetingEyebrow"></div>
-      <div class="home-greeting-title">Portfolio IA · <strong>Resumen ejecutivo</strong></div>
+    <!-- Header -->
+    <div class="home-header">
+      <div class="home-header-eyebrow" id="homeEyebrow"></div>
+      <div class="home-header-title" id="homeTitle">Portfolio IA · <strong>Briefing de hoy</strong></div>
+      <div class="home-header-sub" id="homeSub"></div>
     </div>
 
-    <!-- KPIs -->
-    <div class="home-kpis">
-      <div class="home-kpi">
-        <div class="home-kpi-label">Total iniciativas</div>
-        <div class="home-kpi-value" id="hkpi-total"><strong>—</strong></div>
-        <div class="home-kpi-sub">en el portfolio</div>
-      </div>
-      <div class="home-kpi">
-        <div class="home-kpi-label">En producción</div>
-        <div class="home-kpi-value" id="hkpi-prod"><strong>—</strong></div>
-        <div class="home-kpi-sub">iniciativas activas</div>
-      </div>
-      <div class="home-kpi">
-        <div class="home-kpi-label">Tier alto ≥ 70</div>
-        <div class="home-kpi-value" id="hkpi-tier"><strong>—</strong></div>
-        <div class="home-kpi-sub">alta prioridad</div>
-      </div>
-      <div class="home-kpi">
-        <div class="home-kpi-label">Ahorro estimado</div>
-        <div class="home-kpi-value" id="hkpi-ahorro"><strong>—</strong></div>
-        <div class="home-kpi-sub">total portfolio</div>
-      </div>
-    </div>
-
-    <!-- Mid: matrix + status bars -->
-    <div class="home-mid">
-      <div class="home-card">
-        <div class="home-card-title">Matriz prioridad estratégica · Tier × Impacto</div>
-        <div class="home-matrix-wrap">
-          <svg id="homeMatrix" class="home-matrix-svg" viewBox="0 0 540 280"></svg>
+    <!-- Sección 1: Atención requerida -->
+    <div class="home-section">
+      <div class="home-section-label">Atención requerida</div>
+      <div class="home-attn-grid">
+        <div class="home-attn-col">
+          <div class="home-attn-col-title"><span class="dot" style="background:#ef4444"></span>Alertas activas</div>
+          <div id="homeColAlertas"></div>
+        </div>
+        <div class="home-attn-col">
+          <div class="home-attn-col-title"><span class="dot" style="background:#f59e0b"></span>Sin avance &gt;90 días</div>
+          <div id="homeColStale"></div>
+        </div>
+        <div class="home-attn-col">
+          <div class="home-attn-col-title"><span class="dot" style="background:#3b82f6"></span>Fecha límite próxima</div>
+          <div id="homeColDeadline"></div>
         </div>
       </div>
-      <div class="home-card">
-        <div class="home-card-title">Distribución por estado</div>
-        <div id="homeStatusBars" class="home-status-bar"></div>
-      </div>
     </div>
 
-    <!-- Top initiatives -->
-    <div class="home-top">
-      <div class="home-card-title">Top iniciativas · Ranking por tier</div>
-      <table class="home-top-table">
-        <thead>
-          <tr>
-            <th>Nombre</th>
-            <th>Área</th>
-            <th>Estado</th>
-            <th style="min-width:120px">Tier</th>
-            <th>Ahorro est.</th>
-          </tr>
-        </thead>
-        <tbody id="homeTopTable"></tbody>
-      </table>
+    <!-- Sección 2: ROI bloqueado por fase -->
+    <div class="home-section">
+      <div class="home-section-label">ROI potencial bloqueado por fase</div>
+      <div class="home-funnel" id="homeFunnel"></div>
+    </div>
+
+    <!-- Sección 3: Quick wins sin explotar -->
+    <div class="home-section">
+      <div class="home-section-label">Quick wins sin explotar · Tier alto en fases tempranas</div>
+      <div class="home-qw">
+        <table class="home-qw-table">
+          <thead>
+            <tr>
+              <th>Nombre</th>
+              <th>Área</th>
+              <th>Fase actual</th>
+              <th>Tier</th>
+              <th>Ahorro estimado</th>
+              <th>Por qué es quick win</th>
+            </tr>
+          </thead>
+          <tbody id="homeQWTable"></tbody>
+        </table>
+        <div id="homeQWEmpty" class="home-qw-empty" style="display:none">No hay iniciativas con tier alto en fases tempranas ahora mismo.</div>
+      </div>
     </div>
 
   </div>
@@ -3832,166 +3828,240 @@ function kanbanDrop(e, col) {
 }
 
 // ─────────────────────────────────────────────────────────────────
-// HOME DASHBOARD
 // ─────────────────────────────────────────────────────────────────
-var HOME_COLORS = {
+// HOME — BRIEFING DE HOY
+// ─────────────────────────────────────────────────────────────────
+var HOME_ESTADO_COL = {
   'Producción':    '#10b981',
   'En desarrollo': '#3b82f6',
   'Piloto':        '#8b5cf6',
   'Análisis':      '#f59e0b',
   'Priorización':  '#f97316',
   'Descartado':    '#9ca3af',
-  'Pendiente':     '#cbd5e1',
+  'Pendiente':     '#94a3b8',
   'Por evaluar':   '#e11d48'
 };
-function homeColor(estado) {
+function hCol(estado) {
   if (!estado) return '#9ca3af';
-  for (var k in HOME_COLORS) { if (estado.includes(k)) return HOME_COLORS[k]; }
+  for (var k in HOME_ESTADO_COL) { if (estado.includes(k)) return HOME_ESTADO_COL[k]; }
   return '#6b7280';
 }
-function homeEsc(s) {
+function hEsc(s) {
   return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
-function fmtAhorro(v) {
-  v = parseFloat(v) || 0;
-  if (v <= 0) return '—';
-  if (v >= 1000000) return (v/1000000).toFixed(1) + ' M€';
-  if (v >= 1000) return Math.round(v/1000) + ' K€';
-  return v + ' €';
+function hFmt(v) {
+  v = parseFloat(v)||0;
+  if (v<=0) return '—';
+  if (v>=1000000) return (v/1000000).toFixed(1)+' M€';
+  if (v>=1000) return Math.round(v/1000)+' K€';
+  return v+'€';
+}
+function hParseDate(s) {
+  if (!s) return null;
+  var m;
+  // dd/mm/yyyy
+  m = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+  if (m) return new Date(+m[3], +m[2]-1, +m[1]);
+  // yyyy-mm-dd
+  m = s.match(/^(\d{4})-(\d{2})-(\d{2})/);
+  if (m) return new Date(+m[1], +m[2]-1, +m[3]);
+  return null;
+}
+function hDaysAgo(dateStr) {
+  var d = hParseDate(dateStr);
+  if (!d) return null;
+  return Math.floor((Date.now() - d.getTime()) / 86400000);
+}
+function hDaysUntil(dateStr) {
+  var d = hParseDate(dateStr);
+  if (!d) return null;
+  return Math.floor((d.getTime() - Date.now()) / 86400000);
 }
 
 function renderHome() {
   if (!initiatives || initiatives.length === 0) return;
 
-  // ── Greeting ──
   var now = new Date();
-  var h = now.getHours();
-  var sal = h < 12 ? 'Buenos días' : h < 20 ? 'Buenas tardes' : 'Buenas noches';
-  var days = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
-  var mos  = ['enero','febrero','marzo','abril','mayo','junio',
-              'julio','agosto','septiembre','octubre','noviembre','diciembre'];
-  var eyebrow = document.getElementById('homeGreetingEyebrow');
-  if (eyebrow) eyebrow.textContent = sal + '  ·  ' + days[now.getDay()] + ', ' + now.getDate() + ' de ' + mos[now.getMonth()] + ' ' + now.getFullYear();
+  var days  = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
+  var mos   = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+  var h     = now.getHours();
+  var sal   = h < 12 ? 'Buenos días' : h < 20 ? 'Buenas tardes' : 'Buenas noches';
+  var dateStr = days[now.getDay()] + ', ' + now.getDate() + ' de ' + mos[now.getMonth()] + ' ' + now.getFullYear();
 
-  // ── KPIs ──
-  var total    = initiatives.length;
-  var enProd   = initiatives.filter(function(i){ return i.estado && i.estado.includes('Producci'); }).length;
-  var tierAlto = initiatives.filter(function(i){ return (i.tier||0) >= 70; }).length;
-  var sumAhorro = initiatives.reduce(function(a,i){ return a + (parseFloat(i.ahorro)||0); }, 0);
+  var eyebrow = document.getElementById('homeEyebrow');
+  if (eyebrow) eyebrow.textContent = sal + '  ·  ' + dateStr;
 
-  var el;
-  el = document.getElementById('hkpi-total');  if(el) el.innerHTML = '<strong>'+total+'</strong>';
-  el = document.getElementById('hkpi-prod');   if(el) el.innerHTML = '<strong>'+enProd+'</strong>';
-  el = document.getElementById('hkpi-tier');   if(el) el.innerHTML = '<strong>'+tierAlto+'</strong>';
-  el = document.getElementById('hkpi-ahorro'); if(el) el.innerHTML = '<strong>'+fmtAhorro(sumAhorro)+'</strong>';
+  // ── 1. ATENCIÓN REQUERIDA ──────────────────────────────────────
 
-  // ── Matrix SVG: X=tier(0–100), Y=impact(0–10 from radar[1]) ──
-  var svgEl = document.getElementById('homeMatrix');
-  if (svgEl) {
-    var W=540, H=280, pL=44, pR=20, pT=24, pB=36;
-    var pw = W-pL-pR, ph = H-pT-pB;
-    var mx = pL + pw/2, my = pT + ph/2;
-    var parts = [];
+  // Alertas activas
+  var alertas = initiatives.filter(function(i){ return i.alerta; });
 
-    // Quadrant fills
-    parts.push('<rect x="'+pL+'" y="'+pT+'" width="'+(pw/2)+'" height="'+(ph/2)+'" fill="#fffbeb"/>');
-    parts.push('<rect x="'+mx+'" y="'+pT+'" width="'+(pw/2)+'" height="'+(ph/2)+'" fill="#f0fdf4"/>');
-    parts.push('<rect x="'+pL+'" y="'+my+'" width="'+(pw/2)+'" height="'+(ph/2)+'" fill="#f9fafb"/>');
-    parts.push('<rect x="'+mx+'" y="'+my+'" width="'+(pw/2)+'" height="'+(ph/2)+'" fill="#fff5f5"/>');
+  // Sin avance >90 días: fecha_inicio registrada, >90 días, no Producción/Descartado
+  var stale = initiatives.filter(function(i){
+    if (!i.fecha_inicio) return false;
+    var days = hDaysAgo(i.fecha_inicio);
+    if (days === null || days < 90) return false;
+    var e = (i.estado||'').toLowerCase();
+    return !e.includes('producc') && !e.includes('descart');
+  }).sort(function(a,b){ return (hDaysAgo(b.fecha_inicio)||0)-(hDaysAgo(a.fecha_inicio)||0); }).slice(0,4);
 
-    // Quadrant labels
-    var ql = 'font-size="8" font-family="Inter,sans-serif" font-weight="600" letter-spacing="1.2"';
-    parts.push('<text x="'+(pL+6)+'" y="'+(pT+13)+'" '+ql+' fill="#d97706">POTENCIAL</text>');
-    parts.push('<text x="'+(mx+6)+'" y="'+(pT+13)+'" '+ql+' fill="#16a34a">ALTO VALOR ★</text>');
-    parts.push('<text x="'+(pL+6)+'" y="'+(my+13)+'" '+ql+' fill="#9ca3af">RELLENO</text>');
-    parts.push('<text x="'+(mx+6)+'" y="'+(my+13)+'" '+ql+' fill="#dc2626">A EVALUAR</text>');
+  // Fecha límite próxima: fecha_fin en los próximos 90 días, no Producción/Descartado
+  var deadline = initiatives.filter(function(i){
+    var d = hDaysUntil(i.fecha);
+    if (d === null) return false;
+    var e = (i.estado||'').toLowerCase();
+    return d <= 90 && d >= -7 && !e.includes('descart');
+  }).sort(function(a,b){ return (hDaysUntil(a.fecha)||0)-(hDaysUntil(b.fecha)||0); }).slice(0,4);
 
-    // Grid
-    parts.push('<line x1="'+mx+'" y1="'+pT+'" x2="'+mx+'" y2="'+(H-pB)+'" stroke="#e5e7eb" stroke-width="1"/>');
-    parts.push('<line x1="'+pL+'" y1="'+my+'" x2="'+(W-pR)+'" y2="'+my+'" stroke="#e5e7eb" stroke-width="1"/>');
-
-    // Axis ticks & labels
-    var axStyle = 'font-size="9" font-family="Inter,sans-serif" fill="#9ca3af"';
-    parts.push('<text x="'+(pL+pw/2)+'" y="'+(H-2)+'" '+axStyle+' text-anchor="middle" letter-spacing="1.5">TIER →</text>');
-    parts.push('<text x="10" y="'+(pT+ph/2)+'" '+axStyle+' text-anchor="middle" transform="rotate(-90,10,'+(pT+ph/2)+')">IMPACTO →</text>');
-    ['0','25','50','75','100'].forEach(function(v,i){
-      var x = pL + (i/4)*pw;
-      parts.push('<text x="'+x+'" y="'+(H-pB+12)+'" '+axStyle+' text-anchor="middle">'+v+'</text>');
-    });
-
-    // Dots
-    initiatives.forEach(function(ini) {
-      var tierVal = ini.tier || 0;
-      var impactVal = (ini.radar && ini.radar[1]) ? ini.radar[1] : 0;
-      if (tierVal === 0 && impactVal === 0) return;
-      var cx = pL + (tierVal / 100) * pw;
-      var cy = pT + ((10 - impactVal) / 10) * ph;
-      var col = homeColor(ini.estado);
-      var r = 5.5;
-      parts.push('<circle cx="'+cx.toFixed(1)+'" cy="'+cy.toFixed(1)+'" r="'+r+'" fill="'+col+'" fill-opacity="0.72" stroke="white" stroke-width="1.5"><title>'+homeEsc(ini.name)+'  |  Tier: '+tierVal+'  |  Impacto: '+impactVal.toFixed(1)+'</title></circle>');
-    });
-
-    // Legend (bottom)
-    var seen = {}, lx = pL, ly = H - pB + 24;
-    initiatives.forEach(function(i){ if(i.estado) seen[i.estado] = homeColor(i.estado); });
-    var off = 0;
-    Object.keys(seen).slice(0,7).forEach(function(k){
-      var c = seen[k];
-      parts.push('<circle cx="'+(lx+off+4)+'" cy="'+(ly-3)+'" r="4" fill="'+c+'"/>');
-      parts.push('<text x="'+(lx+off+12)+'" y="'+ly+'" font-size="9" font-family="Inter,sans-serif" fill="#6b7280">'+homeEsc(k)+'</text>');
-      off += 16 + k.length * 5.5 + 10;
-      if (off > pw - 60) off = pw + 100; // hide overflow
-    });
-
-    svgEl.setAttribute('viewBox', '0 0 '+W+' '+(H+10));
-    svgEl.innerHTML = parts.join('');
+  function attnCard(ini, metaHtml) {
+    return '<div class="home-attn-card" onclick="openDetail('+ini.id+')">'+
+      '<div class="home-attn-card-name">'+hEsc(ini.name||'Sin nombre')+'</div>'+
+      '<div class="home-attn-card-meta">'+metaHtml+'</div>'+
+    '</div>';
+  }
+  function estadoBadge(ini) {
+    var col = hCol(ini.estado);
+    return '<span class="home-attn-badge" style="background:'+col+'1a;color:'+col+'">'+hEsc(ini.estado||'?')+'</span>';
+  }
+  function tierBadge(ini) {
+    return '<span class="home-attn-badge" style="background:var(--gray-100);color:var(--gray-600)">Tier '+((ini.tier)||0)+'</span>';
   }
 
-  // ── Status bars ──
-  var counts = {};
-  initiatives.forEach(function(i){ var s=i.estado||'Sin estado'; counts[s]=(counts[s]||0)+1; });
-  var entries = Object.keys(counts).map(function(k){ return [k, counts[k]]; });
-  entries.sort(function(a,b){ return b[1]-a[1]; });
-  var maxC = entries[0] ? entries[0][1] : 1;
+  var colAl = document.getElementById('homeColAlertas');
+  if (colAl) {
+    colAl.innerHTML = alertas.length
+      ? alertas.slice(0,4).map(function(i){ return attnCard(i, estadoBadge(i)+tierBadge(i)); }).join('')
+      : '<div class="home-attn-empty">Sin alertas activas</div>';
+  }
 
-  var barsEl = document.getElementById('homeStatusBars');
-  if (barsEl) {
-    barsEl.innerHTML = entries.map(function(e){
-      var name=e[0], cnt=e[1], pct=Math.round(cnt/total*100), bw=Math.round(cnt/maxC*100);
-      var col=homeColor(name);
-      return '<div class="home-sb-row">'+
-        '<div class="home-sb-label">'+
-          '<span class="home-sb-name">'+homeEsc(name)+'</span>'+
-          '<span class="home-sb-count">'+cnt+' · '+pct+'%</span>'+
+  var colSt = document.getElementById('homeColStale');
+  if (colSt) {
+    colSt.innerHTML = stale.length
+      ? stale.map(function(i){
+          var d = hDaysAgo(i.fecha_inicio);
+          return attnCard(i, estadoBadge(i)+'<span class="home-attn-badge" style="background:#fef3c7;color:#d97706">'+d+' días</span>');
+        }).join('')
+      : '<div class="home-attn-empty">Sin iniciativas estancadas</div>';
+  }
+
+  var colDl = document.getElementById('homeColDeadline');
+  if (colDl) {
+    colDl.innerHTML = deadline.length
+      ? deadline.map(function(i){
+          var d = hDaysUntil(i.fecha);
+          var label = d < 0 ? 'Vencida' : d === 0 ? 'Hoy' : 'En '+d+' días';
+          var bg = d < 0 ? '#fee2e2' : d <= 14 ? '#fef3c7' : '#eff6ff';
+          var tc = d < 0 ? '#dc2626' : d <= 14 ? '#d97706' : '#3b82f6';
+          return attnCard(i, estadoBadge(i)+'<span class="home-attn-badge" style="background:'+bg+';color:'+tc+'">'+label+'</span>');
+        }).join('')
+      : '<div class="home-attn-empty">Sin fechas límite próximas</div>';
+  }
+
+  // Contextual subtitle
+  var totalAttn = alertas.length + (stale.length > 0 ? 1 : 0) + (deadline.length > 0 ? 1 : 0);
+  var subEl = document.getElementById('homeSub');
+  if (subEl) {
+    if (totalAttn === 0) {
+      subEl.innerHTML = 'Todo en orden · Buen momento para revisar los quick wins del portfolio';
+    } else {
+      var parts = [];
+      if (alertas.length)  parts.push('<span class="hl">'+alertas.length+' alerta'+  (alertas.length>1?'s':'')+'</span>');
+      if (stale.length)    parts.push('<span class="hl">'+stale.length+' iniciativa'+ (stale.length>1?'s estancadas':' estancada')+'</span>');
+      if (deadline.length) parts.push('<span class="hl">'+deadline.length+' fecha'+   (deadline.length>1?'s límite próximas':' límite próxima')+'</span>');
+      subEl.innerHTML = 'Requiere atención: ' + parts.join(' · ');
+    }
+  }
+
+  // ── 2. FUNNEL ROI POR FASE ─────────────────────────────────────
+  var PHASES = [
+    { key: 'Análisis',      label: 'Análisis',       color: '#ef4444', match: ['análisis','por evaluar','pendiente','sin estado'] },
+    { key: 'Priorización',  label: 'Priorización',   color: '#f97316', match: ['prioriz'] },
+    { key: 'En desarrollo', label: 'En desarrollo',  color: '#3b82f6', match: ['desarrollo'] },
+    { key: 'Piloto',        label: 'Piloto',          color: '#8b5cf6', match: ['piloto'] },
+    { key: 'Producción',    label: 'Producción ✓',   color: '#10b981', match: ['producc'] },
+  ];
+
+  var funnelData = PHASES.map(function(ph) {
+    var items = initiatives.filter(function(i) {
+      var e = (i.estado||'').toLowerCase();
+      return ph.match.some(function(m){ return e.includes(m); });
+    });
+    var ahorro = items.reduce(function(a,i){ return a+(parseFloat(i.ahorro)||0); }, 0);
+    return { label: ph.label, color: ph.color, count: items.length, ahorro: ahorro };
+  });
+
+  var maxAhorro = Math.max.apply(null, funnelData.map(function(f){ return f.ahorro; })) || 1;
+
+  var funnelEl = document.getElementById('homeFunnel');
+  if (funnelEl) {
+    var hdr = '<div class="home-funnel-row" style="padding-bottom:8px;border-bottom:1px solid var(--gray-200);margin-bottom:4px">'+
+      '<div style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--gray-400)">Fase</div>'+
+      '<div></div>'+
+      '<div style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--gray-400);text-align:right">Iniciativas</div>'+
+      '<div style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--gray-400);text-align:right">Ahorro</div>'+
+    '</div>';
+
+    var rows = funnelData.map(function(f) {
+      var barW = f.ahorro > 0 ? Math.round(f.ahorro / maxAhorro * 100) : (f.count > 0 ? 5 : 0);
+      var isProd = f.label.includes('✓');
+      return '<div class="home-funnel-row">'+
+        '<div class="home-funnel-label" style="color:'+f.color+'">'+hEsc(f.label)+'</div>'+
+        '<div class="home-funnel-track">'+
+          '<div class="home-funnel-fill" style="width:0%;background:'+f.color+(isProd?'':';opacity:0.7')+'" data-w="'+barW+'"></div>'+
         '</div>'+
-        '<div class="home-sb-track">'+
-          '<div class="home-sb-fill" style="width:0%;background:'+col+'" data-w="'+bw+'"></div>'+
-        '</div>'+
+        '<div class="home-funnel-count">'+f.count+'</div>'+
+        '<div class="home-funnel-ahorro">'+(f.ahorro>0 ? hFmt(f.ahorro) : (f.count>0?'<span style="color:var(--gray-400)">Sin datos</span>':'—'))+'</div>'+
       '</div>';
-    }).join('');
+    });
+
+    // Insert divider before Producción
+    rows.splice(4, 0, '<div class="home-funnel-divider"></div>');
+
+    funnelEl.innerHTML = hdr + rows.join('');
     setTimeout(function(){
-      barsEl.querySelectorAll('.home-sb-fill').forEach(function(el){
+      funnelEl.querySelectorAll('.home-funnel-fill').forEach(function(el){
         el.style.width = el.dataset.w + '%';
       });
     }, 80);
   }
 
-  // ── Top table ──
-  var sorted = initiatives.slice().sort(function(a,b){ return (b.tier||0)-(a.tier||0); }).slice(0,8);
-  var tbEl = document.getElementById('homeTopTable');
-  if (tbEl) {
-    tbEl.innerHTML = sorted.map(function(ini){
-      var col = homeColor(ini.estado);
-      return '<tr onclick="openDetail('+ini.id+')">'+
-        '<td style="font-weight:500;max-width:220px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+homeEsc(ini.name||'—')+'</td>'+
-        '<td style="color:var(--gray-400);font-size:11px;white-space:nowrap">'+homeEsc(ini.dept||'—')+'</td>'+
-        '<td><span class="home-tag" style="background:'+col+'1a;color:'+col+'">'+homeEsc(ini.estado||'—')+'</span></td>'+
-        '<td><div class="home-tier-wrap"><div class="home-tier-track"><div class="home-tier-fill" style="width:'+(ini.tier||0)+'%"></div></div><span style="font-size:11px;color:var(--gray-400)">'+(ini.tier||0)+'</span></div></td>'+
-        '<td style="color:var(--gray-500);font-size:12px">'+fmtAhorro(ini.ahorro)+'</td>'+
-      '</tr>';
-    }).join('');
+  // ── 3. QUICK WINS ──────────────────────────────────────────────
+  var EARLY = ['análisis','prioriz','por evaluar','pendiente'];
+  var qw = initiatives.filter(function(i){
+    var e = (i.estado||'').toLowerCase();
+    return (i.tier||0) >= 65 && EARLY.some(function(m){ return e.includes(m); });
+  }).sort(function(a,b){ return (b.tier||0)-(a.tier||0); }).slice(0,6);
+
+  var qwTable = document.getElementById('homeQWTable');
+  var qwEmpty = document.getElementById('homeQWEmpty');
+  if (qwTable) {
+    if (qw.length === 0) {
+      qwTable.innerHTML = '';
+      if (qwEmpty) qwEmpty.style.display = 'block';
+    } else {
+      if (qwEmpty) qwEmpty.style.display = 'none';
+      qwTable.innerHTML = qw.map(function(i){
+        var col = hCol(i.estado);
+        var tierPct = i.tier || 0;
+        // Why quick win
+        var reasons = [];
+        if (tierPct >= 80) reasons.push('Tier muy alto');
+        if (i.viabilidad_text && i.viabilidad_text.includes('Alta')) reasons.push('Alta viabilidad');
+        if ((parseFloat(i.ahorro)||0) > 100000) reasons.push('Alto ROI potencial');
+        if (reasons.length === 0) reasons.push('Alta prioridad sin desplegar');
+        return '<tr onclick="openDetail('+i.id+')">'+
+          '<td style="font-weight:500;max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+hEsc(i.name||'—')+'</td>'+
+          '<td style="color:var(--gray-400);font-size:11px">'+hEsc(i.dept||'—')+'</td>'+
+          '<td><span class="home-badge" style="background:'+col+'1a;color:'+col+'">'+hEsc(i.estado||'—')+'</span></td>'+
+          '<td><div class="home-tier-pill"><div class="home-tier-pip"><div class="home-tier-pip-fill" style="width:'+tierPct+'%"></div></div>'+tierPct+'</div></td>'+
+          '<td style="color:var(--gray-500);font-size:12px">'+hFmt(i.ahorro)+'</td>'+
+          '<td style="color:var(--gray-400);font-size:11px">'+hEsc(reasons.join(' · '))+'</td>'+
+        '</tr>';
+      }).join('');
+    }
   }
 }
+
 </script>
 
 
