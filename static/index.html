@@ -1004,10 +1004,9 @@
   .confirm-ok:hover { background: #dc2626; }
 
   /* ═══ Chat Widget ═══════════════════════════════════════════════ */
-  @keyframes chatHalo {
-    0%   { box-shadow: 0 0 0 0px rgba(51,51,204,0.35), 0 0 0 0px rgba(51,51,204,0.15); }
-    60%  { box-shadow: 0 0 0 10px rgba(51,51,204,0.08), 0 0 0 22px rgba(51,51,204,0); }
-    100% { box-shadow: 0 0 0 0px rgba(51,51,204,0), 0 0 0 0px rgba(51,51,204,0); }
+  @keyframes chatWave {
+    0%   { transform: scale(1);   opacity: 0.6; }
+    100% { transform: scale(1.9); opacity: 0; }
   }
   .chat-fab {
     position: fixed; bottom: 28px; right: 28px; z-index: 8000;
@@ -1016,10 +1015,24 @@
     border: 2px solid #3333cc; cursor: pointer;
     display: flex; align-items: center; justify-content: center;
     transition: transform 0.2s, background 0.2s;
-    animation: chatHalo 2.4s ease-out infinite;
   }
-  .chat-fab:hover { background: #f0f0ff; transform: scale(1.08); animation-play-state: paused; }
-  .chat-fab.open { background: #3333cc; border-color: #3333cc; color: #fff; animation: none; }
+  .chat-fab::before,
+  .chat-fab::after {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    border-radius: 50%;
+    border: 2px solid #3333cc;
+    animation: chatWave 2.2s ease-out infinite;
+    pointer-events: none;
+  }
+  .chat-fab::after { animation-delay: 1.1s; }
+  .chat-fab:hover { background: #f0f0ff; transform: scale(1.06); }
+  .chat-fab:hover::before,
+  .chat-fab:hover::after { animation-play-state: paused; }
+  .chat-fab.open { background: #3333cc; border-color: #3333cc; color: #fff; }
+  .chat-fab.open::before,
+  .chat-fab.open::after { display: none; }
   .chat-fab .chat-fab-icon { font-size: 18px; font-weight: 300; line-height: 1; }
 
   .chat-panel {
