@@ -1006,32 +1006,37 @@
   /* ═══ Chat Widget ═══════════════════════════════════════════════ */
   @keyframes chatRotate {
     0%   { transform: rotate(0deg); }
-    100% { transform: rotate(-360deg); }
+    100% { transform: rotate(360deg); }
   }
   .chat-fab {
     position: fixed; bottom: 28px; right: 28px; z-index: 8000;
     width: 52px; height: 52px; border-radius: 50%;
-    background: linear-gradient(135deg, #1a1aff 13%, rgba(26,26,255,0.12) 62%, transparent 100%);
+    background: #eeeeff;
     border: none; cursor: pointer;
     display: flex; align-items: center; justify-content: center;
-    animation: chatRotate 2.4s linear infinite;
+    overflow: hidden;
     transition: opacity 0.2s;
   }
-  .chat-fab::after {
+  .chat-fab::before {
     content: '';
     position: absolute;
-    inset: 2.5px;
+    inset: -8px;
+    background: conic-gradient(
+      from 0deg,
+      #1a1aff 0deg,
+      rgba(26,26,255,0.35) 60deg,
+      rgba(26,26,255,0.05) 130deg,
+      rgba(26,26,255,0.05) 230deg,
+      rgba(26,26,255,0.35) 300deg,
+      #1a1aff 360deg
+    );
+    animation: chatRotate 2.4s linear infinite;
     border-radius: 50%;
-    background: #fff;
-    z-index: 0;
-    transition: background 0.2s;
   }
-  .chat-fab:hover { opacity: 0.88; }
-  .chat-fab:hover::after { background: #f0f0ff; }
-  .chat-fab.open { animation-play-state: paused; }
-  .chat-fab.open::after { background: #1a1aff; }
-  .chat-fab .chat-fab-icon { position: relative; z-index: 1; font-size: 18px; font-weight: 300; line-height: 1; color: #1a1aff; }
-  .chat-fab.open .chat-fab-icon { color: #fff; }
+  .chat-fab:hover { opacity: 0.85; }
+  .chat-fab.open::before { animation-play-state: paused; background: #1a1aff; }
+  .chat-fab .chat-fab-icon { position: relative; z-index: 1; font-size: 18px; font-weight: 300; line-height: 1; color: #fff; }
+  .chat-fab:not(.open) .chat-fab-icon { color: #1a1aff; }
 
   .chat-panel {
     position: fixed; bottom: 92px; right: 28px; z-index: 8000;
