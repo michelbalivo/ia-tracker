@@ -393,6 +393,13 @@
     cursor: pointer; transition: opacity .15s; letter-spacing: 0.3px;
   }
   .adm-btn-new:hover { opacity: 0.75; }
+  .adm-btn-export {
+    display: flex; align-items: center; gap: 6px;
+    padding: 7px 14px; border-radius: 8px; border: 1px solid #d1d5db;
+    background: #fff; color: #374151; font-size: 12px; font-weight: 600;
+    cursor: pointer; letter-spacing: 0.3px; white-space: nowrap;
+  }
+  .adm-btn-export:hover { background: #f9fafb; border-color: #9ca3af; }
 
   /* Quick-add row */
   .adm-quickadd {
@@ -976,6 +983,24 @@
   .edit-save-btn:disabled { opacity: .5; cursor: wait; }
   .edit-num { -moz-appearance: textfield; }
   .edit-num::-webkit-outer-spin-button, .edit-num::-webkit-inner-spin-button { -webkit-appearance: none; }
+
+  /* ── Confirm delete modal ── */
+  .confirm-overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.5);
+    display: none; align-items: center; justify-content: center; z-index: 10000;
+  }
+  .confirm-box {
+    background: #fff; border-radius: 14px; padding: 28px 32px; max-width: 400px; width: 90%;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.25); text-align: center;
+  }
+  .confirm-icon { font-size: 32px; margin-bottom: 12px; }
+  .confirm-title { font-size: 16px; font-weight: 700; color: #111; margin-bottom: 8px; }
+  .confirm-msg { font-size: 13px; color: #666; margin-bottom: 24px; line-height: 1.5; }
+  .confirm-actions { display: flex; gap: 10px; justify-content: center; }
+  .confirm-cancel { padding: 9px 22px; border-radius: 8px; border: 1px solid #ddd; background: #f5f5f5; font-size: 13px; font-weight: 600; cursor: pointer; }
+  .confirm-cancel:hover { background: #eee; }
+  .confirm-ok { padding: 9px 22px; border-radius: 8px; border: none; background: #ef4444; color: #fff; font-size: 13px; font-weight: 600; cursor: pointer; }
+  .confirm-ok:hover { background: #dc2626; }
 </style>
 </head>
 <body>
@@ -1167,6 +1192,10 @@
         <input class="adm-search-input" id="admSearch" type="text" placeholder="Buscar..." oninput="admOnSearch()" autocomplete="off">
         <button class="adm-search-clear" id="admSearchClear" onclick="admClearSearch()" style="display:none">✕</button>
       </div>
+      <button class="adm-btn-export" onclick="exportToExcel()" title="Exportar todas las iniciativas a Excel">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Exportar
+      </button>
       <button class="adm-btn-new" onclick="adminShowAddRow()">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
         Nueva
@@ -2950,7 +2979,11 @@ async function adminSaveNewRow() {
 
 async function admDeleteRow(e, id, name) {
   e.stopPropagation();
-  if (!confirm('¿Eliminar "' + (name || 'esta iniciativa') + '"?\nEsta acción no se puede deshacer.')) return;
+  var ok = await showConfirm(
+    '¿Eliminar iniciativa?',
+    '"' + (name || 'esta iniciativa') + '" será eliminada permanentemente. Esta acción no se puede deshacer.'
+  );
+  if (!ok) return;
   try {
     var resp = await fetch('/api/initiatives/' + id, { method: 'DELETE' });
     if (!resp.ok) throw new Error('Error ' + resp.status);
@@ -3287,6 +3320,109 @@ function _setVal(id, val) {
 function _setBool(id, val) {
   var el = document.getElementById(id);
   if (el) el.checked = !!val;
+}
+
+// ── Confirm dialog reutilizable ──────────────────────────────────────
+var _confirmResolve = null;
+function showConfirm(title, msg) {
+  return new Promise(function(resolve) {
+    _confirmResolve = resolve;
+    document.getElementById('confirmTitle').textContent = title;
+    document.getElementById('confirmMsg').textContent   = msg;
+    document.getElementById('confirmModal').style.display = 'flex';
+  });
+}
+function confirmResolve(ok) {
+  document.getElementById('confirmModal').style.display = 'none';
+  if (_confirmResolve) { _confirmResolve(ok); _confirmResolve = null; }
+}
+
+// ── Export a Excel ───────────────────────────────────────────────────
+function exportToExcel() {
+  var rows = initiatives.map(function(i) {
+    var fases = i.fases || {};
+    var comp  = i.componentes || {};
+    return {
+      'ID':                       i.id,
+      'Nombre':                   i.name || '',
+      'Departamento':             i.dept || '',
+      'Estado':                   i.estado || '',
+      'Dominio':                  i.dominio || '',
+      'Proceso':                  i.proceso || '',
+      'Clasificación proceso':    i.clasificacion_proceso || '',
+      'Criticidad proceso':       i.criticidad_proceso || '',
+      'Tipo IA':                  i.tipo_ia || '',
+      'Modelo IA':                i.modelo_ia || '',
+      'OCR':                      i.tip_ocr ? 'Sí' : '',
+      'Generativa':               i.tip_generativa ? 'Sí' : '',
+      'Analítica':                i.tip_analitica ? 'Sí' : '',
+      'Predictiva':               i.tip_predictiva ? 'Sí' : '',
+      'Objetivo':                 i.objetivo || '',
+      'Descripción':              i.desc || '',
+      'Usuarios':                 i.usuarios || '',
+      'Viabilidad':               i.viabilidad || '',
+      'Complejidad':              i.complejidad || '',
+      'Madurez funcional':        i.madurez_funcional || '',
+      'Time to value':            i.time_to_value || '',
+      'Riesgos':                  i.riesgos || '',
+      'Compliance':               i.compliance || '',
+      'Retorno':                  i.retorno || '',
+      'Tipo retorno':             i.tipo_retorno || '',
+      'Ahorro (€/año)':           i.ahorro || '',
+      'ROI Business Case':        i.roi_business_case || '',
+      'Prioridad':                i.prioridad || '',
+      'Reach':                    i.reach || '',
+      'Impact':                   i.impact || '',
+      'Confidence':               i.confidence || '',
+      'Effort':                   i.effort || '',
+      'RIC':                      i.ric || '',
+      'TIER':                     i.tier || '',
+      'Equipo':                   i.equipo || '',
+      'Responsable':              i.responsable || '',
+      'Alerta':                   i.alerta ? 'Sí' : '',
+      'Fecha registro':           i.fecha_registro || '',
+      'Fecha inicio':             i.fecha_inicio || '',
+      'Fecha fin':                i.fecha || '',
+      'Fase Inicio':              fases['Inicio'] || '',
+      'Fase Análisis':            fases['Análisis'] || '',
+      'Fase Priorización':        fases['Priorización'] || '',
+      'Fase Piloto':              fases['Piloto'] || '',
+      'Fase Diseño':              fases['Diseño'] || '',
+      'Fase Iteración':           fases['Iteración / Pruebas'] || '',
+      'Fase Mantenimiento':       fases['Mantenimiento'] || '',
+      'Comp BBDD':                comp.bbdd || '',
+      'Comp OCR':                 comp.ocr || '',
+      'Comp Cluster':             comp.cluster || '',
+      'Comp API':                 comp.api || '',
+      'Comp Backend':             comp.backend || '',
+      'Comp Modelo IA':           comp.modelo || '',
+      'Comp MCP':                 comp.mcp || '',
+      'Comp RAG':                 comp.rag || '',
+      'Comp Prompting':           comp.prompting || '',
+      'Comp Frontend':            comp.frontend || '',
+      'Link DevHub':              i.link_devhub || '',
+      'PowerApps ID':             i.powerapps_id || ''
+    };
+  });
+
+  var ws = XLSX.utils.json_to_sheet(rows);
+
+  // Ajustar ancho de columnas automáticamente
+  var cols = Object.keys(rows[0] || {});
+  ws['!cols'] = cols.map(function(k) {
+    var max = k.length;
+    rows.forEach(function(r) { var v = String(r[k] || ''); if (v.length > max) max = v.length; });
+    return { wch: Math.min(max + 2, 50) };
+  });
+
+  var wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'Portfolio IA');
+
+  var fecha = new Date();
+  var fname = 'ia-portfolio-' + fecha.getFullYear() + '-' +
+    String(fecha.getMonth()+1).padStart(2,'0') + '-' +
+    String(fecha.getDate()).padStart(2,'0') + '.xlsx';
+  XLSX.writeFile(wb, fname);
 }
 </script>
 
@@ -3672,5 +3808,19 @@ function _setBool(id, val) {
   </div>
 </div>
 <!-- ═════════════════════════════════════════════════════ -->
+
+
+<!-- Confirm delete modal -->
+<div id="confirmModal" class="confirm-overlay">
+  <div class="confirm-box">
+    <div class="confirm-icon">🗑️</div>
+    <div class="confirm-title" id="confirmTitle">¿Eliminar iniciativa?</div>
+    <div class="confirm-msg" id="confirmMsg">Esta acción no se puede deshacer.</div>
+    <div class="confirm-actions">
+      <button class="confirm-cancel" onclick="confirmResolve(false)">Cancelar</button>
+      <button class="confirm-ok"     onclick="confirmResolve(true)">Eliminar</button>
+    </div>
+  </div>
+</div>
 
 </body></html>
