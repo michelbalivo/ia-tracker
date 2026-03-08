@@ -3542,7 +3542,7 @@ function toggleChat() {
   if (icon) {
     icon.innerHTML = open
       ? '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>'
-      : '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3c0 0-1 4-4 6s-5 2-5 2 3 0 5 2 4 6 4 6 1-4 4-6 5-2 5-2-3 0-5-2-4-6-4-6z"/></svg>';
+      : '';
   }
   if (open) {
     setTimeout(function(){ document.getElementById('chatInput').focus(); }, 250);
@@ -4083,11 +4083,7 @@ function kanbanDrop(e, col) {
 
 <!-- ═══ Chat Widget ════════════════════════════════════════════════ -->
 <button class="chat-fab" id="chatFab" onclick="toggleChat()" title="Asistente IA">
-  <span class="chat-fab-icon" id="chatFabIcon">
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-      <path d="M12 3c0 0-1 4-4 6s-5 2-5 2 3 0 5 2 4 6 4 6 1-4 4-6 5-2 5-2-3 0-5-2-4-6-4-6z"/>
-    </svg>
-  </span>
+  <span class="chat-fab-icon" id="chatFabIcon"></span>
 </button>
 
 <div class="chat-panel" id="chatPanel">
