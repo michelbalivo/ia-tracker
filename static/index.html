@@ -1086,6 +1086,21 @@
   }
   .chat-send:disabled { opacity: 0.35; cursor: not-allowed; }
   .chat-send:hover:not(:disabled) { opacity: 0.8; }
+
+  /* ── Kanban drag & drop ── */
+  .kanban-card { cursor: grab; }
+  .kanban-card:active { cursor: grabbing; }
+  .kanban-card.dragging { opacity: 0.35; transform: scale(0.97); }
+  .kanban-swim-col {
+    transition: background 0.15s;
+    border-radius: 6px;
+    min-height: 40px;
+  }
+  .kanban-swim-col.drag-over {
+    background: rgba(0,0,0,0.04);
+    outline: 2px dashed #bbb;
+    outline-offset: -3px;
+  }
 </style>
 </head>
 <body>
@@ -2587,12 +2602,13 @@ function renderKanban() {
     html += '<div class="kanban-swim-body">';
     kanbanColumns.forEach(function(col) {
       var items = gData.items.filter(function(i) { return getEstadoClass(i.estado) === col.id; });
-      html += '<div class="kanban-swim-col">';
+      var colEst = col.id.replace(/'/g, "\\'");
+      html += '<div class="kanban-swim-col" data-col="' + colEst + '" ondragover="event.preventDefault();event.dataTransfer.dropEffect=\'move\'" ondragenter="kanbanDragEnter(this)" ondragleave="kanbanDragLeave(event,this)" ondrop="kanbanDrop(event,this)">';
       items.forEach(function(ini) {
         var truncName = ini.name.length > 45 ? ini.name.substring(0,45) + '...' : ini.name;
         var team = ini.equipo && ini.equipo !== '--' ? ini.equipo : '';
         var comp = ini.complejidad || '';
-        html += '<div class="kanban-card" onclick="goToDetail(' + ini.id + ')">';
+        html += '<div class="kanban-card" draggable="true" data-id="' + ini.id + '" ondragstart="kanbanDragStart(event,' + ini.id + ')" ondragend="kanbanDragEnd(event)" onclick="goToDetail(' + ini.id + ')">';
         html += '<div class="kanban-card-id">#' + ini.id + '</div>';
         html += '<div class="kanban-card-name">' + truncName + '</div>';
         html += '<div class="kanban-card-dept">' + ini.dept + '</div>';
@@ -3593,6 +3609,67 @@ function chatSend() {
     _chatBusy = false;
     document.getElementById('chatSend').disabled = false;
     document.getElementById('chatMessages').scrollTop = 99999;
+  });
+}
+
+/* ═══ Kanban Drag & Drop ════════════════════════════════════════════ */
+var _kanbanDragId   = null;
+var _kanbanDragFrom = null;
+
+function kanbanDragStart(e, id) {
+  var ini = initiatives.find(function(i){ return i.id === id; });
+  _kanbanDragId   = id;
+  _kanbanDragFrom = ini ? ini.estado : null;
+  e.dataTransfer.effectAllowed = 'move';
+  e.dataTransfer.setData('text/plain', String(id));
+  setTimeout(function(){ e.target.classList.add('dragging'); }, 0);
+}
+
+function kanbanDragEnd(e) {
+  e.target.classList.remove('dragging');
+  document.querySelectorAll('.kanban-swim-col.drag-over').forEach(function(c){ c.classList.remove('drag-over'); });
+}
+
+function kanbanDragEnter(col) {
+  col.classList.add('drag-over');
+}
+
+function kanbanDragLeave(e, col) {
+  if (!col.contains(e.relatedTarget)) {
+    col.classList.remove('drag-over');
+  }
+}
+
+function kanbanDrop(e, col) {
+  e.preventDefault();
+  col.classList.remove('drag-over');
+
+  var id       = _kanbanDragId;
+  var fromEst  = _kanbanDragFrom;
+  var toEstado = col.dataset.col;
+  _kanbanDragId = null; _kanbanDragFrom = null;
+
+  if (!id || !toEstado) return;
+  var ini = initiatives.find(function(i){ return i.id === id; });
+  if (!ini || getEstadoClass(ini.estado) === toEstado) return;
+
+  // Actualización optimista
+  ini.estado = toEstado;
+  renderKanban();
+
+  // PATCH al servidor
+  fetch('/api/initiatives/' + id, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ estado: toEstado })
+  })
+  .then(function(r){
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+  })
+  .catch(function() {
+    // Revertir si falla
+    ini.estado = fromEst;
+    renderKanban();
   });
 }
 </script>
