@@ -1124,6 +1124,60 @@
     outline: 2px dashed #bbb;
     outline-offset: -3px;
   }
+
+  /* ══════════════════════════════════════════════
+     HOME DASHBOARD
+  ══════════════════════════════════════════════ */
+  #view-home { background: var(--gray-50); }
+  .home-wrap { padding: 40px; max-width: 1400px; margin: 0 auto; }
+
+  .home-greeting { margin-bottom: 32px; }
+  .home-greeting-eyebrow { font-size: 10px; font-weight: 500; letter-spacing: 2.5px;
+    text-transform: uppercase; color: var(--gray-400); margin-bottom: 8px; }
+  .home-greeting-title { font-size: 30px; font-weight: 300; color: var(--black); line-height: 1.2; }
+  .home-greeting-title strong { font-weight: 700; }
+
+  .home-kpis { display: grid; grid-template-columns: repeat(4,1fr); gap: 1px;
+    background: var(--gray-200); border: 1px solid var(--gray-200); margin-bottom: 24px; }
+  .home-kpi { background: var(--white); padding: 28px 24px; }
+  .home-kpi-label { font-size: 9px; font-weight: 500; letter-spacing: 2.5px;
+    text-transform: uppercase; color: var(--gray-400); margin-bottom: 12px; }
+  .home-kpi-value { font-size: 40px; font-weight: 300; color: var(--black);
+    line-height: 1; margin-bottom: 6px; }
+  .home-kpi-value strong { font-weight: 800; }
+  .home-kpi-sub { font-size: 11px; color: var(--gray-400); }
+
+  .home-mid { display: grid; grid-template-columns: 1fr 320px; gap: 24px; margin-bottom: 24px; }
+  .home-card { background: var(--white); border: 1px solid var(--gray-200); padding: 28px; }
+  .home-card-title { font-size: 9px; font-weight: 500; letter-spacing: 2.5px;
+    text-transform: uppercase; color: var(--gray-400); margin-bottom: 20px; }
+
+  .home-matrix-wrap { width: 100%; }
+  .home-matrix-svg { width: 100%; display: block; }
+
+  .home-status-bar { display: flex; flex-direction: column; gap: 14px; }
+  .home-sb-row { display: flex; flex-direction: column; gap: 5px; }
+  .home-sb-label { display: flex; justify-content: space-between; align-items: baseline; }
+  .home-sb-name { font-size: 12px; font-weight: 500; color: var(--black); }
+  .home-sb-count { font-size: 10px; color: var(--gray-400); }
+  .home-sb-track { height: 4px; background: var(--gray-100); overflow: hidden; }
+  .home-sb-fill { height: 100%; transition: width 0.9s cubic-bezier(0.4,0,0.2,1); }
+
+  .home-top { background: var(--white); border: 1px solid var(--gray-200); padding: 28px; }
+  .home-top-table { width: 100%; border-collapse: collapse; }
+  .home-top-table th { font-size: 9px; font-weight: 500; letter-spacing: 2px;
+    text-transform: uppercase; color: var(--gray-400);
+    padding: 0 20px 14px 0; border-bottom: 1px solid var(--gray-200); text-align: left; }
+  .home-top-table td { padding: 14px 20px 14px 0; border-bottom: 1px solid var(--gray-100);
+    font-size: 13px; vertical-align: middle; color: var(--black); }
+  .home-top-table tr:last-child td { border-bottom: none; }
+  .home-top-table tbody tr { cursor: pointer; }
+  .home-top-table tbody tr:hover td { background: var(--gray-50); }
+  .home-tag { display: inline-block; padding: 3px 9px; font-size: 10px; font-weight: 500;
+    letter-spacing: 0.3px; border-radius: 2px; }
+  .home-tier-wrap { display: flex; align-items: center; gap: 8px; }
+  .home-tier-track { width: 72px; height: 3px; background: var(--gray-100); flex-shrink: 0; }
+  .home-tier-fill { height: 100%; background: var(--black); }
 </style>
 </head>
 <body>
@@ -1134,7 +1188,8 @@
     <span class="header-brand-sub">Portfolio de Iniciativas</span>
   </div>
   <nav class="header-nav">
-    <button class="header-nav-btn active" onclick="switchView('portfolio',this)">Portfolio</button>
+    <button class="header-nav-btn active" onclick="switchView('home',this)">Home</button>
+    <button class="header-nav-btn" onclick="switchView('portfolio',this)">Portfolio</button>
     <button class="header-nav-btn" onclick="switchView('seguimiento',this)">Seguimiento</button>
     <button class="header-nav-btn" onclick="switchView('insights',this)">Insights</button>
     <button class="header-nav-btn" onclick="switchView('admin',this)">Admin</button>
@@ -1145,7 +1200,76 @@
 </header>
 
 <!-- ═══ PORTFOLIO VIEW ═══ -->
-<div id="view-portfolio" class="view-section active" style="display:block">
+
+<!-- ═══════════════════════ HOME ═════════════════════════════════════════ -->
+<div id="view-home" class="view-section active" style="display:block">
+  <div class="home-wrap">
+
+    <!-- Greeting -->
+    <div class="home-greeting">
+      <div class="home-greeting-eyebrow" id="homeGreetingEyebrow"></div>
+      <div class="home-greeting-title">Portfolio IA · <strong>Resumen ejecutivo</strong></div>
+    </div>
+
+    <!-- KPIs -->
+    <div class="home-kpis">
+      <div class="home-kpi">
+        <div class="home-kpi-label">Total iniciativas</div>
+        <div class="home-kpi-value" id="hkpi-total"><strong>—</strong></div>
+        <div class="home-kpi-sub">en el portfolio</div>
+      </div>
+      <div class="home-kpi">
+        <div class="home-kpi-label">En producción</div>
+        <div class="home-kpi-value" id="hkpi-prod"><strong>—</strong></div>
+        <div class="home-kpi-sub">iniciativas activas</div>
+      </div>
+      <div class="home-kpi">
+        <div class="home-kpi-label">Tier alto ≥ 70</div>
+        <div class="home-kpi-value" id="hkpi-tier"><strong>—</strong></div>
+        <div class="home-kpi-sub">alta prioridad</div>
+      </div>
+      <div class="home-kpi">
+        <div class="home-kpi-label">Ahorro estimado</div>
+        <div class="home-kpi-value" id="hkpi-ahorro"><strong>—</strong></div>
+        <div class="home-kpi-sub">total portfolio</div>
+      </div>
+    </div>
+
+    <!-- Mid: matrix + status bars -->
+    <div class="home-mid">
+      <div class="home-card">
+        <div class="home-card-title">Matriz prioridad estratégica · Tier × Impacto</div>
+        <div class="home-matrix-wrap">
+          <svg id="homeMatrix" class="home-matrix-svg" viewBox="0 0 540 280"></svg>
+        </div>
+      </div>
+      <div class="home-card">
+        <div class="home-card-title">Distribución por estado</div>
+        <div id="homeStatusBars" class="home-status-bar"></div>
+      </div>
+    </div>
+
+    <!-- Top initiatives -->
+    <div class="home-top">
+      <div class="home-card-title">Top iniciativas · Ranking por tier</div>
+      <table class="home-top-table">
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>Área</th>
+            <th>Estado</th>
+            <th style="min-width:120px">Tier</th>
+            <th>Ahorro est.</th>
+          </tr>
+        </thead>
+        <tbody id="homeTopTable"></tbody>
+      </table>
+    </div>
+
+  </div>
+</div>
+
+<div id="view-portfolio" class="view-section" style="display:none">
 <section class="hero">
   <div class="hero-title">Proyectos de Inteligencia Artificial</div>
   <h1>Portfolio de <strong>Iniciativas IA SSCC</strong></h1>
@@ -1494,6 +1618,7 @@ async function loadFromAPI(manual = false) {
     populateSegTeamOptions();
     renderSegView();
     renderInsights();
+    renderHome();
 
     var footer = document.querySelector('footer');
     if (footer) {
@@ -2001,6 +2126,9 @@ function _renderView(view) {
   }
   if (view === 'insights') {
     setTimeout(function() { renderInsights(); }, 50);
+  }
+  if (view === 'home') {
+    setTimeout(function() { renderHome(); }, 50);
   }
   if (view === 'admin') {
     setTimeout(function() { renderAdminTable(); }, 50);
@@ -3701,6 +3829,168 @@ function kanbanDrop(e, col) {
     ini.estado = fromEst;
     renderKanban();
   });
+}
+
+// ─────────────────────────────────────────────────────────────────
+// HOME DASHBOARD
+// ─────────────────────────────────────────────────────────────────
+var HOME_COLORS = {
+  'Producción':    '#10b981',
+  'En desarrollo': '#3b82f6',
+  'Piloto':        '#8b5cf6',
+  'Análisis':      '#f59e0b',
+  'Priorización':  '#f97316',
+  'Descartado':    '#9ca3af',
+  'Pendiente':     '#cbd5e1',
+  'Por evaluar':   '#e11d48'
+};
+function homeColor(estado) {
+  if (!estado) return '#9ca3af';
+  for (var k in HOME_COLORS) { if (estado.includes(k)) return HOME_COLORS[k]; }
+  return '#6b7280';
+}
+function homeEsc(s) {
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function fmtAhorro(v) {
+  v = parseFloat(v) || 0;
+  if (v <= 0) return '—';
+  if (v >= 1000000) return (v/1000000).toFixed(1) + ' M€';
+  if (v >= 1000) return Math.round(v/1000) + ' K€';
+  return v + ' €';
+}
+
+function renderHome() {
+  if (!initiatives || initiatives.length === 0) return;
+
+  // ── Greeting ──
+  var now = new Date();
+  var h = now.getHours();
+  var sal = h < 12 ? 'Buenos días' : h < 20 ? 'Buenas tardes' : 'Buenas noches';
+  var days = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
+  var mos  = ['enero','febrero','marzo','abril','mayo','junio',
+              'julio','agosto','septiembre','octubre','noviembre','diciembre'];
+  var eyebrow = document.getElementById('homeGreetingEyebrow');
+  if (eyebrow) eyebrow.textContent = sal + '  ·  ' + days[now.getDay()] + ', ' + now.getDate() + ' de ' + mos[now.getMonth()] + ' ' + now.getFullYear();
+
+  // ── KPIs ──
+  var total    = initiatives.length;
+  var enProd   = initiatives.filter(function(i){ return i.estado && i.estado.includes('Producci'); }).length;
+  var tierAlto = initiatives.filter(function(i){ return (i.tier||0) >= 70; }).length;
+  var sumAhorro = initiatives.reduce(function(a,i){ return a + (parseFloat(i.ahorro)||0); }, 0);
+
+  var el;
+  el = document.getElementById('hkpi-total');  if(el) el.innerHTML = '<strong>'+total+'</strong>';
+  el = document.getElementById('hkpi-prod');   if(el) el.innerHTML = '<strong>'+enProd+'</strong>';
+  el = document.getElementById('hkpi-tier');   if(el) el.innerHTML = '<strong>'+tierAlto+'</strong>';
+  el = document.getElementById('hkpi-ahorro'); if(el) el.innerHTML = '<strong>'+fmtAhorro(sumAhorro)+'</strong>';
+
+  // ── Matrix SVG: X=tier(0–100), Y=impact(0–10 from radar[1]) ──
+  var svgEl = document.getElementById('homeMatrix');
+  if (svgEl) {
+    var W=540, H=280, pL=44, pR=20, pT=24, pB=36;
+    var pw = W-pL-pR, ph = H-pT-pB;
+    var mx = pL + pw/2, my = pT + ph/2;
+    var parts = [];
+
+    // Quadrant fills
+    parts.push('<rect x="'+pL+'" y="'+pT+'" width="'+(pw/2)+'" height="'+(ph/2)+'" fill="#fffbeb"/>');
+    parts.push('<rect x="'+mx+'" y="'+pT+'" width="'+(pw/2)+'" height="'+(ph/2)+'" fill="#f0fdf4"/>');
+    parts.push('<rect x="'+pL+'" y="'+my+'" width="'+(pw/2)+'" height="'+(ph/2)+'" fill="#f9fafb"/>');
+    parts.push('<rect x="'+mx+'" y="'+my+'" width="'+(pw/2)+'" height="'+(ph/2)+'" fill="#fff5f5"/>');
+
+    // Quadrant labels
+    var ql = 'font-size="8" font-family="Inter,sans-serif" font-weight="600" letter-spacing="1.2"';
+    parts.push('<text x="'+(pL+6)+'" y="'+(pT+13)+'" '+ql+' fill="#d97706">POTENCIAL</text>');
+    parts.push('<text x="'+(mx+6)+'" y="'+(pT+13)+'" '+ql+' fill="#16a34a">ALTO VALOR ★</text>');
+    parts.push('<text x="'+(pL+6)+'" y="'+(my+13)+'" '+ql+' fill="#9ca3af">RELLENO</text>');
+    parts.push('<text x="'+(mx+6)+'" y="'+(my+13)+'" '+ql+' fill="#dc2626">A EVALUAR</text>');
+
+    // Grid
+    parts.push('<line x1="'+mx+'" y1="'+pT+'" x2="'+mx+'" y2="'+(H-pB)+'" stroke="#e5e7eb" stroke-width="1"/>');
+    parts.push('<line x1="'+pL+'" y1="'+my+'" x2="'+(W-pR)+'" y2="'+my+'" stroke="#e5e7eb" stroke-width="1"/>');
+
+    // Axis ticks & labels
+    var axStyle = 'font-size="9" font-family="Inter,sans-serif" fill="#9ca3af"';
+    parts.push('<text x="'+(pL+pw/2)+'" y="'+(H-2)+'" '+axStyle+' text-anchor="middle" letter-spacing="1.5">TIER →</text>');
+    parts.push('<text x="10" y="'+(pT+ph/2)+'" '+axStyle+' text-anchor="middle" transform="rotate(-90,10,'+(pT+ph/2)+')">IMPACTO →</text>');
+    ['0','25','50','75','100'].forEach(function(v,i){
+      var x = pL + (i/4)*pw;
+      parts.push('<text x="'+x+'" y="'+(H-pB+12)+'" '+axStyle+' text-anchor="middle">'+v+'</text>');
+    });
+
+    // Dots
+    initiatives.forEach(function(ini) {
+      var tierVal = ini.tier || 0;
+      var impactVal = (ini.radar && ini.radar[1]) ? ini.radar[1] : 0;
+      if (tierVal === 0 && impactVal === 0) return;
+      var cx = pL + (tierVal / 100) * pw;
+      var cy = pT + ((10 - impactVal) / 10) * ph;
+      var col = homeColor(ini.estado);
+      var r = 5.5;
+      parts.push('<circle cx="'+cx.toFixed(1)+'" cy="'+cy.toFixed(1)+'" r="'+r+'" fill="'+col+'" fill-opacity="0.72" stroke="white" stroke-width="1.5"><title>'+homeEsc(ini.name)+'  |  Tier: '+tierVal+'  |  Impacto: '+impactVal.toFixed(1)+'</title></circle>');
+    });
+
+    // Legend (bottom)
+    var seen = {}, lx = pL, ly = H - pB + 24;
+    initiatives.forEach(function(i){ if(i.estado) seen[i.estado] = homeColor(i.estado); });
+    var off = 0;
+    Object.keys(seen).slice(0,7).forEach(function(k){
+      var c = seen[k];
+      parts.push('<circle cx="'+(lx+off+4)+'" cy="'+(ly-3)+'" r="4" fill="'+c+'"/>');
+      parts.push('<text x="'+(lx+off+12)+'" y="'+ly+'" font-size="9" font-family="Inter,sans-serif" fill="#6b7280">'+homeEsc(k)+'</text>');
+      off += 16 + k.length * 5.5 + 10;
+      if (off > pw - 60) off = pw + 100; // hide overflow
+    });
+
+    svgEl.setAttribute('viewBox', '0 0 '+W+' '+(H+10));
+    svgEl.innerHTML = parts.join('');
+  }
+
+  // ── Status bars ──
+  var counts = {};
+  initiatives.forEach(function(i){ var s=i.estado||'Sin estado'; counts[s]=(counts[s]||0)+1; });
+  var entries = Object.keys(counts).map(function(k){ return [k, counts[k]]; });
+  entries.sort(function(a,b){ return b[1]-a[1]; });
+  var maxC = entries[0] ? entries[0][1] : 1;
+
+  var barsEl = document.getElementById('homeStatusBars');
+  if (barsEl) {
+    barsEl.innerHTML = entries.map(function(e){
+      var name=e[0], cnt=e[1], pct=Math.round(cnt/total*100), bw=Math.round(cnt/maxC*100);
+      var col=homeColor(name);
+      return '<div class="home-sb-row">'+
+        '<div class="home-sb-label">'+
+          '<span class="home-sb-name">'+homeEsc(name)+'</span>'+
+          '<span class="home-sb-count">'+cnt+' · '+pct+'%</span>'+
+        '</div>'+
+        '<div class="home-sb-track">'+
+          '<div class="home-sb-fill" style="width:0%;background:'+col+'" data-w="'+bw+'"></div>'+
+        '</div>'+
+      '</div>';
+    }).join('');
+    setTimeout(function(){
+      barsEl.querySelectorAll('.home-sb-fill').forEach(function(el){
+        el.style.width = el.dataset.w + '%';
+      });
+    }, 80);
+  }
+
+  // ── Top table ──
+  var sorted = initiatives.slice().sort(function(a,b){ return (b.tier||0)-(a.tier||0); }).slice(0,8);
+  var tbEl = document.getElementById('homeTopTable');
+  if (tbEl) {
+    tbEl.innerHTML = sorted.map(function(ini){
+      var col = homeColor(ini.estado);
+      return '<tr onclick="openDetail('+ini.id+')">'+
+        '<td style="font-weight:500;max-width:220px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+homeEsc(ini.name||'—')+'</td>'+
+        '<td style="color:var(--gray-400);font-size:11px;white-space:nowrap">'+homeEsc(ini.dept||'—')+'</td>'+
+        '<td><span class="home-tag" style="background:'+col+'1a;color:'+col+'">'+homeEsc(ini.estado||'—')+'</span></td>'+
+        '<td><div class="home-tier-wrap"><div class="home-tier-track"><div class="home-tier-fill" style="width:'+(ini.tier||0)+'%"></div></div><span style="font-size:11px;color:var(--gray-400)">'+(ini.tier||0)+'</span></div></td>'+
+        '<td style="color:var(--gray-500);font-size:12px">'+fmtAhorro(ini.ahorro)+'</td>'+
+      '</tr>';
+    }).join('');
+  }
 }
 </script>
 
