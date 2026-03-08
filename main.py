@@ -8,7 +8,7 @@ Para poblar la base de datos desde Excel (primera vez):
     python migrate_from_excel.py
 """
 
-import os, math, threading
+import os, math, threading, json
 from pathlib import Path
 from contextlib import asynccontextmanager
 from fastapi import FastAPI, HTTPException
@@ -484,6 +484,87 @@ def reset_status(iid: int):
         conn.commit()
         cur.close(); conn.close()
         return {"ok": True, "id": iid}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+
+# ── Asistente IA ────────────────────────────────────────────────────
+
+class ChatMessage(BaseModel):
+    message: str
+    history: list = []   # [{role, content}, ...]
+
+def _build_context(conn) -> str:
+    """Serializa todas las iniciativas a texto estructurado para el contexto."""
+    cur = conn.cursor()
+    cur.execute("SELECT * FROM initiatives ORDER BY id")
+    rows = cur.fetchall()
+    cur.close()
+
+    lines = [f"Hay {len(rows)} iniciativas en el portfolio de IA:\n"]
+    for r in rows:
+        r = dict(r)
+        estado = r.get("estado_override") or r.get("estado_excel") or "Pendiente"
+        lines.append(
+            f"- ID {r['id']}: {r['name'] or '(sin nombre)'} | "
+            f"Dept: {r['dept'] or '—'} | Estado: {estado} | "
+            f"Prioridad: {r['prioridad'] or '—'} | "
+            f"Dominio: {r['dominio'] or '—'} | "
+            f"Proceso: {r['proceso'] or '—'} | "
+            f"Equipo: {r['equipo'] or '—'} | "
+            f"Responsable: {r['responsable'] or '—'} | "
+            f"Tipo IA: {r.get('tipo_ia') or '—'} | "
+            f"Viabilidad: {r.get('viabilidad') or '—'} | "
+            f"Complejidad: {r.get('complejidad') or '—'} | "
+            f"Prioridad: {r.get('prioridad') or '—'} | "
+            f"Alerta: {'Sí' if r.get('alerta') else 'No'} | "
+            f"Retorno: {r.get('retorno') or '—'} | "
+            f"Ahorro: {r.get('ahorro') or '—'} | "
+            f"RIC: {r.get('ric') or '—'} | "
+            f"TIER: {r.get('tier') or '—'} | "
+            f"Fecha fin: {r.get('fecha_fin') or '—'} | "
+            f"Objetivo: {(r.get('objetivo') or '')[:120] or '—'} | "
+            f"Desc: {(r.get('desc_ejecutiva') or '')[:150] or '—'}"
+        )
+    return "\n".join(lines)
+
+SYSTEM_PROMPT = """Eres un asistente especializado en el portfolio de iniciativas de Inteligencia Artificial de SSCC (Servicios Corporativos).
+Tienes acceso a todos los datos actuales del portfolio. Responde siempre en español, de forma concisa y directa.
+Puedes analizar, resumir, comparar y responder preguntas sobre las iniciativas.
+Cuando listes iniciativas usa formato de lista clara. Si la pregunta no tiene relación con el portfolio, indícalo amablemente.
+No inventes datos que no estén en el contexto."""
+
+@app.post("/api/chat")
+def chat_endpoint(body: ChatMessage):
+    api_key = os.environ.get("ANTHROPIC_API_KEY")
+    if not api_key:
+        raise HTTPException(status_code=503, detail="ANTHROPIC_API_KEY no configurada")
+    try:
+        import anthropic
+        conn = get_conn()
+        context = _build_context(conn)
+        conn.close()
+
+        client = anthropic.Anthropic(api_key=api_key)
+
+        # Historial + mensaje actual
+        messages = []
+        for h in body.history[-10:]:   # últimos 10 turnos para no exceder contexto
+            messages.append({"role": h["role"], "content": h["content"]})
+        messages.append({"role": "user", "content": body.message})
+
+        system = SYSTEM_PROMPT + "\n\n## DATOS ACTUALES DEL PORTFOLIO\n" + context
+
+        resp = client.messages.create(
+            model="claude-haiku-4-5-20251001",
+            max_tokens=1024,
+            system=system,
+            messages=messages
+        )
+        return {"reply": resp.content[0].text}
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
