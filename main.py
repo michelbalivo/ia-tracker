@@ -493,7 +493,7 @@ def reset_status(iid: int):
 
 class ChatMessage(BaseModel):
     message: str
-    history: list = []   # [{role, content}, ...]
+    history: list[dict] = []   # [{role, content}, ...]
 
 def _build_context(conn) -> str:
     """Serializa todas las iniciativas a texto estructurado para el contexto."""
@@ -537,7 +537,8 @@ No inventes datos que no estén en el contexto."""
 
 @app.post("/api/chat")
 def chat_endpoint(body: ChatMessage):
-    api_key = os.environ.get("ANTHROPIC_API_KEY")
+    import traceback
+    api_key = os.environ.get("ANTHROPIC_API_KEY", "").strip()
     if not api_key:
         raise HTTPException(status_code=503, detail="ANTHROPIC_API_KEY no configurada")
     try:
@@ -550,8 +551,11 @@ def chat_endpoint(body: ChatMessage):
 
         # Historial + mensaje actual
         messages = []
-        for h in body.history[-10:]:   # últimos 10 turnos para no exceder contexto
-            messages.append({"role": h["role"], "content": h["content"]})
+        for h in body.history[-10:]:
+            role    = h.get("role")    if isinstance(h, dict) else getattr(h, "role",    None)
+            content = h.get("content") if isinstance(h, dict) else getattr(h, "content", None)
+            if role in ("user", "assistant") and content:
+                messages.append({"role": role, "content": str(content)})
         messages.append({"role": "user", "content": body.message})
 
         system = SYSTEM_PROMPT + "\n\n## DATOS ACTUALES DEL PORTFOLIO\n" + context
@@ -566,6 +570,8 @@ def chat_endpoint(body: ChatMessage):
     except HTTPException:
         raise
     except Exception as e:
+        tb = traceback.format_exc()
+        print(f"[chat] ERROR: {e}\n{tb}")
         raise HTTPException(status_code=500, detail=str(e))
 
 
