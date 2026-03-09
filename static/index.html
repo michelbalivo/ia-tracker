@@ -1005,8 +1005,8 @@
 
   /* ═══ Chat Widget ═══════════════════════════════════════════════ */
   .chat-fab {
-    position: fixed; bottom: 28px; right: 28px; z-index: 8000;
-    width: 64px; height: 64px; border-radius: 50%;
+    position: fixed; top: 4px; right: 16px; z-index: 8001;
+    width: 48px; height: 48px; border-radius: 50%;
     background: transparent;
     border: none; cursor: pointer;
     display: flex; align-items: center; justify-content: center;
@@ -1014,24 +1014,24 @@
     padding: 0;
   }
   .chat-fab:hover { opacity: 0.85; }
-  .chat-fab-lottie { width: 64px; height: 64px; border-radius: 50%; overflow: hidden; }
+  .chat-fab-lottie { width: 48px; height: 48px; border-radius: 50%; overflow: hidden; }
   .chat-fab.open .chat-fab-lottie { display: none; }
   .chat-fab .chat-fab-icon {
     display: none; position: absolute;
-    width: 64px; height: 64px; border-radius: 50%;
+    width: 48px; height: 48px; border-radius: 50%;
     background: #1a1aff; align-items: center; justify-content: center; color: #fff;
   }
   .chat-fab.open .chat-fab-icon { display: flex; }
 
   .chat-panel {
-    position: fixed; bottom: 92px; right: 28px; z-index: 8000;
+    position: fixed; top: 60px; right: 16px; z-index: 8000;
     width: 380px; max-width: calc(100vw - 40px);
     background: #fff; border-radius: 18px;
     box-shadow: 0 12px 48px rgba(0,0,0,0.18);
     display: flex; flex-direction: column; overflow: hidden;
-    transform: scale(0.9) translateY(20px); opacity: 0;
+    transform: scale(0.9) translateY(-10px); opacity: 0;
     pointer-events: none; transition: transform 0.25s cubic-bezier(.34,1.56,.64,1), opacity 0.2s;
-    transform-origin: bottom right;
+    transform-origin: top right;
   }
   .chat-panel.open { transform: scale(1) translateY(0); opacity: 1; pointer-events: all; }
 
