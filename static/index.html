@@ -1071,7 +1071,6 @@
 
   .chat-msg { display: flex; flex-direction: column; max-width: 88%; }
   .chat-msg.user { align-self: flex-end; align-items: flex-end; }
-  .chat-msg.assistant { align-self: flex-start; align-items: flex-start; }
   .chat-bubble {
     padding: 9px 13px; border-radius: 14px; font-size: 13px; line-height: 1.5;
     white-space: pre-wrap; word-break: break-word;
@@ -4168,6 +4167,7 @@ function kanbanDrop(e, col) {
   </div>
   <div class="chat-messages" id="chatMessages">
     <div class="chat-msg assistant">
+      <div class="chat-assistant-icon"><span></span><span></span><span></span></div>
       <div class="chat-bubble">Hola, soy tu asistente de portfolio. Puedo responder preguntas sobre las iniciativas, estados, equipos, prioridades... ¿en qué puedo ayudarte?</div>
     </div>
   </div>
