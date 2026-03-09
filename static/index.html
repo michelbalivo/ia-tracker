@@ -1016,12 +1016,12 @@
   .chat-fab:hover { opacity: 0.85; }
   .chat-fab-lottie { width: 48px; height: 48px; border-radius: 50%; overflow: hidden; }
   .chat-fab.open .chat-fab-lottie { display: none; }
-  .chat-fab .chat-fab-icon {
-    display: none; position: absolute;
+  .chat-fab .chat-fab-icon { display: none; }
+  .chat-fab.open .chat-fab-icon {
+    display: flex; position: absolute;
     width: 48px; height: 48px; border-radius: 50%;
     background: #1a1aff; align-items: center; justify-content: center; color: #fff;
   }
-  .chat-fab.open .chat-fab-icon { display: flex; }
 
   .chat-panel {
     position: fixed; top: 60px; right: 16px; z-index: 8000;
