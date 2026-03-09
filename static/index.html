@@ -1124,63 +1124,6 @@
     outline: 2px dashed #bbb;
     outline-offset: -3px;
   }
-
-  
-  /* ══════════════════════════════════════════════
-     HOME — BRIEFING DE HOY
-  ══════════════════════════════════════════════ */
-  #view-home { background: var(--gray-50); }
-  .home-wrap { padding: 40px; max-width: 1360px; margin: 0 auto; }
-
-  /* ── Header briefing ── */
-  .home-header { margin-bottom: 36px; padding-bottom: 28px; border-bottom: 1px solid var(--gray-200); }
-  .home-header-eyebrow { font-size: 9px; font-weight: 500; letter-spacing: 2.5px; text-transform: uppercase; color: var(--gray-400); margin-bottom: 10px; }
-  .home-header-title { font-size: 26px; font-weight: 300; color: var(--black); margin-bottom: 6px; }
-  .home-header-title strong { font-weight: 700; }
-  .home-header-sub { font-size: 13px; color: var(--gray-400); }
-  .home-header-sub .hl { color: var(--black); font-weight: 600; }
-
-  /* ── Section titles ── */
-  .home-section { margin-bottom: 32px; }
-  .home-section-label { font-size: 9px; font-weight: 500; letter-spacing: 2.5px; text-transform: uppercase; color: var(--gray-400); margin-bottom: 16px; display: flex; align-items: center; gap: 10px; }
-  .home-section-label::after { content: ''; flex: 1; height: 1px; background: var(--gray-200); }
-
-  /* ── Atencion cards ── */
-  .home-attn-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; }
-  .home-attn-col { display: flex; flex-direction: column; gap: 8px; }
-  .home-attn-col-title { font-size: 10px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; color: var(--gray-500); padding-bottom: 8px; border-bottom: 2px solid var(--gray-200); margin-bottom: 4px; display: flex; align-items: center; gap: 6px; }
-  .home-attn-col-title .dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
-  .home-attn-card { background: var(--white); border: 1px solid var(--gray-200); padding: 14px 16px; cursor: pointer; transition: border-color 0.15s; }
-  .home-attn-card:hover { border-color: var(--gray-400); }
-  .home-attn-card-name { font-size: 13px; font-weight: 500; color: var(--black); margin-bottom: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .home-attn-card-meta { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
-  .home-attn-badge { font-size: 9px; font-weight: 500; letter-spacing: 0.5px; padding: 2px 7px; border-radius: 2px; }
-  .home-attn-empty { font-size: 12px; color: var(--gray-400); padding: 12px 0; font-style: italic; }
-
-  /* ── ROI Funnel ── */
-  .home-funnel { display: flex; flex-direction: column; gap: 10px; background: var(--white); border: 1px solid var(--gray-200); padding: 28px; }
-  .home-funnel-row { display: grid; grid-template-columns: 130px 1fr 80px 80px; gap: 12px; align-items: center; }
-  .home-funnel-label { font-size: 11px; font-weight: 500; color: var(--black); }
-  .home-funnel-track { height: 8px; background: var(--gray-100); overflow: hidden; }
-  .home-funnel-fill { height: 100%; transition: width 0.9s cubic-bezier(0.4,0,0.2,1); }
-  .home-funnel-count { font-size: 11px; color: var(--gray-400); text-align: right; }
-  .home-funnel-ahorro { font-size: 12px; font-weight: 600; color: var(--black); text-align: right; }
-  .home-funnel-divider { grid-column: 1/-1; height: 1px; background: var(--gray-100); margin: 4px 0; }
-
-  /* ── Quick wins table ── */
-  .home-qw { background: var(--white); border: 1px solid var(--gray-200); }
-  .home-qw-table { width: 100%; border-collapse: collapse; }
-  .home-qw-table th { font-size: 9px; font-weight: 500; letter-spacing: 2px; text-transform: uppercase; color: var(--gray-400); padding: 20px 20px 14px; border-bottom: 1px solid var(--gray-200); text-align: left; }
-  .home-qw-table td { padding: 13px 20px; border-bottom: 1px solid var(--gray-100); font-size: 13px; color: var(--black); vertical-align: middle; }
-  .home-qw-table tr:last-child td { border-bottom: none; }
-  .home-qw-table tbody tr { cursor: pointer; }
-  .home-qw-table tbody tr:hover td { background: var(--gray-50); }
-  .home-qw-empty { padding: 24px 20px; font-size: 13px; color: var(--gray-400); font-style: italic; }
-  .home-tier-pill { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 700; color: var(--black); }
-  .home-tier-pip { width: 28px; height: 3px; background: var(--gray-100); }
-  .home-tier-pip-fill { height: 100%; background: var(--black); }
-  .home-badge { display: inline-block; padding: 3px 9px; font-size: 10px; font-weight: 500; border-radius: 2px; }
-
 </style>
 </head>
 <body>
@@ -1191,8 +1134,7 @@
     <span class="header-brand-sub">Portfolio de Iniciativas</span>
   </div>
   <nav class="header-nav">
-    <button class="header-nav-btn active" onclick="switchView('home',this)">Home</button>
-    <button class="header-nav-btn" onclick="switchView('portfolio',this)">Portfolio</button>
+    <button class="header-nav-btn active" onclick="switchView('portfolio',this)">Portfolio</button>
     <button class="header-nav-btn" onclick="switchView('seguimiento',this)">Seguimiento</button>
     <button class="header-nav-btn" onclick="switchView('insights',this)">Insights</button>
     <button class="header-nav-btn" onclick="switchView('admin',this)">Admin</button>
@@ -1203,69 +1145,7 @@
 </header>
 
 <!-- ═══ PORTFOLIO VIEW ═══ -->
-
-
-<!-- ═══════════════════════ HOME — BRIEFING ═══════════════════════════════ -->
-<div id="view-home" class="view-section active" style="display:block">
-  <div class="home-wrap">
-
-    <!-- Header -->
-    <div class="home-header">
-      <div class="home-header-eyebrow" id="homeEyebrow"></div>
-      <div class="home-header-title" id="homeTitle">Portfolio IA · <strong>Briefing de hoy</strong></div>
-      <div class="home-header-sub" id="homeSub"></div>
-    </div>
-
-    <!-- Sección 1: Atención requerida -->
-    <div class="home-section">
-      <div class="home-section-label">Atención requerida</div>
-      <div class="home-attn-grid">
-        <div class="home-attn-col">
-          <div class="home-attn-col-title"><span class="dot" style="background:#ef4444"></span>Alertas activas</div>
-          <div id="homeColAlertas"></div>
-        </div>
-        <div class="home-attn-col">
-          <div class="home-attn-col-title"><span class="dot" style="background:#f59e0b"></span>Sin avance &gt;90 días</div>
-          <div id="homeColStale"></div>
-        </div>
-        <div class="home-attn-col">
-          <div class="home-attn-col-title"><span class="dot" style="background:#3b82f6"></span>Fecha límite próxima</div>
-          <div id="homeColDeadline"></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Sección 2: ROI bloqueado por fase -->
-    <div class="home-section">
-      <div class="home-section-label">ROI potencial bloqueado por fase</div>
-      <div class="home-funnel" id="homeFunnel"></div>
-    </div>
-
-    <!-- Sección 3: Quick wins sin explotar -->
-    <div class="home-section">
-      <div class="home-section-label">Quick wins sin explotar · Tier alto en fases tempranas</div>
-      <div class="home-qw">
-        <table class="home-qw-table">
-          <thead>
-            <tr>
-              <th>Nombre</th>
-              <th>Área</th>
-              <th>Fase actual</th>
-              <th>Tier</th>
-              <th>Ahorro estimado</th>
-              <th>Por qué es quick win</th>
-            </tr>
-          </thead>
-          <tbody id="homeQWTable"></tbody>
-        </table>
-        <div id="homeQWEmpty" class="home-qw-empty" style="display:none">No hay iniciativas con tier alto en fases tempranas ahora mismo.</div>
-      </div>
-    </div>
-
-  </div>
-</div>
-
-<div id="view-portfolio" class="view-section" style="display:none">
+<div id="view-portfolio" class="view-section active" style="display:block">
 <section class="hero">
   <div class="hero-title">Proyectos de Inteligencia Artificial</div>
   <h1>Portfolio de <strong>Iniciativas IA SSCC</strong></h1>
@@ -1614,7 +1494,6 @@ async function loadFromAPI(manual = false) {
     populateSegTeamOptions();
     renderSegView();
     renderInsights();
-    renderHome();
 
     var footer = document.querySelector('footer');
     if (footer) {
@@ -2122,9 +2001,6 @@ function _renderView(view) {
   }
   if (view === 'insights') {
     setTimeout(function() { renderInsights(); }, 50);
-  }
-  if (view === 'home') {
-    setTimeout(function() { renderHome(); }, 50);
   }
   if (view === 'admin') {
     setTimeout(function() { renderAdminTable(); }, 50);
@@ -3826,242 +3702,6 @@ function kanbanDrop(e, col) {
     renderKanban();
   });
 }
-
-// ─────────────────────────────────────────────────────────────────
-// ─────────────────────────────────────────────────────────────────
-// HOME — BRIEFING DE HOY
-// ─────────────────────────────────────────────────────────────────
-var HOME_ESTADO_COL = {
-  'Producción':    '#10b981',
-  'En desarrollo': '#3b82f6',
-  'Piloto':        '#8b5cf6',
-  'Análisis':      '#f59e0b',
-  'Priorización':  '#f97316',
-  'Descartado':    '#9ca3af',
-  'Pendiente':     '#94a3b8',
-  'Por evaluar':   '#e11d48'
-};
-function hCol(estado) {
-  if (!estado) return '#9ca3af';
-  for (var k in HOME_ESTADO_COL) { if (estado.includes(k)) return HOME_ESTADO_COL[k]; }
-  return '#6b7280';
-}
-function hEsc(s) {
-  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
-function hFmt(v) {
-  v = parseFloat(v)||0;
-  if (v<=0) return '—';
-  if (v>=1000000) return (v/1000000).toFixed(1)+' M€';
-  if (v>=1000) return Math.round(v/1000)+' K€';
-  return v+'€';
-}
-function hParseDate(s) {
-  if (!s) return null;
-  var m;
-  // dd/mm/yyyy
-  m = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
-  if (m) return new Date(+m[3], +m[2]-1, +m[1]);
-  // yyyy-mm-dd
-  m = s.match(/^(\d{4})-(\d{2})-(\d{2})/);
-  if (m) return new Date(+m[1], +m[2]-1, +m[3]);
-  return null;
-}
-function hDaysAgo(dateStr) {
-  var d = hParseDate(dateStr);
-  if (!d) return null;
-  return Math.floor((Date.now() - d.getTime()) / 86400000);
-}
-function hDaysUntil(dateStr) {
-  var d = hParseDate(dateStr);
-  if (!d) return null;
-  return Math.floor((d.getTime() - Date.now()) / 86400000);
-}
-
-function renderHome() {
-  if (!initiatives || initiatives.length === 0) return;
-
-  var now = new Date();
-  var days  = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
-  var mos   = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
-  var h     = now.getHours();
-  var sal   = h < 12 ? 'Buenos días' : h < 20 ? 'Buenas tardes' : 'Buenas noches';
-  var dateStr = days[now.getDay()] + ', ' + now.getDate() + ' de ' + mos[now.getMonth()] + ' ' + now.getFullYear();
-
-  var eyebrow = document.getElementById('homeEyebrow');
-  if (eyebrow) eyebrow.textContent = sal + '  ·  ' + dateStr;
-
-  // ── 1. ATENCIÓN REQUERIDA ──────────────────────────────────────
-
-  // Alertas activas
-  var alertas = initiatives.filter(function(i){ return i.alerta; });
-
-  // Sin avance >90 días: fecha_inicio registrada, >90 días, no Producción/Descartado
-  var stale = initiatives.filter(function(i){
-    if (!i.fecha_inicio) return false;
-    var days = hDaysAgo(i.fecha_inicio);
-    if (days === null || days < 90) return false;
-    var e = (i.estado||'').toLowerCase();
-    return !e.includes('producc') && !e.includes('descart');
-  }).sort(function(a,b){ return (hDaysAgo(b.fecha_inicio)||0)-(hDaysAgo(a.fecha_inicio)||0); }).slice(0,4);
-
-  // Fecha límite próxima: fecha_fin en los próximos 90 días, no Producción/Descartado
-  var deadline = initiatives.filter(function(i){
-    var d = hDaysUntil(i.fecha);
-    if (d === null) return false;
-    var e = (i.estado||'').toLowerCase();
-    return d <= 90 && d >= -7 && !e.includes('descart');
-  }).sort(function(a,b){ return (hDaysUntil(a.fecha)||0)-(hDaysUntil(b.fecha)||0); }).slice(0,4);
-
-  function attnCard(ini, metaHtml) {
-    return '<div class="home-attn-card" onclick="openDetail('+ini.id+')">'+
-      '<div class="home-attn-card-name">'+hEsc(ini.name||'Sin nombre')+'</div>'+
-      '<div class="home-attn-card-meta">'+metaHtml+'</div>'+
-    '</div>';
-  }
-  function estadoBadge(ini) {
-    var col = hCol(ini.estado);
-    return '<span class="home-attn-badge" style="background:'+col+'1a;color:'+col+'">'+hEsc(ini.estado||'?')+'</span>';
-  }
-  function tierBadge(ini) {
-    return '<span class="home-attn-badge" style="background:var(--gray-100);color:var(--gray-600)">Tier '+((ini.tier)||0)+'</span>';
-  }
-
-  var colAl = document.getElementById('homeColAlertas');
-  if (colAl) {
-    colAl.innerHTML = alertas.length
-      ? alertas.slice(0,4).map(function(i){ return attnCard(i, estadoBadge(i)+tierBadge(i)); }).join('')
-      : '<div class="home-attn-empty">Sin alertas activas</div>';
-  }
-
-  var colSt = document.getElementById('homeColStale');
-  if (colSt) {
-    colSt.innerHTML = stale.length
-      ? stale.map(function(i){
-          var d = hDaysAgo(i.fecha_inicio);
-          return attnCard(i, estadoBadge(i)+'<span class="home-attn-badge" style="background:#fef3c7;color:#d97706">'+d+' días</span>');
-        }).join('')
-      : '<div class="home-attn-empty">Sin iniciativas estancadas</div>';
-  }
-
-  var colDl = document.getElementById('homeColDeadline');
-  if (colDl) {
-    colDl.innerHTML = deadline.length
-      ? deadline.map(function(i){
-          var d = hDaysUntil(i.fecha);
-          var label = d < 0 ? 'Vencida' : d === 0 ? 'Hoy' : 'En '+d+' días';
-          var bg = d < 0 ? '#fee2e2' : d <= 14 ? '#fef3c7' : '#eff6ff';
-          var tc = d < 0 ? '#dc2626' : d <= 14 ? '#d97706' : '#3b82f6';
-          return attnCard(i, estadoBadge(i)+'<span class="home-attn-badge" style="background:'+bg+';color:'+tc+'">'+label+'</span>');
-        }).join('')
-      : '<div class="home-attn-empty">Sin fechas límite próximas</div>';
-  }
-
-  // Contextual subtitle
-  var totalAttn = alertas.length + (stale.length > 0 ? 1 : 0) + (deadline.length > 0 ? 1 : 0);
-  var subEl = document.getElementById('homeSub');
-  if (subEl) {
-    if (totalAttn === 0) {
-      subEl.innerHTML = 'Todo en orden · Buen momento para revisar los quick wins del portfolio';
-    } else {
-      var parts = [];
-      if (alertas.length)  parts.push('<span class="hl">'+alertas.length+' alerta'+  (alertas.length>1?'s':'')+'</span>');
-      if (stale.length)    parts.push('<span class="hl">'+stale.length+' iniciativa'+ (stale.length>1?'s estancadas':' estancada')+'</span>');
-      if (deadline.length) parts.push('<span class="hl">'+deadline.length+' fecha'+   (deadline.length>1?'s límite próximas':' límite próxima')+'</span>');
-      subEl.innerHTML = 'Requiere atención: ' + parts.join(' · ');
-    }
-  }
-
-  // ── 2. FUNNEL ROI POR FASE ─────────────────────────────────────
-  var PHASES = [
-    { key: 'Análisis',      label: 'Análisis',       color: '#ef4444', match: ['análisis','por evaluar','pendiente','sin estado'] },
-    { key: 'Priorización',  label: 'Priorización',   color: '#f97316', match: ['prioriz'] },
-    { key: 'En desarrollo', label: 'En desarrollo',  color: '#3b82f6', match: ['desarrollo'] },
-    { key: 'Piloto',        label: 'Piloto',          color: '#8b5cf6', match: ['piloto'] },
-    { key: 'Producción',    label: 'Producción ✓',   color: '#10b981', match: ['producc'] },
-  ];
-
-  var funnelData = PHASES.map(function(ph) {
-    var items = initiatives.filter(function(i) {
-      var e = (i.estado||'').toLowerCase();
-      return ph.match.some(function(m){ return e.includes(m); });
-    });
-    var ahorro = items.reduce(function(a,i){ return a+(parseFloat(i.ahorro)||0); }, 0);
-    return { label: ph.label, color: ph.color, count: items.length, ahorro: ahorro };
-  });
-
-  var maxAhorro = Math.max.apply(null, funnelData.map(function(f){ return f.ahorro; })) || 1;
-
-  var funnelEl = document.getElementById('homeFunnel');
-  if (funnelEl) {
-    var hdr = '<div class="home-funnel-row" style="padding-bottom:8px;border-bottom:1px solid var(--gray-200);margin-bottom:4px">'+
-      '<div style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--gray-400)">Fase</div>'+
-      '<div></div>'+
-      '<div style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--gray-400);text-align:right">Iniciativas</div>'+
-      '<div style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--gray-400);text-align:right">Ahorro</div>'+
-    '</div>';
-
-    var rows = funnelData.map(function(f) {
-      var barW = f.ahorro > 0 ? Math.round(f.ahorro / maxAhorro * 100) : (f.count > 0 ? 5 : 0);
-      var isProd = f.label.includes('✓');
-      return '<div class="home-funnel-row">'+
-        '<div class="home-funnel-label" style="color:'+f.color+'">'+hEsc(f.label)+'</div>'+
-        '<div class="home-funnel-track">'+
-          '<div class="home-funnel-fill" style="width:0%;background:'+f.color+(isProd?'':';opacity:0.7')+'" data-w="'+barW+'"></div>'+
-        '</div>'+
-        '<div class="home-funnel-count">'+f.count+'</div>'+
-        '<div class="home-funnel-ahorro">'+(f.ahorro>0 ? hFmt(f.ahorro) : (f.count>0?'<span style="color:var(--gray-400)">Sin datos</span>':'—'))+'</div>'+
-      '</div>';
-    });
-
-    // Insert divider before Producción
-    rows.splice(4, 0, '<div class="home-funnel-divider"></div>');
-
-    funnelEl.innerHTML = hdr + rows.join('');
-    setTimeout(function(){
-      funnelEl.querySelectorAll('.home-funnel-fill').forEach(function(el){
-        el.style.width = el.dataset.w + '%';
-      });
-    }, 80);
-  }
-
-  // ── 3. QUICK WINS ──────────────────────────────────────────────
-  var EARLY = ['análisis','prioriz','por evaluar','pendiente'];
-  var qw = initiatives.filter(function(i){
-    var e = (i.estado||'').toLowerCase();
-    return (i.tier||0) >= 65 && EARLY.some(function(m){ return e.includes(m); });
-  }).sort(function(a,b){ return (b.tier||0)-(a.tier||0); }).slice(0,6);
-
-  var qwTable = document.getElementById('homeQWTable');
-  var qwEmpty = document.getElementById('homeQWEmpty');
-  if (qwTable) {
-    if (qw.length === 0) {
-      qwTable.innerHTML = '';
-      if (qwEmpty) qwEmpty.style.display = 'block';
-    } else {
-      if (qwEmpty) qwEmpty.style.display = 'none';
-      qwTable.innerHTML = qw.map(function(i){
-        var col = hCol(i.estado);
-        var tierPct = i.tier || 0;
-        // Why quick win
-        var reasons = [];
-        if (tierPct >= 80) reasons.push('Tier muy alto');
-        if (i.viabilidad_text && i.viabilidad_text.includes('Alta')) reasons.push('Alta viabilidad');
-        if ((parseFloat(i.ahorro)||0) > 100000) reasons.push('Alto ROI potencial');
-        if (reasons.length === 0) reasons.push('Alta prioridad sin desplegar');
-        return '<tr onclick="openDetail('+i.id+')">'+
-          '<td style="font-weight:500;max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+hEsc(i.name||'—')+'</td>'+
-          '<td style="color:var(--gray-400);font-size:11px">'+hEsc(i.dept||'—')+'</td>'+
-          '<td><span class="home-badge" style="background:'+col+'1a;color:'+col+'">'+hEsc(i.estado||'—')+'</span></td>'+
-          '<td><div class="home-tier-pill"><div class="home-tier-pip"><div class="home-tier-pip-fill" style="width:'+tierPct+'%"></div></div>'+tierPct+'</div></td>'+
-          '<td style="color:var(--gray-500);font-size:12px">'+hFmt(i.ahorro)+'</td>'+
-          '<td style="color:var(--gray-400);font-size:11px">'+hEsc(reasons.join(' · '))+'</td>'+
-        '</tr>';
-      }).join('');
-    }
-  }
-}
-
 </script>
 
 
