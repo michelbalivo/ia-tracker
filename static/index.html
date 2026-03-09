@@ -3542,13 +3542,7 @@ function toggleChat() {
   var panel = document.getElementById('chatPanel');
   var open  = panel.classList.toggle('open');
   fab.classList.toggle('open', open);
-  // Cambiar icono: estrella → X al abrir
-  var icon = document.getElementById('chatFabIcon');
-  if (icon) {
-    icon.innerHTML = open
-      ? '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>'
-      : '';
-  }
+  // El icono X y la animación Lottie se muestran/ocultan via CSS con la clase .open
   if (open) {
     setTimeout(function(){ document.getElementById('chatInput').focus(); }, 250);
   }
