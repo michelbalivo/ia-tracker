@@ -1078,7 +1078,30 @@
   }
   .chat-msg.user .chat-bubble { background: #111; color: #fff; border-bottom-right-radius: 4px; }
   .chat-msg.assistant .chat-bubble { background: #f3f4f6; color: #111; border-bottom-left-radius: 4px; }
-  .chat-typing .chat-bubble { color: #9ca3af; font-style: italic; }
+  .chat-typing .chat-bubble {
+    background: transparent !important;
+    padding: 4px 0 !important;
+    display: flex; align-items: center;
+  }
+  .chat-typing-lottie { width: 52px; height: 52px; }
+
+  /* Icono animado junto a mensajes del asistente */
+  .chat-msg.assistant { flex-direction: row; align-items: flex-start; gap: 6px; }
+  .chat-assistant-icon {
+    display: flex; align-items: center; gap: 3px;
+    flex-shrink: 0; margin-top: 10px;
+  }
+  .chat-assistant-icon span {
+    width: 4px; height: 4px; border-radius: 50%;
+    background: #1a1aff;
+    animation: assistantDot 1.6s ease-in-out infinite;
+  }
+  .chat-assistant-icon span:nth-child(2) { animation-delay: 0.25s; }
+  .chat-assistant-icon span:nth-child(3) { animation-delay: 0.5s; }
+  @keyframes assistantDot {
+    0%, 80%, 100% { transform: scale(0.55); opacity: 0.35; }
+    40% { transform: scale(1); opacity: 1; }
+  }
 
   .chat-suggestions {
     padding: 0 12px 8px; display: flex; flex-wrap: wrap; gap: 6px;
@@ -3589,9 +3612,36 @@ function chatAppend(role, text, typing) {
   var msgs = document.getElementById('chatMessages');
   var div  = document.createElement('div');
   div.className = 'chat-msg ' + role + (typing ? ' chat-typing' : '');
+
+  // Icono animado junto a mensajes del asistente
+  if (role === 'assistant') {
+    var iconEl = document.createElement('div');
+    iconEl.className = 'chat-assistant-icon';
+    iconEl.innerHTML = '<span></span><span></span><span></span>';
+    div.appendChild(iconEl);
+  }
+
   var bub = document.createElement('div');
   bub.className = 'chat-bubble';
-  bub.textContent = text;
+
+  if (typing) {
+    // Animación Lottie de carga en lugar de "…"
+    var lottieEl = document.createElement('div');
+    lottieEl.className = 'chat-typing-lottie';
+    bub.appendChild(lottieEl);
+    if (window.lottie) {
+      window._chatTypingAnim = lottie.loadAnimation({
+        container: lottieEl,
+        renderer: 'svg',
+        loop: true,
+        autoplay: true,
+        path: '/static/animations/loading.json'
+      });
+    }
+  } else {
+    bub.textContent = text;
+  }
+
   div.appendChild(bub);
   msgs.appendChild(div);
   msgs.scrollTop = msgs.scrollHeight;
@@ -3625,6 +3675,7 @@ function chatSend() {
     return r.json();
   })
   .then(function(data) {
+    if (window._chatTypingAnim) { window._chatTypingAnim.destroy(); window._chatTypingAnim = null; }
     typingBub.parentNode.remove();
     chatAppend('assistant', data.reply);
     _chatHistory.push({ role: 'user',      content: msg });
@@ -4137,4 +4188,5 @@ function kanbanDrop(e, col) {
   </div>
 </div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie.min.js"></script>
 </body></html>
