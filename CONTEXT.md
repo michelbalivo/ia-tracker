@@ -75,8 +75,33 @@ ia-tracker/
 
 ---
 
+## Historial de cambios solicitados por el usuario
+
+Este historial recoge qué se pidió y qué se hizo, para retomar contexto fácilmente.
+
+---
+
+### Mar 10, 2026 — Animación del asistente
+
+**Petición:** Mejorar la animación del botón/widget del asistente, usando como referencia el proyecto `spa-esmsweb-develop` (se proporcionó un zip con el código de `AIAssistantChat`).
+
+**Iteraciones:**
+1. Se interpretó erróneamente el zip como el proyecto principal en lugar de referencia → se corrigió.
+2. Se añadió `lottie-web` via CDN y se copiaron `loading.json` y `standby.json` a `static/animations/`.
+3. Primer intento: animación Lottie `loading` en el typing indicator + puntitos CSS en mensajes → el usuario indicó que esa animación debería ir en el **botón FAB**, no en el chat.
+4. Se limpió el chat (sin iconos en burbujas, typing indicator vuelve a `…`) y se puso el Lottie en el botón FAB.
+5. Se usó `loading.json` en el FAB → el usuario indicó que esa es la animación de "ejecutando", no la inicial → se cambió a `standby.json`.
+6. Se movió el botón FAB de **esquina inferior derecha** a **esquina superior derecha** (dentro del header) porque se cruzaba con datos.
+7. Se corrigieron 2 warnings de VS Code: `display: none` mezclado con propiedades flex en la misma regla CSS.
+8. Se limpió la función `toggleChat` que sobreescribía `innerHTML` del icono (código obsoleto del sistema anterior).
+
+**Estado resultante:** FAB en `top: 4px; right: 16px` con animación `standby.json`. Panel abre hacia abajo desde el header. Chat interior limpio.
+
+---
+
 ## Estado actual (última actualización: Mar 10, 2026)
 
-- Botón FAB del asistente reposicionado a esquina superior derecha con animación Lottie `standby.json`.
-- CSS limpio: sin duplicados en el bloque del chat widget, sin warnings de VS Code en ese bloque.
+- Botón FAB del asistente en esquina superior derecha con animación Lottie `standby.json`.
+- CSS limpio: sin warnings de VS Code en el bloque del chat widget.
 - Panel de chat funcional con sugerencias, historial, y conexión a `/api/chat`.
+- Pendiente: valorar si el FAB encaja bien visualmente en el header una vez desplegado.
