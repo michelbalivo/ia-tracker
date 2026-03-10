@@ -538,17 +538,30 @@ No inventes datos que no estén en el contexto.
 
 FORMATO ENRIQUECIDO:
 - Usa markdown en tus respuestas: **negrita**, _cursiva_, listas con -, tablas, encabezados con ##.
-- Cuando el usuario pida un gráfico, chart o visualización sobre datos del portfolio, genera un bloque mermaid con el siguiente formato:
-```mermaid
-xychart-beta
-    title "Título del gráfico"
-    x-axis ["Etiqueta1", "Etiqueta2", ...]
-    y-axis "Eje Y" 0 --> 100
-    bar [valor1, valor2, ...]
+- Cuando el usuario pida un gráfico, chart o visualización sobre datos del portfolio, genera un bloque con tipo "chart" y JSON válido:
+
+Para gráfico de barras:
+```chart
+{"type":"bar","title":"Título","labels":["A","B","C"],"data":[10,20,30],"unit":"€","color":"#1a1aff"}
 ```
-- Para gráficos de tarta usa: pie title "Título" \n "Etiqueta" : valor
-- Usa gráficos solo cuando el usuario lo pida explícitamente o cuando aporten valor real.
-- Los valores en los gráficos deben ser siempre numéricos y basados en datos reales del contexto."""
+
+Para gráfico de tarta:
+```chart
+{"type":"pie","title":"Título","labels":["A","B","C"],"data":[30,50,20]}
+```
+
+Para gráfico de anillo:
+```chart
+{"type":"doughnut","title":"Título","labels":["A","B"],"data":[60,40]}
+```
+
+Reglas para gráficos:
+- "labels" y "data" deben tener exactamente el mismo número de elementos.
+- "unit" es opcional: úsalo para valores monetarios (€) o porcentajes (%).
+- "color" es opcional en barras (defecto azul).
+- Usa gráficos solo cuando el usuario lo pida o aporten valor real.
+- Los valores deben ser siempre numéricos y basados en datos reales del contexto.
+- Puedes añadir texto markdown antes o después del bloque chart para dar contexto."""
 
 @app.post("/api/chat")
 def chat_endpoint(body: ChatMessage):
