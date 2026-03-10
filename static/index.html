@@ -1005,8 +1005,8 @@
 
   /* ═══ Chat Widget ═══════════════════════════════════════════════ */
   .chat-fab {
-    position: fixed; top: 4px; right: 16px; z-index: 8001;
-    width: 48px; height: 48px; border-radius: 50%;
+    position: fixed; bottom: 28px; right: 28px; z-index: 8001;
+    width: 64px; height: 64px; border-radius: 50%;
     background: transparent;
     border: none; cursor: pointer;
     display: flex; align-items: center; justify-content: center;
@@ -1014,24 +1014,24 @@
     padding: 0;
   }
   .chat-fab:hover { opacity: 0.85; }
-  .chat-fab-lottie { width: 48px; height: 48px; border-radius: 50%; overflow: hidden; }
+  .chat-fab-lottie { width: 64px; height: 64px; border-radius: 50%; overflow: hidden; }
   .chat-fab.open .chat-fab-lottie { display: none; }
   .chat-fab .chat-fab-icon { display: none; }
   .chat-fab.open .chat-fab-icon {
     display: flex; position: absolute;
-    width: 48px; height: 48px; border-radius: 50%;
+    width: 64px; height: 64px; border-radius: 50%;
     background: #1a1aff; align-items: center; justify-content: center; color: #fff;
   }
 
   .chat-panel {
-    position: fixed; top: 60px; right: 16px; z-index: 8000;
+    position: fixed; bottom: 104px; right: 28px; z-index: 8000;
     width: 380px; max-width: calc(100vw - 40px);
     background: #fff; border-radius: 18px;
     box-shadow: 0 12px 48px rgba(0,0,0,0.18);
     display: flex; flex-direction: column; overflow: hidden;
-    transform: scale(0.9) translateY(-10px); opacity: 0;
+    transform: scale(0.9) translateY(20px); opacity: 0;
     pointer-events: none; transition: transform 0.25s cubic-bezier(.34,1.56,.64,1), opacity 0.2s;
-    transform-origin: top right;
+    transform-origin: bottom right;
   }
   .chat-panel.open { transform: scale(1) translateY(0); opacity: 1; pointer-events: all; }
 
@@ -3603,7 +3603,20 @@ function chatAppend(role, text, typing) {
   if (typing) {
     bub.textContent = '…';
   } else if (role === 'assistant' && window.marked) {
-    bub.innerHTML = marked.parse(text);
+    // Sustituir bloques ```mermaid por placeholders antes de parsear markdown
+    var mermaidBlocks = [];
+    var processed = text.replace(/```mermaid\n([\s\S]*?)```/g, function(_, code) {
+      var idx = mermaidBlocks.length;
+      mermaidBlocks.push(code.trim());
+      return '<div class="mermaid-block" data-code="' + idx + '"></div>';
+    });
+    bub.innerHTML = marked.parse(processed);
+    // Restaurar el código mermaid real en los placeholders
+    bub.querySelectorAll('.mermaid-block').forEach(function(el) {
+      var idx = parseInt(el.getAttribute('data-code'));
+      el.setAttribute('data-code', mermaidBlocks[idx]);
+    });
+    renderMermaid(bub);
   } else {
     bub.textContent = text;
   }
@@ -4158,8 +4171,10 @@ function kanbanDrop(e, col) {
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.6/marked.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
 <script>
   document.addEventListener('DOMContentLoaded', function() {
+    // Lottie en el FAB
     var fabEl = document.getElementById('chatFabLottie');
     if (fabEl && window.lottie) {
       lottie.loadAnimation({
@@ -4170,6 +4185,25 @@ function kanbanDrop(e, col) {
         path: '/static/animations/standby.json'
       });
     }
+    // Inicializar Mermaid
+    if (window.mermaid) {
+      mermaid.initialize({ startOnLoad: false, theme: 'neutral', fontFamily: 'Inter, sans-serif' });
+    }
   });
+
+  // Renderizar bloques mermaid inyectados dinámicamente
+  function renderMermaid(container) {
+    if (!window.mermaid) return;
+    var blocks = container.querySelectorAll('.mermaid-block');
+    blocks.forEach(function(block, i) {
+      var code = block.getAttribute('data-code');
+      var id = 'mermaid-' + Date.now() + '-' + i;
+      mermaid.render(id, code).then(function(result) {
+        block.innerHTML = result.svg;
+      }).catch(function() {
+        block.textContent = 'Error al renderizar el gráfico.';
+      });
+    });
+  }
 </script>
 </body></html>
