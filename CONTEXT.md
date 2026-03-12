@@ -99,9 +99,24 @@ Este historial recoge qué se pidió y qué se hizo, para retomar contexto fáci
 
 ---
 
-## Estado actual (última actualización: Mar 10, 2026)
+### Mar 11, 2026 — Dark Mode
+
+**Petición:** Añadir dark mode a la app.
+
+**Implementación:**
+- Variables dark mode en `[data-theme="dark"]` sobre `<html>` — invierte escala de grises y ajusta azul a `#4d8eff` y blue-light a `#0d1f40`.
+- Botón toggle (icono luna/sol) en `.header-right`, controlado con CSS puro + selector `[data-theme="dark"]`.
+- JS: función `toggleTheme()` en el primer `<script>` + IIFE de inicialización que lee `localStorage('theme')` antes del render.
+- Overrides adicionales para los colores hardcodeados más visibles (prioridades, banners de descarte, chat, kanban, export button).
+- La preferencia persiste en `localStorage`.
+
+**Estado:** Completado. Botón luna/sol en header superior derecho.
+
+---
+
+## Estado actual (última actualización: Mar 11, 2026)
 
 - Botón FAB del asistente en esquina superior derecha con animación Lottie `standby.json`.
 - CSS limpio: sin warnings de VS Code en el bloque del chat widget.
 - Panel de chat funcional con sugerencias, historial, y conexión a `/api/chat`.
-- Pendiente: valorar si el FAB encaja bien visualmente en el header una vez desplegado.
+- **Dark mode** implementado con toggle luna/sol en el header. Persiste en localStorage.
