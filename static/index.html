@@ -30,6 +30,56 @@
     --red: #dc2626;
     --amber: #d97706;
   }
+  /* ── DARK MODE ── */
+  [data-theme="dark"] {
+    --black: #f0f0f0;
+    --white: #111111;
+    --gray-50: #1a1a1a;
+    --gray-100: #222222;
+    --gray-200: #2e2e2e;
+    --gray-300: #3d3d3d;
+    --gray-400: #6b6b6b;
+    --gray-500: #8a8a8a;
+    --gray-600: #a3a3a3;
+    --gray-700: #b8b8b8;
+    --gray-800: #d0d0d0;
+    --gray-900: #e8e8e8;
+    --blue: #4d8eff;
+    --blue-light: #0d1f40;
+  }
+
+  /* ── DARK MODE OVERRIDES (hardcoded colors) ── */
+  [data-theme="dark"] .adm-btn-export { background: #1e1e1e; color: #d0d0d0; border-color: #3d3d3d; }
+  [data-theme="dark"] .adm-btn-export:hover { background: #2a2a2a; border-color: #6b6b6b; }
+  [data-theme="dark"] .adm-prio-alta  { background: #2d1a1a; }
+  [data-theme="dark"] .adm-prio-media { background: #2d2410; }
+  [data-theme="dark"] .adm-tr-new { background: #0d1a2d; }
+  [data-theme="dark"] .adm-highlight { background: #2d2a00; }
+  [data-theme="dark"] .adm-del-btn:hover { background: #2d1a1a; }
+  [data-theme="dark"] .estado-discarded { background: #2d1a1a; }
+  [data-theme="dark"] .descarte-banner { background: #2d1a1a; border-color: #5a2020; }
+  [data-theme="dark"] .kanban-swim-col.drag-over { background: rgba(255,255,255,0.04); }
+  [data-theme="dark"] .chat-bubble tr:nth-child(even) td { background: #1e1e1e; }
+  [data-theme="dark"] .chat-input { background: #1a1a1a; color: #e8e8e8; border-color: #3d3d3d; }
+  [data-theme="dark"] .chat-input:focus { background: #1a1a1a; border-color: #f0f0f0; }
+  [data-theme="dark"] .group-card-tag { background: rgba(17,17,17,0.85); }
+
+  /* ── DARK TOGGLE BTN ── */
+  .theme-toggle {
+    width: 32px; height: 32px;
+    border: 1px solid var(--gray-300);
+    background: none; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--gray-500); transition: all 0.15s;
+    flex-shrink: 0;
+  }
+  .theme-toggle:hover { border-color: var(--black); color: var(--black); }
+  .theme-toggle svg { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-width: 1.8; }
+  .theme-toggle .icon-moon { display: block; }
+  .theme-toggle .icon-sun  { display: none; }
+  [data-theme="dark"] .theme-toggle .icon-moon { display: none; }
+  [data-theme="dark"] .theme-toggle .icon-sun  { display: block; }
+
   body {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif;
     background: var(--white);
@@ -643,12 +693,16 @@
   .kanban-swim-col { border-right: 1px solid var(--gray-100); padding: 8px 10px 16px; min-height: 40px; display: flex; flex-direction: column; gap: 8px; }
   .kanban-swim-col:last-child { border-right: none; }
 
-  /* Gantt tooltip */
+  /* Gantt tooltip — global, anclado al body */
   .gantt-bar { cursor: pointer; }
-  .gantt-tooltip { display: none; position: absolute; bottom: calc(100% + 8px); left: 50%; transform: translateX(-50%); background: var(--white); border: 1px solid var(--gray-200); box-shadow: 0 4px 16px rgba(0,0,0,.12); padding: 12px 16px; z-index: 50; min-width: 240px; pointer-events: none; white-space: nowrap; }
-  .gantt-tooltip::after { content: ''; position: absolute; top: 100%; left: 50%; transform: translateX(-50%); border: 6px solid transparent; border-top-color: var(--white); }
-  .gantt-tooltip::before { content: ''; position: absolute; top: 100%; left: 50%; transform: translateX(-50%); border: 7px solid transparent; border-top-color: var(--gray-200); }
-  .gantt-bar:hover .gantt-tooltip { display: block; }
+  #gantt-tt {
+    display: none; position: fixed; z-index: 9999;
+    background: var(--white); border: 1px solid var(--gray-200);
+    box-shadow: 0 4px 16px rgba(0,0,0,.12); padding: 12px 16px;
+    pointer-events: none; white-space: nowrap;
+  }
+  #gantt-tt::after { content: ''; position: absolute; top: 100%; left: 50%; transform: translateX(-50%); border: 6px solid transparent; border-top-color: var(--white); }
+  #gantt-tt::before { content: ''; position: absolute; top: 100%; left: 50%; transform: translateX(-50%); border: 7px solid transparent; border-top-color: var(--gray-200); }
   .gantt-tt-row { display: flex; gap: 12px; margin-bottom: 4px; font-size: 11px; }
   .gantt-tt-label { color: var(--gray-400); font-weight: 500; min-width: 90px; text-align: right; }
   .gantt-tt-val { color: var(--gray-900); font-weight: 500; }
@@ -1168,6 +1222,9 @@
 </head>
 <body>
 
+<!-- Tooltip global del Gantt (fuera de cualquier overflow:hidden) -->
+<div id="gantt-tt"></div>
+
 <header class="header">
   <div class="header-left">
     <a class="header-brand" onclick="switchView('portfolio',document.querySelector('.header-nav-btn'));showGroupsHome();" style="cursor:pointer;text-decoration:none;color:inherit;">IA TRACKER</a>
@@ -1181,6 +1238,12 @@
   </nav>
   <div class="header-right">
     <span id="syncStatus" style="font-size:10px;color:var(--gray-400);letter-spacing:0.5px;display:none;"></span>
+    <button class="theme-toggle" onclick="toggleTheme()" title="Cambiar tema">
+      <!-- luna (light mode) -->
+      <svg class="icon-moon" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      <!-- sol (dark mode) -->
+      <svg class="icon-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+    </button>
   </div>
 </header>
 
@@ -1404,6 +1467,45 @@
 </footer>
 
 <script>
+// ── GANTT TOOLTIP GLOBAL ───────────────────────────────────────
+function ganttShowTT(e, el) {
+  var tt = document.getElementById('gantt-tt');
+  tt.innerHTML =
+    '<div class="gantt-tt-row"><span class="gantt-tt-label">Fase</span><span class="gantt-tt-val">' + el.dataset.ttPhase + '</span></div>' +
+    '<div class="gantt-tt-row"><span class="gantt-tt-label">Inicio</span><span class="gantt-tt-val">' + el.dataset.ttFrom + '</span></div>' +
+    '<div class="gantt-tt-row"><span class="gantt-tt-label">Fin</span><span class="gantt-tt-val">' + el.dataset.ttTo + '</span></div>' +
+    '<div class="gantt-tt-row"><span class="gantt-tt-label">Equipo IA</span><span class="gantt-tt-val">' + el.dataset.ttEquipo + '</span></div>' +
+    '<div class="gantt-tt-row"><span class="gantt-tt-label">Departamento</span><span class="gantt-tt-val">' + el.dataset.ttDept + '</span></div>';
+  tt.style.display = 'block';
+  ganttMoveTT(e);
+}
+function ganttMoveTT(e) {
+  var tt = document.getElementById('gantt-tt');
+  var x = e.clientX, y = e.clientY;
+  var tw = tt.offsetWidth, th = tt.offsetHeight;
+  var left = x - tw / 2;
+  left = Math.max(8, Math.min(left, window.innerWidth - tw - 8));
+  tt.style.left = left + 'px';
+  tt.style.top = (y - th - 14) + 'px';
+}
+function ganttHideTT() {
+  document.getElementById('gantt-tt').style.display = 'none';
+}
+// ──────────────────────────────────────────────────────────────
+
+// ── DARK MODE ──────────────────────────────────────────────────
+(function() {
+  if (localStorage.getItem('theme') === 'dark') {
+    document.documentElement.setAttribute('data-theme', 'dark');
+  }
+})();
+function toggleTheme() {
+  const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+  document.documentElement.setAttribute('data-theme', isDark ? 'light' : 'dark');
+  localStorage.setItem('theme', isDark ? 'light' : 'dark');
+}
+// ──────────────────────────────────────────────────────────────
+
 // ══════════════════════════════════════════════════════════════
 // ── SHAREPOINT CONFIG (sin registro, usa sesión del navegador) ──
 // Solo necesitas subir este HTML al mismo SharePoint o a cualquier
@@ -1439,7 +1541,7 @@ function buildTimelineFromFases() {
       if (isNaN(d)) return;
       if (seen[f.phase]) return;     // ya tenemos este phase
       seen[f.phase] = true;
-      points.push({ phase: f.phase, idx: monthToIndex(d.getFullYear(), d.getMonth()) });
+      points.push({ phase: f.phase, idx: monthToIndex(d.getFullYear(), d.getMonth()), date: d });
     });
 
     if (points.length === 0) return;
@@ -1453,7 +1555,8 @@ function buildTimelineFromFases() {
       var start = points[i].idx;
       var end = (i + 1 < points.length) ? points[i + 1].idx : start + 3;
       if (end > start) {
-        segments.push({ start: start, end: end, phase: points[i].phase });
+        var endDate = (i + 1 < points.length) ? points[i + 1].date : null;
+        segments.push({ start: start, end: end, phase: points[i].phase, startDate: points[i].date, endDate: endDate });
       }
     }
     if (segments.length > 0) {
@@ -1548,9 +1651,7 @@ async function loadFromAPI(manual = false) {
       dateEl.textContent = 'Actualizado ' + now2.getDate() + '/' + (now2.getMonth()+1) + '/' + String(now2.getFullYear()).slice(2);
     }
 
-    statusEl.textContent = "✓ " + initiatives.length + " iniciativas";
-    statusEl.style.color = "#16a34a";
-    setTimeout(function(){ statusEl.style.opacity='0'; }, 3000);
+    statusEl.style.display = 'none';
   } catch(e) {
     console.error("API load error:", e);
     statusEl.textContent = "✕ " + e.message;
@@ -2096,6 +2197,11 @@ function idxToMonthStr(idx) {
   var d = indexToDate(idx);
   var mn = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
   return mn[d.month] + ' ' + d.year;
+}
+function formatFullDate(d) {
+  if (!d) return '--';
+  var mn = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+  return d.getDate() + ' ' + mn[d.getMonth()] + ' ' + d.getFullYear();
 }
 
 // ── SEGUIMIENTO VIEW SWITCH ──
@@ -2811,18 +2917,14 @@ function renderGantt() {
         relEnd = Math.min(100, relEnd);
         if (relEnd > relStart) {
           var ttPhase = phaseLabels[p.phase] || p.phase;
-          var ttFrom = idxToMonthStr(p.start);
-          var ttTo = idxToMonthStr(p.end);
+          var ttFrom = p.startDate ? formatFullDate(p.startDate) : idxToMonthStr(p.start);
+          var ttTo = p.endDate ? formatFullDate(p.endDate) : idxToMonthStr(p.end);
           var ttEquipo = ini.equipo || '--';
-          html += `<div class="gantt-bar ${phaseColors[p.phase]||'bar-pending'}" style="left:${relStart.toFixed(2)}%;width:${(relEnd-relStart).toFixed(2)}%" onclick="goToDetail(${ini.id})">`;
-          html += `<div class="gantt-tooltip">`;
-          html += `<div class="gantt-tt-row"><span class="gantt-tt-label">Fase</span><span class="gantt-tt-val">${ttPhase}</span></div>`;
-          html += `<div class="gantt-tt-row"><span class="gantt-tt-label">Iniciativa</span><span class="gantt-tt-val">${ini.id} - ${ini.name.length > 40 ? ini.name.substring(0,40)+'...' : ini.name}</span></div>`;
-          html += `<div class="gantt-tt-row"><span class="gantt-tt-label">Inicio</span><span class="gantt-tt-val">${ttFrom}</span></div>`;
-          html += `<div class="gantt-tt-row"><span class="gantt-tt-label">Fin</span><span class="gantt-tt-val">${ttTo}</span></div>`;
-          html += `<div class="gantt-tt-row"><span class="gantt-tt-label">Equipo IA</span><span class="gantt-tt-val">${ttEquipo}</span></div>`;
-          html += `<div class="gantt-tt-row"><span class="gantt-tt-label">Departamento</span><span class="gantt-tt-val">${ini.dept || '--'}</span></div>`;
-          html += `</div></div>`;
+          var ttName = (ini.id + ' - ' + ini.name).substring(0, 50);
+          var ttDept = ini.dept || '--';
+          html += `<div class="gantt-bar ${phaseColors[p.phase]||'bar-pending'}" style="left:${relStart.toFixed(2)}%;width:${(relEnd-relStart).toFixed(2)}%"` +
+            ` data-tt-phase="${ttPhase}" data-tt-name="${ttName}" data-tt-from="${ttFrom}" data-tt-to="${ttTo}" data-tt-equipo="${ttEquipo}" data-tt-dept="${ttDept}"` +
+            ` onclick="goToDetail(${ini.id})" onmouseenter="ganttShowTT(event,this)" onmouseleave="ganttHideTT()"></div>`;
         }
       });
       html += `</div></div>`;
