@@ -1435,11 +1435,13 @@ function buildTimelineFromFases() {
     fasesOrder.forEach(function(f) {
       var dateStr = ini.fases[f.key];
       if (!dateStr) return;
-      var d = new Date(dateStr);
+      // Parsear como fecha local (evita desfase UTC)
+      var parts = dateStr.split('-');
+      var d = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
       if (isNaN(d)) return;
       if (seen[f.phase]) return;     // ya tenemos este phase
       seen[f.phase] = true;
-      points.push({ phase: f.phase, idx: monthToIndex(d.getFullYear(), d.getMonth()) });
+      points.push({ phase: f.phase, idx: dateToFractionalIndex(d), dateStr: dateStr });
     });
 
     if (points.length === 0) return;
@@ -1451,9 +1453,10 @@ function buildTimelineFromFases() {
     var segments = [];
     for (var i = 0; i < points.length; i++) {
       var start = points[i].idx;
-      var end = (i + 1 < points.length) ? points[i + 1].idx : start + 3;
-      if (end > start) {
-        segments.push({ start: start, end: end, phase: points[i].phase });
+      var endIdx = (i + 1 < points.length) ? points[i + 1].idx : start + 3;
+      var endDateStr = (i + 1 < points.length) ? points[i + 1].dateStr : null;
+      if (endIdx > start) {
+        segments.push({ start: start, end: endIdx, phase: points[i].phase, startDate: points[i].dateStr, endDate: endDateStr });
       }
     }
     if (segments.length > 0) {
@@ -2065,7 +2068,14 @@ var ganttVisibleMonths = 14; // meses visibles a la vez
 var ganttOffset = 0; // offset en allMonths
 
 function monthToIndex(year, month) { return (year - GANTT_ORIGIN_YEAR) * 12 + month - GANTT_ORIGIN_MONTH; }
-function indexToDate(idx) { var y = GANTT_ORIGIN_YEAR + Math.floor((GANTT_ORIGIN_MONTH + idx) / 12); var m = (GANTT_ORIGIN_MONTH + idx) % 12; return { year: y, month: m }; }
+function indexToDate(idx) { var y = GANTT_ORIGIN_YEAR + Math.floor((GANTT_ORIGIN_MONTH + Math.floor(idx)) / 12); var m = (GANTT_ORIGIN_MONTH + Math.floor(idx)) % 12; return { year: y, month: m }; }
+
+// Índice decimal: incorpora el día para posicionar la barra con precisión sub-mes
+function dateToFractionalIndex(d) {
+  var monthIdx = monthToIndex(d.getFullYear(), d.getMonth());
+  var daysInMonth = new Date(d.getFullYear(), d.getMonth() + 1, 0).getDate();
+  return monthIdx + (d.getDate() - 1) / daysInMonth;
+}
 
 // Centrar en el mes actual al cargar
 (function initGanttOffset() {
@@ -2096,6 +2106,15 @@ function idxToMonthStr(idx) {
   var d = indexToDate(idx);
   var mn = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
   return mn[d.month] + ' ' + d.year;
+}
+
+// Formatea "2025-01-30" → "30 ene 2025"
+function fmtDateEs(dateStr) {
+  if (!dateStr) return '—';
+  var parts = dateStr.split('-');
+  if (parts.length < 3) return dateStr;
+  var mn = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+  return parseInt(parts[2]) + ' ' + mn[parseInt(parts[1]) - 1] + ' ' + parts[0];
 }
 
 // ── SEGUIMIENTO VIEW SWITCH ──
@@ -2811,8 +2830,8 @@ function renderGantt() {
         relEnd = Math.min(100, relEnd);
         if (relEnd > relStart) {
           var ttPhase = phaseLabels[p.phase] || p.phase;
-          var ttFrom = idxToMonthStr(p.start);
-          var ttTo = idxToMonthStr(p.end);
+          var ttFrom = p.startDate ? fmtDateEs(p.startDate) : idxToMonthStr(p.start);
+          var ttTo   = p.endDate   ? fmtDateEs(p.endDate)   : idxToMonthStr(p.end);
           var ttEquipo = ini.equipo || '--';
           html += `<div class="gantt-bar ${phaseColors[p.phase]||'bar-pending'}" style="left:${relStart.toFixed(2)}%;width:${(relEnd-relStart).toFixed(2)}%" onclick="goToDetail(${ini.id})">`;
           html += `<div class="gantt-tooltip">`;
