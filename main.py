@@ -603,6 +603,32 @@ def chat_endpoint(body: ChatMessage):
         raise HTTPException(status_code=500, detail=str(e))
 
 
+# ── Fix encoding (temporal) ─────────────────────────────────────────
+@app.get("/api/fix-encoding")
+def fix_encoding():
+    """Corrige valores de estado con encoding corrupto. Llamar una vez y eliminar."""
+    try:
+        conn = get_conn()
+        cur = conn.cursor()
+        # Usar UPDATE con id directo, sin leer las columnas corruptas
+        ids = [4, 35, 40, 44, 46, 55, 58, 59]
+        for iid in ids:
+            cur.execute(
+                "UPDATE initiatives SET estado_excel = %s WHERE id = %s",
+                ('Producción', iid)
+            )
+            cur.execute(
+                "UPDATE initiatives SET estado_override = NULL WHERE id = %s",
+                (iid,)
+            )
+        conn.commit()
+        cur.close()
+        conn.close()
+        return {"ok": True, "fixed": ids}
+    except Exception as e:
+        return {"error": str(e)}
+
+
 # ── Servir frontend ─────────────────────────────────────────────────
 @app.get("/", response_class=HTMLResponse)
 def index():
