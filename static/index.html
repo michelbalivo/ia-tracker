@@ -1287,7 +1287,7 @@
         <div class="filter-option" onclick="filterBy('Diseño')">Diseño</div>
         <div class="filter-option" onclick="filterBy('Piloto')">Piloto</div>
         <div class="filter-option" onclick="filterBy('Iteración')">Iteración</div>
-        <div class="filter-option" onclick="filterBy('Mantenimiento')">Mantenimiento</div>
+        <div class="filter-option" onclick="filterBy('Producción')">Producción</div>
         <div class="filter-option" onclick="filterBy('Priorización')">Priorización</div>
         <div class="filter-option" onclick="filterBy('Pendiente')">Pendiente</div>
         <div class="filter-option" onclick="filterBy('Descartada')">Descartada</div>
@@ -1340,7 +1340,7 @@
           <div class="seg-filter-option" data-val="Diseño" onclick="setSegEstadoFilter('Diseño',this)">Diseño</div>
           <div class="seg-filter-option" data-val="Piloto" onclick="setSegEstadoFilter('Piloto',this)">Piloto</div>
           <div class="seg-filter-option" data-val="Iteración" onclick="setSegEstadoFilter('Iteración',this)">Iteración</div>
-          <div class="seg-filter-option" data-val="Mantenimiento" onclick="setSegEstadoFilter('Mantenimiento',this)">Mantenimiento</div>
+          <div class="seg-filter-option" data-val="Producción" onclick="setSegEstadoFilter('Producción',this)">Producción</div>
           <div class="seg-filter-option" data-val="Pendiente" onclick="setSegEstadoFilter('Pendiente',this)">Pendiente</div>
           <div class="seg-filter-option" data-val="Descartada" onclick="setSegEstadoFilter('Descartada',this)">Descartada</div>
         </div>
@@ -1525,7 +1525,7 @@ function buildTimelineFromFases() {
     { key: 'Diseño',              phase: 'design'      },
     { key: 'Piloto',              phase: 'pilot'       },
     { key: 'Iteración / Pruebas', phase: 'iteration'   },
-    { key: 'Mantenimiento',       phase: 'maintenance' },
+    { key: 'Producción',       phase: 'maintenance' },
   ];
 
   initiatives.forEach(function(ini) {
@@ -1691,12 +1691,12 @@ function getEstadoClass(estado) {
   if (estado.includes("Diseño")) return "Diseño";
   if (estado.includes("Piloto")) return "Piloto";
   if (estado.includes("Iteración")) return "Iteración";
-  if (estado.includes("Mantenimiento")) return "Mantenimiento";
+  if (estado.includes("Producción")) return "Producción";
   if (estado.includes("Priorización")) return "Priorización";
   return "Pendiente";
 }
 function getEstadoCSSClass(estado) {
-  return {"Descartada":"estado-discarded","Análisis":"estado-active","Diseño":"estado-design","Piloto":"estado-pilot","Iteración":"estado-iteration","Mantenimiento":"estado-maintenance","Priorización":"estado-priority","Pendiente":"estado-pending"}[getEstadoClass(estado)] || "estado-pending";
+  return {"Descartada":"estado-discarded","Análisis":"estado-active","Diseño":"estado-design","Piloto":"estado-pilot","Iteración":"estado-iteration","Producción":"estado-maintenance","Priorización":"estado-priority","Pendiente":"estado-pending"}[getEstadoClass(estado)] || "estado-pending";
 }
 
 // ── GROUP DEFINITIONS ──
@@ -2199,7 +2199,7 @@ const phaseColors = {
 };
 const phaseLabels = {
   analysis: "Análisis", design: "Diseño", pilot: "Piloto",
-  iteration: "Iteración", maintenance: "Mantenimiento",
+  iteration: "Iteración", maintenance: "Producción",
   pending: "Pendiente", priority: "Priorización"
 };
 function idxToMonthStr(idx) {
@@ -2366,7 +2366,7 @@ function groupInitiatives(list) {
 
 var insightsEstadoColors = {
   'Análisis':'#a3a3a3','Diseño':'#93b4e8','Piloto':'#5a9cf5','Iteración':'#a8c4f0',
-  'Mantenimiento':'#0047BB','Priorización':'#525252','Pendiente':'#d4d4d4','Descartada':'#dc2626'
+  'Producción':'#0047BB','Priorización':'#525252','Pendiente':'#d4d4d4','Descartada':'#dc2626'
 };
 var retornoColors = {
   'Incremento Eficiencia':'#000000','Incremento Beneficios':'#0047BB',
@@ -2583,7 +2583,7 @@ function renderInsights() {
   all.forEach(function(i){ var e = getEstadoClass(i.estado); estadoCounts[e] = (estadoCounts[e]||0)+1; });
   var estadoBarEl = document.getElementById('insEstadoBar');
   if (estadoBarEl) {
-    var estadoOrder = ['Mantenimiento','Piloto','Iteración','Diseño','Análisis','Priorización','Pendiente','Descartada'];
+    var estadoOrder = ['Producción','Piloto','Iteración','Diseño','Análisis','Priorización','Pendiente','Descartada'];
     var barHtml = '<div class="ins-sec-title">Distribución por Estado</div>';
     barHtml += '<div class="ins-estado-bar">';
     estadoOrder.forEach(function(e){
@@ -2737,7 +2737,7 @@ var kanbanColumns = [
   { id: 'Diseño', label: 'Diseño', color: '#93b4e8' },
   { id: 'Piloto', label: 'Piloto', color: '#5a9cf5' },
   { id: 'Iteración', label: 'Iteración', color: '#a8c4f0' },
-  { id: 'Mantenimiento', label: 'Mantenimiento', color: 'var(--blue)' },
+  { id: 'Producción', label: 'Producción', color: 'var(--blue)' },
   { id: 'Descartada', label: 'Descartada', color: 'var(--red)' }
 ];
 
@@ -2974,7 +2974,7 @@ function renderGantt() {
 // ── ADMIN TABLE (GitHub Projects style) ──────────────────────────────
 
 var admStatusColors = {
-  'Mantenimiento': { bg: '#eff6ff', border: 'var(--blue)', text: 'var(--blue)', dot: 'var(--blue)' },
+  'Producción': { bg: '#eff6ff', border: 'var(--blue)', text: 'var(--blue)', dot: 'var(--blue)' },
   'Piloto':        { bg: '#f0fdf4', border: '#16a34a',     text: '#16a34a',     dot: '#16a34a' },
   'Iteración':     { bg: '#f5f5f5', border: '#737373',     text: '#737373',     dot: '#737373' },
   'Diseño':        { bg: '#f5f5f5', border: '#a3a3a3',     text: '#525252',     dot: '#93b4e8' },
@@ -2983,7 +2983,7 @@ var admStatusColors = {
   'Pendiente':     { bg: '#fafafa', border: '#e5e5e5',     text: '#a3a3a3',     dot: '#d4d4d4' },
   'Descartada':    { bg: '#fef2f2', border: '#dc2626',     text: '#dc2626',     dot: '#dc2626' },
 };
-var admAllStatuses = ['Pendiente','Priorización','Análisis','Diseño','Piloto','Iteración','Mantenimiento','Descartada'];
+var admAllStatuses = ['Pendiente','Priorización','Análisis','Diseño','Piloto','Iteración','Producción','Descartada'];
 
 function admOnSearch() {
   var q = (document.getElementById('admSearch').value || '').trim();
@@ -3310,7 +3310,7 @@ function renderSegSummary() {
     item('Piloto',       'Piloto',        all.filter(function(i){return getEstadoClass(i.estado)==='Piloto';}).length) +
     item('Diseño',       'Diseño',        all.filter(function(i){return getEstadoClass(i.estado)==='Diseño';}).length) +
     item('Iteración',    'Iteración',     all.filter(function(i){return getEstadoClass(i.estado)==='Iteración';}).length) +
-    item('Mantenimiento','Mantenimiento', all.filter(function(i){return getEstadoClass(i.estado)==='Mantenimiento';}).length) +
+    item('Producción','Producción', all.filter(function(i){return getEstadoClass(i.estado)==='Producción';}).length) +
     item('Pendiente',    'Pendientes',    all.filter(function(i){return getEstadoClass(i.estado)==='Pendiente';}).length) +
     item('Descartada',   'Descartadas',   all.filter(function(i){return getEstadoClass(i.estado)==='Descartada';}).length, 'color:var(--red)');
 }
@@ -3427,7 +3427,7 @@ function openEditModal(id) {
       _setVal('edt-fase-piloto',     fases['Piloto'] || '');
       _setVal('edt-fase-diseno',     fases['Dise\u00f1o'] || '');
       _setVal('edt-fase-iter',       fases['Iteraci\u00f3n / Pruebas'] || '');
-      _setVal('edt-fase-mant',       fases['Mantenimiento'] || '');
+      _setVal('edt-fase-prod',       fases['Producción'] || '');
 
       // Componentes técnicos
       var comp = d.componentes || {};
@@ -3533,7 +3533,7 @@ function saveEditModal() {
     fase_piloto:             gd('edt-fase-piloto'),
     fase_diseno:             gd('edt-fase-diseno'),
     fase_iteracion:          gd('edt-fase-iter'),
-    fase_mantenimiento:      gd('edt-fase-mant'),
+    fase_produccion:      gd('edt-fase-prod'),
     comp_bbdd:               gv('edt-comp-bbdd'),
     comp_ocr:                gv('edt-comp-ocr'),
     comp_cluster:            gv('edt-comp-cluster'),
@@ -3666,7 +3666,7 @@ function exportToExcel() {
       'Fase Piloto':              fases['Piloto'] || '',
       'Fase Diseño':              fases['Diseño'] || '',
       'Fase Iteración':           fases['Iteración / Pruebas'] || '',
-      'Fase Mantenimiento':       fases['Mantenimiento'] || '',
+      'Fase Producción':       fases['Producción'] || '',
       'Comp BBDD':                comp.bbdd || '',
       'Comp OCR':                 comp.ocr || '',
       'Comp Cluster':             comp.cluster || '',
@@ -4208,8 +4208,8 @@ function kanbanDrop(e, col) {
             <input id="edt-fase-iter" class="edit-input" type="date">
           </div>
           <div class="edit-field">
-            <label class="edit-label">Mantenimiento</label>
-            <input id="edt-fase-mant" class="edit-input" type="date">
+            <label class="edit-label">Producción</label>
+            <input id="edt-fase-prod" class="edit-input" type="date">
           </div>
         </div>
 

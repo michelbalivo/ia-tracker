@@ -131,7 +131,7 @@ def row_to_initiative(row: dict) -> dict:
         "Diseño":              fmt_date(row["fase_diseno"]),
         "Piloto":              fmt_date(row["fase_piloto"]),
         "Iteración / Pruebas": fmt_date(row["fase_iteracion"]),
-        "Mantenimiento":       fmt_date(row["fase_mantenimiento"]),
+        "Producción":          fmt_date(row["fase_produccion"]),
     }
 
     # Estado: override manual tiene prioridad sobre el del Excel
@@ -279,7 +279,7 @@ class InitiativeCreate(BaseModel):
     fase_diseno: str | None = None
     fase_piloto: str | None = None
     fase_iteracion: str | None = None
-    fase_mantenimiento: str | None = None
+    fase_produccion: str | None = None
     fecha_fin: str | None = None
 
 @app.post("/api/initiatives", status_code=201)
@@ -297,7 +297,7 @@ def create_initiative(body: InitiativeCreate):
                 equipo, responsable, modelo_ia, prioridad,
                 reach, impact, confidence, effort, ai_complexity, tier,
                 fase_inicio, fase_analisis, fase_priorizacion, fase_diseno,
-                fase_piloto, fase_iteracion, fase_mantenimiento, fecha_fin
+                fase_piloto, fase_iteracion, fase_produccion, fecha_fin
             ) VALUES (
                 %s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,
                 %s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s
@@ -309,7 +309,7 @@ def create_initiative(body: InitiativeCreate):
             body.reach, body.impact, body.confidence, body.effort, body.ai_complexity,
             body.tier,
             body.fase_inicio, body.fase_analisis, body.fase_priorizacion, body.fase_diseno,
-            body.fase_piloto, body.fase_iteracion, body.fase_mantenimiento, body.fecha_fin,
+            body.fase_piloto, body.fase_iteracion, body.fase_produccion, body.fecha_fin,
         ))
         conn.commit()
         cur.close(); conn.close()
@@ -381,7 +381,7 @@ class InitiativeUpdate(BaseModel):
     fase_piloto:              str | None = None
     fase_diseno:              str | None = None
     fase_iteracion:           str | None = None
-    fase_mantenimiento:       str | None = None
+    fase_produccion:          str | None = None
     # Componentes técnicos
     comp_bbdd:                str | None = None
     comp_ocr:                 str | None = None

@@ -1,0 +1,63 @@
+-- 1) Renombrar columna fase_mantenimiento → fase_produccion
+ALTER TABLE initiatives RENAME COLUMN fase_mantenimiento TO fase_produccion;
+
+-- 2) Actualización COMPLETA de fechas de fases (pisa todo lo anterior)
+-- Generado automáticamente — 2026-03-15
+
+UPDATE initiatives SET fase_inicio = NULL, fase_analisis = '2026-01-10', fase_priorizacion = '2026-03-13', fase_piloto = NULL, fase_diseno = NULL, fase_iteracion = NULL, fase_produccion = NULL WHERE id = 1;
+UPDATE initiatives SET fase_inicio = NULL, fase_analisis = NULL, fase_priorizacion = NULL, fase_piloto = '2026-01-10', fase_diseno = '2026-02-20', fase_iteracion = '2026-05-15', fase_produccion = NULL WHERE id = 2;
+UPDATE initiatives SET fase_inicio = NULL, fase_analisis = '2025-12-19', fase_priorizacion = NULL, fase_piloto = '2025-12-21', fase_diseno = '2026-01-14', fase_iteracion = '2026-03-31', fase_produccion = '2026-04-30' WHERE id = 3;
+UPDATE initiatives SET fase_inicio = NULL, fase_analisis = '2024-01-01', fase_priorizacion = NULL, fase_piloto = '2024-02-01', fase_diseno = '2024-04-01', fase_iteracion = '2024-05-01', fase_produccion = '2024-11-30' WHERE id = 4;
+UPDATE initiatives SET fase_inicio = NULL, fase_analisis = NULL, fase_priorizacion = NULL, fase_piloto = NULL, fase_diseno = NULL, fase_iteracion = NULL, fase_produccion = NULL WHERE id = 5;
+UPDATE initiatives SET fase_inicio = NULL, fase_analisis = NULL, fase_priorizacion = NULL, fase_piloto = NULL, fase_diseno = NULL, fase_iteracion = NULL, fase_produccion = NULL WHERE id = 6;
+UPDATE initiatives SET fase_inicio = NULL, fase_analisis = '2025-07-01', fase_priorizacion = NULL, fase_piloto = '2025-09-01', fase_diseno = '2025-12-10', fase_iteracion = '2026-03-30', fase_produccion = NULL WHERE id = 7;
+UPDATE initiatives SET fase_inicio = NULL, fase_analisis = NULL, fase_priorizacion = NULL, fase_piloto = '2026-02-23', fase_diseno = '2026-03-30', fase_iteracion = NULL, fase_produccion = NULL WHERE id = 8;
+UPDATE initiatives SET fase_inicio = NULL, fase_analisis = NULL, fase_priorizacion = NULL, fase_piloto = NULL, fase_diseno = NULL, fase_iteracion = NULL, fase_produccion = NULL WHERE id = 9;
+UPDATE initiatives SET fase_inicio = NULL, fase_analisis = NULL, fase_priorizacion = NULL, fase_piloto = NULL, fase_diseno = NULL, fase_iteracion = NULL, fase_produccion = NULL WHERE id = 10;
+UPDATE initiatives SET fase_inicio = NULL, fase_analisis = NULL, fase_priorizacion = NULL, fase_piloto = NULL, fase_diseno = NULL, fase_iteracion = NULL, fase_produccion = NULL WHERE id = 11;
+UPDATE initiatives SET fase_inicio = NULL, fase_analisis = NULL, fase_priorizacion = NULL, fase_piloto = NULL, fase_diseno = NULL, fase_iteracion = NULL, fase_produccion = NULL WHERE id = 12;
+UPDATE initiatives SET fase_inicio = NULL, fase_analisis = NULL, fase_priorizacion = NULL, fase_piloto = '2025-12-12', fase_diseno = '2025-12-12', fase_iteracion = '2026-04-06', fase_produccion = '2026-06-01' WHERE id = 13;
+UPDATE initiatives SET fase_inicio = NULL, fase_analisis = NULL, fase_priorizacion = NULL, fase_piloto = NULL, fase_diseno = NULL, fase_iteracion = NULL, fase_produccion = NULL WHERE id = 14;
+UPDATE initiatives SET fase_inicio = NULL, fase_analisis = NULL, fase_priorizacion = NULL, fase_piloto = NULL, fase_diseno = NULL, fase_iteracion = NULL, fase_produccion = NULL WHERE id = 15;
+UPDATE initiatives SET fase_inicio = NULL, fase_analisis = '2025-12-20', fase_priorizacion = NULL, fase_piloto = '2026-02-02', fase_diseno = '2026-03-06', fase_iteracion = NULL, fase_produccion = NULL WHERE id = 16;
+UPDATE initiatives SET fase_inicio = NULL, fase_analisis = NULL, fase_priorizacion = NULL, fase_piloto = NULL, fase_diseno = NULL, fase_iteracion = NULL, fase_produccion = NULL WHERE id = 17;
+UPDATE initiatives SET fase_inicio = NULL, fase_analisis = NULL, fase_priorizacion = NULL, fase_piloto = NULL, fase_diseno = NULL, fase_iteracion = NULL, fase_produccion = NULL WHERE id = 18;
+UPDATE initiatives SET fase_inicio = NULL, fase_analisis = NULL, fase_priorizacion = NULL, fase_piloto = NULL, fase_diseno = NULL, fase_iteracion = NULL, fase_produccion = NULL WHERE id = 19;
+UPDATE initiatives SET fase_inicio = NULL, fase_analisis = NULL, fase_priorizacion = NULL, fase_piloto = NULL, fase_diseno = NULL, fase_iteracion = NULL, fase_produccion = NULL WHERE id = 20;
+UPDATE initiatives SET fase_inicio = NULL, fase_analisis = NULL, fase_priorizacion = NULL, fase_piloto = NULL, fase_diseno = NULL, fase_iteracion = NULL, fase_produccion = NULL WHERE id = 21;
+UPDATE initiatives SET fase_inicio = NULL, fase_analisis = NULL, fase_priorizacion = NULL, fase_piloto = NULL, fase_diseno = NULL, fase_iteracion = NULL, fase_produccion = NULL WHERE id = 22;
+UPDATE initiatives SET fase_inicio = NULL, fase_analisis = NULL, fase_priorizacion = NULL, fase_piloto = NULL, fase_diseno = NULL, fase_iteracion = NULL, fase_produccion = NULL WHERE id = 23;
+UPDATE initiatives SET fase_inicio = NULL, fase_analisis = NULL, fase_priorizacion = NULL, fase_piloto = NULL, fase_diseno = NULL, fase_iteracion = NULL, fase_produccion = NULL WHERE id = 24;
+UPDATE initiatives SET fase_inicio = NULL, fase_analisis = NULL, fase_priorizacion = NULL, fase_piloto = NULL, fase_diseno = NULL, fase_iteracion = NULL, fase_produccion = NULL WHERE id = 25;
+UPDATE initiatives SET fase_inicio = NULL, fase_analisis = NULL, fase_priorizacion = NULL, fase_piloto = '2025-12-01', fase_diseno = '2026-01-30', fase_iteracion = '2026-02-27', fase_produccion = '2026-03-31' WHERE id = 26;
+UPDATE initiatives SET fase_inicio = NULL, fase_analisis = NULL, fase_priorizacion = NULL, fase_piloto = NULL, fase_diseno = '2026-02-28', fase_iteracion = NULL, fase_produccion = NULL WHERE id = 27;
+UPDATE initiatives SET fase_inicio = NULL, fase_analisis = NULL, fase_priorizacion = NULL, fase_piloto = NULL, fase_diseno = NULL, fase_iteracion = NULL, fase_produccion = NULL WHERE id = 28;
+UPDATE initiatives SET fase_inicio = NULL, fase_analisis = NULL, fase_priorizacion = NULL, fase_piloto = NULL, fase_diseno = NULL, fase_iteracion = NULL, fase_produccion = NULL WHERE id = 29;
+UPDATE initiatives SET fase_inicio = NULL, fase_analisis = NULL, fase_priorizacion = NULL, fase_piloto = NULL, fase_diseno = NULL, fase_iteracion = NULL, fase_produccion = NULL WHERE id = 30;
+UPDATE initiatives SET fase_inicio = NULL, fase_analisis = NULL, fase_priorizacion = NULL, fase_piloto = NULL, fase_diseno = NULL, fase_iteracion = NULL, fase_produccion = NULL WHERE id = 31;
+UPDATE initiatives SET fase_inicio = NULL, fase_analisis = NULL, fase_priorizacion = NULL, fase_piloto = NULL, fase_diseno = NULL, fase_iteracion = NULL, fase_produccion = NULL WHERE id = 32;
+UPDATE initiatives SET fase_inicio = NULL, fase_analisis = NULL, fase_priorizacion = NULL, fase_piloto = NULL, fase_diseno = NULL, fase_iteracion = NULL, fase_produccion = NULL WHERE id = 33;
+UPDATE initiatives SET fase_inicio = NULL, fase_analisis = NULL, fase_priorizacion = NULL, fase_piloto = NULL, fase_diseno = NULL, fase_iteracion = NULL, fase_produccion = NULL WHERE id = 34;
+UPDATE initiatives SET fase_inicio = NULL, fase_analisis = NULL, fase_priorizacion = NULL, fase_piloto = '2025-10-15', fase_diseno = '2025-12-15', fase_iteracion = '2026-01-15', fase_produccion = '2026-02-13' WHERE id = 35;
+UPDATE initiatives SET fase_inicio = NULL, fase_analisis = '2025-07-01', fase_priorizacion = NULL, fase_piloto = '2025-08-01', fase_diseno = '2025-10-01', fase_iteracion = NULL, fase_produccion = NULL WHERE id = 36;
+UPDATE initiatives SET fase_inicio = NULL, fase_analisis = NULL, fase_priorizacion = NULL, fase_piloto = '2026-02-02', fase_diseno = '2026-01-30', fase_iteracion = '2026-03-30', fase_produccion = '2026-05-29' WHERE id = 37;
+UPDATE initiatives SET fase_inicio = NULL, fase_analisis = '2026-03-10', fase_priorizacion = NULL, fase_piloto = '2026-04-15', fase_diseno = NULL, fase_iteracion = NULL, fase_produccion = NULL WHERE id = 38;
+UPDATE initiatives SET fase_inicio = NULL, fase_analisis = '2026-03-06', fase_priorizacion = NULL, fase_piloto = '2026-03-31', fase_diseno = NULL, fase_iteracion = NULL, fase_produccion = NULL WHERE id = 39;
+UPDATE initiatives SET fase_inicio = NULL, fase_analisis = NULL, fase_priorizacion = NULL, fase_piloto = NULL, fase_diseno = NULL, fase_iteracion = NULL, fase_produccion = NULL WHERE id = 40;
+UPDATE initiatives SET fase_inicio = NULL, fase_analisis = NULL, fase_priorizacion = NULL, fase_piloto = NULL, fase_diseno = NULL, fase_iteracion = NULL, fase_produccion = NULL WHERE id = 41;
+UPDATE initiatives SET fase_inicio = NULL, fase_analisis = NULL, fase_priorizacion = NULL, fase_piloto = NULL, fase_diseno = NULL, fase_iteracion = NULL, fase_produccion = NULL WHERE id = 42;
+UPDATE initiatives SET fase_inicio = NULL, fase_analisis = NULL, fase_priorizacion = NULL, fase_piloto = NULL, fase_diseno = NULL, fase_iteracion = NULL, fase_produccion = NULL WHERE id = 43;
+UPDATE initiatives SET fase_inicio = NULL, fase_analisis = '2024-10-01', fase_priorizacion = '2025-01-01', fase_piloto = '2025-03-01', fase_diseno = '2025-03-01', fase_iteracion = '2025-03-01', fase_produccion = '2025-03-01' WHERE id = 44;
+UPDATE initiatives SET fase_inicio = NULL, fase_analisis = NULL, fase_priorizacion = NULL, fase_piloto = '2026-01-12', fase_diseno = '2026-01-31', fase_iteracion = '2026-03-13', fase_produccion = '2026-04-30' WHERE id = 45;
+UPDATE initiatives SET fase_inicio = NULL, fase_analisis = '2025-12-01', fase_priorizacion = NULL, fase_piloto = '2025-03-30', fase_diseno = '2025-04-30', fase_iteracion = '2025-05-15', fase_produccion = '2025-06-30' WHERE id = 46;
+UPDATE initiatives SET fase_inicio = NULL, fase_analisis = NULL, fase_priorizacion = NULL, fase_piloto = NULL, fase_diseno = NULL, fase_iteracion = NULL, fase_produccion = NULL WHERE id = 47;
+UPDATE initiatives SET fase_inicio = NULL, fase_analisis = NULL, fase_priorizacion = NULL, fase_piloto = NULL, fase_diseno = NULL, fase_iteracion = NULL, fase_produccion = NULL WHERE id = 48;
+UPDATE initiatives SET fase_inicio = NULL, fase_analisis = NULL, fase_priorizacion = NULL, fase_piloto = NULL, fase_diseno = NULL, fase_iteracion = NULL, fase_produccion = NULL WHERE id = 49;
+UPDATE initiatives SET fase_inicio = NULL, fase_analisis = NULL, fase_priorizacion = NULL, fase_piloto = NULL, fase_diseno = NULL, fase_iteracion = NULL, fase_produccion = NULL WHERE id = 50;
+UPDATE initiatives SET fase_inicio = NULL, fase_analisis = NULL, fase_priorizacion = NULL, fase_piloto = NULL, fase_diseno = NULL, fase_iteracion = NULL, fase_produccion = NULL WHERE id = 51;
+UPDATE initiatives SET fase_inicio = NULL, fase_analisis = '2026-01-30', fase_priorizacion = '2026-04-15', fase_piloto = NULL, fase_diseno = NULL, fase_iteracion = NULL, fase_produccion = NULL WHERE id = 52;
+UPDATE initiatives SET fase_inicio = NULL, fase_analisis = NULL, fase_priorizacion = NULL, fase_piloto = NULL, fase_diseno = NULL, fase_iteracion = NULL, fase_produccion = NULL WHERE id = 53;
+UPDATE initiatives SET fase_inicio = NULL, fase_analisis = NULL, fase_priorizacion = NULL, fase_piloto = '2025-12-15', fase_diseno = '2026-01-15', fase_iteracion = '2026-01-30', fase_produccion = '2026-03-15' WHERE id = 54;
+UPDATE initiatives SET fase_inicio = NULL, fase_analisis = '2025-01-01', fase_priorizacion = NULL, fase_piloto = '2025-02-01', fase_diseno = '2025-05-01', fase_iteracion = '2025-06-01', fase_produccion = '2025-09-01' WHERE id = 55;
+UPDATE initiatives SET fase_inicio = NULL, fase_analisis = '2025-03-03', fase_priorizacion = NULL, fase_piloto = '2026-03-12', fase_diseno = '2026-03-26', fase_iteracion = '2026-04-16', fase_produccion = '2026-04-30' WHERE id = 56;
+UPDATE initiatives SET fase_inicio = NULL, fase_analisis = NULL, fase_priorizacion = NULL, fase_piloto = NULL, fase_diseno = NULL, fase_iteracion = NULL, fase_produccion = NULL WHERE id = 57;
