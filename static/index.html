@@ -1672,6 +1672,7 @@ async function loadFromAPI(manual = false) {
     console.error("API load error:", e);
     statusEl.textContent = "✕ " + e.message;
     statusEl.style.color = "#dc2626";
+    throw e;  // Re-lanzar para que el llamador pueda capturarlo
   }
 }
 
@@ -2141,7 +2142,7 @@ function switchView(view, btn) {
   // Si hay cambios en BBDD pendientes, recarga datos antes de renderizar
   if (_dataDirty && view !== 'admin') {
     _dataDirty = false;
-    loadFromAPI().then(function() { _renderView(view); });
+    loadFromAPI().then(function() { _renderView(view); }).catch(function(e) { console.error('Refresh error:', e); });
     return;
   }
 
@@ -3359,7 +3360,7 @@ loadFromAPI().then(function() {
     btns.forEach(function(b) { if (b.textContent.toLowerCase().indexOf(hash) >= 0) targetBtn = b; });
     switchView(hash, targetBtn);
   }
-});
+}).catch(function(e) { console.error('Initial load error:', e); });
 
 /* ═══════════════════════════════════════════════════════
    ADMIN EDIT MODAL  — abre al pinchar en fila de admin
@@ -3840,7 +3841,13 @@ function chatConfirmAction(confirmed) {
     typingBub.parentNode.remove();
     chatAppend('assistant', data.reply);
     _chatHistory.push({ role: 'assistant', content: data.reply });
-    if (data.action_executed) loadFromAPI();
+    if (data.action_executed) {
+      loadFromAPI().then(function() {
+        chatAppend('assistant', '🔄 Datos actualizados en el portfolio.');
+      }).catch(function(e) {
+        chatAppend('assistant', '⚠️ Error al refrescar datos: ' + e.message);
+      });
+    }
   })
   .catch(function(err) {
     typingBub.parentNode.remove();
@@ -3912,7 +3919,11 @@ function chatSend() {
 
     // Si se ejecutó una acción, recargar datos
     if (data.action_executed) {
-      loadFromAPI();
+      loadFromAPI().then(function() {
+        chatAppend('assistant', '🔄 Datos actualizados en el portfolio.');
+      }).catch(function(e) {
+        chatAppend('assistant', '⚠️ Error al refrescar datos: ' + e.message);
+      });
     }
   })
   .catch(function(err) {
