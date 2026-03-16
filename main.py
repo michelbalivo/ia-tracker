@@ -186,6 +186,15 @@ def row_to_initiative(row: dict) -> dict:
         "usuarios":               row["usuarios"],
         "objetivo":               row["objetivo"],
 
+        # ── RICE ───────────────────────────────────────────────────────
+        "reach":                  reach or None,
+        "impact":                 impact or None,
+        "confidence":             confidence or None,
+        "effort":                 effort or None,
+        "ai_complexity":          ai_comp or None,
+        "score_viabilidad":       sc_viab or None,
+        "score_complejidad":      float(safe_get(row, "score_complejidad") or 0) or None,
+
         # ── Scores y tier ───────────────────────────────────────────
         "tier":                   tier_pct,
         "ric":                    float(safe_get(row, "ric") or 0) or None,
