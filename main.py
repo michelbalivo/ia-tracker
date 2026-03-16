@@ -524,6 +524,19 @@ Cuando listes iniciativas usa formato de lista clara con markdown (negritas, lis
 Si la pregunta no tiene relación con el portfolio, indícalo amablemente.
 No inventes datos que no estén en el contexto.
 
+MODIFICACIÓN DE DATOS:
+- Tienes herramientas para crear, actualizar y eliminar iniciativas.
+- ANTES de usar una herramienta, SIEMPRE confirma con el usuario exactamente qué vas a hacer:
+  - Indica el ID y nombre de la iniciativa.
+  - Indica el campo exacto que vas a cambiar.
+  - Indica el valor actual del campo (búscalo en el contexto).
+  - Indica el nuevo valor que vas a poner.
+- Si el usuario no especifica claramente qué campo quiere cambiar, PREGÚNTALE antes de usar la herramienta. No asumas.
+- Si el usuario pide un cambio ambiguo, enumera los campos posibles y pide que elija.
+- Ejemplo de confirmación antes de usar la herramienta:
+  "Voy a actualizar la iniciativa #5 (Chatbot RRHH): cambiar el campo **estado** de 'Pendiente' a 'Análisis'. ¿Confirmo?"
+  Solo usa la herramienta DESPUÉS de que el usuario confirme.
+
 FORMATO ENRIQUECIDO:
 - Usa markdown en tus respuestas: **negrita**, _cursiva_, listas con -, tablas, encabezados con ##.
 - Cuando el usuario pida un gráfico, chart o visualización sobre datos del portfolio, genera un bloque con tipo "chart" y JSON válido:
@@ -600,7 +613,8 @@ CHAT_TOOLS = [
 class ChatMessage(BaseModel):
     message: str
     history: list[dict] = []
-    confirm_action: dict | None = None   # Si viene, ejecutar la acción pendiente
+    confirm_action: dict | None = None        # Legacy: acción única
+    confirm_actions: list[dict] | None = None  # Múltiples acciones pendientes
 
 
 def _execute_tool(tool_name: str, tool_input: dict) -> str:
@@ -689,11 +703,20 @@ def chat_endpoint(body: ChatMessage):
     try:
         import anthropic
 
-        # ── Si viene una confirmación, ejecutar la acción directamente ──
-        if body.confirm_action:
-            action = body.confirm_action
-            result = _execute_tool(action["tool"], action["input"])
-            return {"reply": f"✅ {result}", "action_executed": True}
+        # ── Si viene una confirmación, ejecutar las acciones ──
+        actions = body.confirm_actions or ([body.confirm_action] if body.confirm_action else None)
+        if actions:
+            results = []
+            all_ok = True
+            for action in actions:
+                result = _execute_tool(action["tool"], action["input"])
+                is_error = result.startswith("Error")
+                if is_error:
+                    all_ok = False
+                    results.append(f"❌ {result}")
+                else:
+                    results.append(f"✅ {result}")
+            return {"reply": "\n".join(results), "action_executed": all_ok}
 
         # ── Flujo normal: preguntar a Claude ──
         conn = get_conn()
@@ -722,24 +745,26 @@ def chat_endpoint(body: ChatMessage):
 
         # ── Procesar respuesta ──
         text_parts = []
-        pending_action = None
+        pending_actions = []
 
         for block in resp.content:
             if block.type == "text":
                 text_parts.append(block.text)
             elif block.type == "tool_use":
-                pending_action = {
+                pending_actions.append({
                     "tool": block.name,
                     "input": block.input
-                }
+                })
 
         reply_text = "\n".join(text_parts)
 
-        if pending_action:
-            summary = _describe_action(pending_action["tool"], pending_action["input"], context)
+        if pending_actions:
+            summaries = [_describe_action(a["tool"], a["input"], context) for a in pending_actions]
+            full_summary = "\n\n".join(summaries)
             return {
-                "reply": reply_text + ("\n\n" if reply_text else "") + summary,
-                "pending_action": pending_action
+                "reply": reply_text + ("\n\n" if reply_text else "") + full_summary,
+                "pending_actions": pending_actions,
+                "pending_action": pending_actions[0]  # Compatibilidad
             }
 
         return {"reply": reply_text}

@@ -3803,21 +3803,21 @@ function chatAppend(role, text, typing) {
   return bub;
 }
 
-var _chatPendingAction = null;
+var _chatPendingActions = null;
 
 function chatConfirmAction(confirmed) {
   // Quitar botones
   var btns = document.querySelectorAll('.chat-confirm-buttons');
   btns.forEach(function(b) { b.parentNode.remove(); });
 
-  if (!confirmed || !_chatPendingAction) {
-    _chatPendingAction = null;
+  if (!confirmed || !_chatPendingActions) {
+    _chatPendingActions = null;
     chatAppend('assistant', 'Operación cancelada.');
     return;
   }
 
-  var action = _chatPendingAction;
-  _chatPendingAction = null;
+  var actions = _chatPendingActions;
+  _chatPendingActions = null;
 
   var typingBub = chatAppend('assistant', '…', true);
   _chatBusy = true;
@@ -3829,19 +3829,22 @@ function chatConfirmAction(confirmed) {
     body: JSON.stringify({
       message: '',
       history: _chatHistory,
-      confirm_action: { tool: action.tool, input: action.input }
+      confirm_actions: actions
     })
   })
-  .then(function(r) { return r.json(); })
+  .then(function(r) {
+    if (!r.ok) return r.text().then(function(t) { throw new Error(t); });
+    return r.json();
+  })
   .then(function(data) {
     typingBub.parentNode.remove();
     chatAppend('assistant', data.reply);
     _chatHistory.push({ role: 'assistant', content: data.reply });
     if (data.action_executed) syncData();
   })
-  .catch(function() {
+  .catch(function(err) {
     typingBub.parentNode.remove();
-    chatAppend('assistant', 'Error al ejecutar la acción.');
+    chatAppend('assistant', 'Error: ' + (err.message || 'Error al ejecutar la acción.'));
   })
   .finally(function() {
     _chatBusy = false;
@@ -3883,9 +3886,20 @@ function chatSend() {
     _chatHistory.push({ role: 'assistant', content: data.reply });
     if (_chatHistory.length > 20) _chatHistory = _chatHistory.slice(-20);
 
-    // Si hay acción pendiente, mostrar botones de confirmación
-    if (data.pending_action) {
-      _chatPendingAction = data.pending_action;
+    // Si hay acciones pendientes, mostrar botones de confirmación
+    if (data.pending_actions && data.pending_actions.length > 0) {
+      _chatPendingActions = data.pending_actions;
+      var btnDiv = document.createElement('div');
+      btnDiv.className = 'chat-msg assistant';
+      btnDiv.innerHTML = '<div class="chat-confirm-buttons">' +
+        '<button class="chat-btn-confirm" onclick="chatConfirmAction(true)">Confirmar</button>' +
+        '<button class="chat-btn-cancel" onclick="chatConfirmAction(false)">Cancelar</button>' +
+        '</div>';
+      document.getElementById('chatMessages').appendChild(btnDiv);
+      document.getElementById('chatMessages').scrollTop = 99999;
+    } else if (data.pending_action) {
+      // Compatibilidad legacy
+      _chatPendingActions = [data.pending_action];
       var btnDiv = document.createElement('div');
       btnDiv.className = 'chat-msg assistant';
       btnDiv.innerHTML = '<div class="chat-confirm-buttons">' +
