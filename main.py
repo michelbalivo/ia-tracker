@@ -134,16 +134,12 @@ def row_to_initiative(row: dict) -> dict:
         "Producción":          fmt_date(row["fase_produccion"]),
     }
 
-    # Estado: override manual tiene prioridad sobre el del Excel
-    estado = row["estado_override"] or row["estado_excel"] or "Pendiente"
-
     return {
         # ── Identificación ──────────────────────────────────────────
         "id":                     row["id"],
         "name":                   row["name"],
         "dept":                   row["dept"],
-        "estado":                 estado,
-        "estado_excel":           row["estado_excel"],
+        "estado":                 row["estado"] or "Pendiente",
         "desc":                   row["desc_ejecutiva"],
 
         # ── Proceso ─────────────────────────────────────────────────
@@ -301,7 +297,7 @@ def create_initiative(body: InitiativeCreate):
         new_id = cur.fetchone()["next_id"]
         cur.execute("""
             INSERT INTO initiatives (
-                id, name, dept, proceso, dominio, estado_excel,
+                id, name, dept, proceso, dominio, estado,
                 desc_ejecutiva, tipo_retorno, objetivo, ahorro, usuarios,
                 equipo, responsable, modelo_ia, prioridad,
                 reach, impact, confidence, effort, ai_complexity, tier,
@@ -376,7 +372,7 @@ class InitiativeUpdate(BaseModel):
     ric:                      float | None = None
     tier:                     float | None = None
     # Seguimiento
-    estado:                   str | None = None   # → estado_override
+    estado:                   str | None = None
     alerta:                   bool | None = None
     equipo:                   str | None = None
     responsable:              str | None = None
@@ -414,7 +410,6 @@ def update_initiative(iid: int, body: InitiativeUpdate):
         # Mapeo de nombres de payload → columnas reales en DB
         col_map = {
             "desc":     "desc_ejecutiva",
-            "estado":   "estado_override",
         }
         for k, v in data.items():
             col = col_map.get(k, k)
@@ -466,7 +461,7 @@ def update_status(iid: int, body: StatusUpdate):
         conn = get_conn()
         cur  = conn.cursor()
         cur.execute(
-            "UPDATE initiatives SET estado_override = %s, updated_at = NOW() WHERE id = %s",
+            "UPDATE initiatives SET estado = %s, updated_at = NOW() WHERE id = %s",
             (body.status, iid)
         )
         if cur.rowcount == 0:
@@ -477,22 +472,6 @@ def update_status(iid: int, body: StatusUpdate):
         return {"ok": True, "id": iid, "status": body.status}
     except HTTPException:
         raise
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-
-
-@app.delete("/api/initiatives/{iid}/status")
-def reset_status(iid: int):
-    try:
-        conn = get_conn()
-        cur  = conn.cursor()
-        cur.execute(
-            "UPDATE initiatives SET estado_override = NULL, updated_at = NOW() WHERE id = %s",
-            (iid,)
-        )
-        conn.commit()
-        cur.close(); conn.close()
-        return {"ok": True, "id": iid}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -514,7 +493,7 @@ def _build_context(conn) -> str:
     lines = [f"Hay {len(rows)} iniciativas en el portfolio de IA:\n"]
     for r in rows:
         r = dict(r)
-        estado = r.get("estado_override") or r.get("estado_excel") or "Pendiente"
+        estado = r.get("estado") or "Pendiente"
         lines.append(
             f"- ID {r['id']}: {r['name'] or '(sin nombre)'} | "
             f"Dept: {r['dept'] or '—'} | Estado: {estado} | "
@@ -613,6 +592,38 @@ def chat_endpoint(body: ChatMessage):
 
 
 # ── Servir frontend ─────────────────────────────────────────────────
+# ── Normalizar estados (temporal) ──────────────────────────────────
+@app.get("/api/fix-estados")
+def fix_estados():
+    """Normaliza valores de estado. Llamar una vez y eliminar."""
+    try:
+        conn = get_conn()
+        cur = conn.cursor()
+        fixes = [
+            ("Pendiente revisión", "Pendiente"),
+            ("Pendiente revision", "Pendiente"),
+            ("Iteración / Pruebas", "Iteración"),
+            ("Iteracion / Pruebas", "Iteración"),
+            ("En progreso", "Piloto"),
+            ("Completado", "Producción"),
+            ("Pausado", "Pendiente"),
+            ("Cancelado", "Descartada"),
+        ]
+        total = 0
+        for old_val, new_val in fixes:
+            cur.execute(
+                "UPDATE initiatives SET estado = %s WHERE estado = %s",
+                (new_val, old_val)
+            )
+            total += cur.rowcount
+        conn.commit()
+        cur.close()
+        conn.close()
+        return {"ok": True, "rows_updated": total}
+    except Exception as e:
+        return {"error": str(e)}
+
+
 @app.get("/", response_class=HTMLResponse)
 def index():
     html = STATIC_PATH / "index.html"

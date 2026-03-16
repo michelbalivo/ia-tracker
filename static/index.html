@@ -1283,13 +1283,13 @@
       <div class="filter-panel-title">Estado</div>
       <div class="filter-options-row">
         <div class="filter-option active" onclick="filterBy('all')">Todas</div>
+        <div class="filter-option" onclick="filterBy('Pendiente')">Pendiente</div>
+        <div class="filter-option" onclick="filterBy('Priorización')">Priorización</div>
         <div class="filter-option" onclick="filterBy('Análisis')">Análisis</div>
         <div class="filter-option" onclick="filterBy('Diseño')">Diseño</div>
         <div class="filter-option" onclick="filterBy('Piloto')">Piloto</div>
         <div class="filter-option" onclick="filterBy('Iteración')">Iteración</div>
         <div class="filter-option" onclick="filterBy('Producción')">Producción</div>
-        <div class="filter-option" onclick="filterBy('Priorización')">Priorización</div>
-        <div class="filter-option" onclick="filterBy('Pendiente')">Pendiente</div>
         <div class="filter-option" onclick="filterBy('Descartada')">Descartada</div>
       </div>
     </div>
@@ -1336,12 +1336,13 @@
         <div class="filter-panel-title">Estado</div>
         <div class="filter-options-row">
           <div class="seg-filter-option active" data-val="all" onclick="setSegEstadoFilter('all',this)">Todas</div>
+          <div class="seg-filter-option" data-val="Pendiente" onclick="setSegEstadoFilter('Pendiente',this)">Pendiente</div>
+          <div class="seg-filter-option" data-val="Priorización" onclick="setSegEstadoFilter('Priorización',this)">Priorización</div>
           <div class="seg-filter-option" data-val="Análisis" onclick="setSegEstadoFilter('Análisis',this)">Análisis</div>
           <div class="seg-filter-option" data-val="Diseño" onclick="setSegEstadoFilter('Diseño',this)">Diseño</div>
           <div class="seg-filter-option" data-val="Piloto" onclick="setSegEstadoFilter('Piloto',this)">Piloto</div>
           <div class="seg-filter-option" data-val="Iteración" onclick="setSegEstadoFilter('Iteración',this)">Iteración</div>
           <div class="seg-filter-option" data-val="Producción" onclick="setSegEstadoFilter('Producción',this)">Producción</div>
-          <div class="seg-filter-option" data-val="Pendiente" onclick="setSegEstadoFilter('Pendiente',this)">Pendiente</div>
           <div class="seg-filter-option" data-val="Descartada" onclick="setSegEstadoFilter('Descartada',this)">Descartada</div>
         </div>
         <div class="filter-panel-title">Equipo</div>
@@ -2583,7 +2584,7 @@ function renderInsights() {
   all.forEach(function(i){ var e = getEstadoClass(i.estado); estadoCounts[e] = (estadoCounts[e]||0)+1; });
   var estadoBarEl = document.getElementById('insEstadoBar');
   if (estadoBarEl) {
-    var estadoOrder = ['Producción','Piloto','Iteración','Diseño','Análisis','Priorización','Pendiente','Descartada'];
+    var estadoOrder = ['Pendiente','Priorización','Análisis','Diseño','Piloto','Iteración','Producción','Descartada'];
     var barHtml = '<div class="ins-sec-title">Distribución por Estado</div>';
     barHtml += '<div class="ins-estado-bar">';
     estadoOrder.forEach(function(e){
@@ -3306,12 +3307,13 @@ function renderSegSummary() {
 
   document.getElementById('seg-summary').innerHTML =
     item('all',          'Iniciativas',   all.length) +
-    item('Análisis',     'Análisis',      all.filter(function(i){return getEstadoClass(i.estado)==='Análisis';}).length) +
-    item('Piloto',       'Piloto',        all.filter(function(i){return getEstadoClass(i.estado)==='Piloto';}).length) +
-    item('Diseño',       'Diseño',        all.filter(function(i){return getEstadoClass(i.estado)==='Diseño';}).length) +
-    item('Iteración',    'Iteración',     all.filter(function(i){return getEstadoClass(i.estado)==='Iteración';}).length) +
-    item('Producción','Producción', all.filter(function(i){return getEstadoClass(i.estado)==='Producción';}).length) +
     item('Pendiente',    'Pendientes',    all.filter(function(i){return getEstadoClass(i.estado)==='Pendiente';}).length) +
+    item('Priorización', 'Priorización', all.filter(function(i){return getEstadoClass(i.estado)==='Priorización';}).length) +
+    item('Análisis',     'Análisis',      all.filter(function(i){return getEstadoClass(i.estado)==='Análisis';}).length) +
+    item('Diseño',       'Diseño',        all.filter(function(i){return getEstadoClass(i.estado)==='Diseño';}).length) +
+    item('Piloto',       'Piloto',        all.filter(function(i){return getEstadoClass(i.estado)==='Piloto';}).length) +
+    item('Iteración',    'Iteración',     all.filter(function(i){return getEstadoClass(i.estado)==='Iteración';}).length) +
+    item('Producción',   'Producción',    all.filter(function(i){return getEstadoClass(i.estado)==='Producción';}).length) +
     item('Descartada',   'Descartadas',   all.filter(function(i){return getEstadoClass(i.estado)==='Descartada';}).length, 'color:var(--red)');
 }
 
@@ -4146,10 +4148,13 @@ function kanbanDrop(e, col) {
             <label class="edit-label">Estado</label>
             <select id="edt-estado" class="edit-select">
               <option value="Pendiente">Pendiente</option>
-              <option value="En progreso">En progreso</option>
-              <option value="Completado">Completado</option>
-              <option value="Pausado">Pausado</option>
-              <option value="Cancelado">Cancelado</option>
+              <option value="Priorización">Priorización</option>
+              <option value="Análisis">Análisis</option>
+              <option value="Diseño">Diseño</option>
+              <option value="Piloto">Piloto</option>
+              <option value="Iteración">Iteración</option>
+              <option value="Producción">Producción</option>
+              <option value="Descartada">Descartada</option>
             </select>
           </div>
           <div class="edit-field">
