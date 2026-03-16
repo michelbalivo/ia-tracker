@@ -1584,10 +1584,14 @@ async function loadFromAPI(manual = false) {
   statusEl.style.color = "var(--gray-400)";
 
   try {
-    var resp = await fetch('/api/initiatives?_t=' + Date.now());
+    var [resp, areasResp] = await Promise.all([
+      fetch('/api/initiatives?_t=' + Date.now()),
+      fetch('/api/areas?_t=' + Date.now())
+    ]);
     if (!resp.ok) throw new Error('HTTP ' + resp.status);
     var newData = await resp.json();
     if (!newData.length) throw new Error('Sin datos en la base de datos');
+    try { _areasFromAPI = await areasResp.json(); } catch(e) { _areasFromAPI = []; }
 
     // Map API fields to prototype data model
     var mapped = newData.map(function(d) {
@@ -1598,6 +1602,7 @@ async function loadFromAPI(manual = false) {
         proceso: d.proceso || '',
         dominio: d.dominio || '',
         estado:  d.estado || 'Pendiente',
+        area_funcional: d.area_funcional || '',
         desc:    d.desc || '',
         retorno: d.retorno || d.tipo_retorno || '',
         modelo_ia: d.modelo_ia || '',
@@ -1627,6 +1632,9 @@ async function loadFromAPI(manual = false) {
 
     initiatives.length = 0;
     mapped.forEach(function(ini) { initiatives.push(ini); });
+
+    // Reconstruir grupos dinámicos desde area_funcional
+    initiativeGroups = buildInitiativeGroups();
 
     // Reconstruir timeline del Gantt con fechas reales del Excel
     buildTimelineFromFases();
@@ -1700,44 +1708,44 @@ function getEstadoCSSClass(estado) {
   return {"Descartada":"estado-discarded","Análisis":"estado-active","Diseño":"estado-design","Piloto":"estado-pilot","Iteración":"estado-iteration","Producción":"estado-maintenance","Priorización":"estado-priority","Pendiente":"estado-pending"}[getEstadoClass(estado)] || "estado-pending";
 }
 
-// ── GROUP DEFINITIONS ──
-var initiativeGroups = [
-  { id: 'sap-copilot', label: 'SAP Finance Copilot',
-    desc: 'Capa de IA transversal sobre el ecosistema SAP',
-    filter: function(i) {
-      var sapIds = [1,2,3,5,6,7,10,11,14,15,20,34,37,38,39,40,41,42,44,45,46,47,52];
-      return sapIds.indexOf(i.id) >= 0;
-    }},
-  { id: 'compras', label: 'Compras Intelligence',
-    desc: 'Asistente inteligente para compras indirectas',
-    filter: function(i) {
-      var ids = [18,19,49,50];
-      return ids.indexOf(i.id) >= 0;
-    }},
-  { id: 'energy', label: 'Energy Intelligence',
-    desc: 'Plataforma de IA para gestión energética',
-    filter: function(i) {
-      return [21,22,23,51].indexOf(i.id) >= 0;
-    }},
-  { id: 'contracts', label: 'Contract Intelligence Hub',
-    desc: 'Extracción, análisis y consulta de contratos',
-    filter: function(i) {
-      var ids = [4,17,28,29,35,43];
-      return ids.indexOf(i.id) >= 0;
-    }},
-  { id: 'retail', label: 'Global Retail Support',
-    desc: 'Hub de soporte inteligente a tiendas',
-    filter: function(i) {
-      var ids = [26,27];
-      return ids.indexOf(i.id) >= 0;
-    }},
-  { id: 'extensiones', label: 'Extensiones Apps',
-    desc: 'IA integrada en aplicaciones específicas',
-    filter: function(i) {
-      var ids = [8,9,12,13,16,24,25,30,31,32,33,36,48,53,54,55,56,57];
-      return ids.indexOf(i.id) >= 0;
-    }}
-];
+// ── GROUP DEFINITIONS (dinámico desde area_funcional) ──
+var _areasFromAPI = []; // se llena en loadData
+
+function buildInitiativeGroups() {
+  // Construir grupos a partir de las áreas únicas en las iniciativas
+  var areaOrder = _areasFromAPI.length
+    ? _areasFromAPI.map(function(a){ return a.nombre; })
+    : [];
+  var seen = {};
+  var groups = [];
+  // Primero las que vienen de la tabla maestra (en orden)
+  areaOrder.forEach(function(nombre) {
+    var area = _areasFromAPI.find(function(a){ return a.nombre === nombre; });
+    seen[nombre] = true;
+    groups.push({
+      id: nombre.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
+      label: nombre,
+      desc: (area && area.descripcion) || '',
+      filter: function(i) { return i.area_funcional === nombre; }
+    });
+  });
+  // Luego las que aparecen en iniciativas pero no en la tabla maestra
+  initiatives.forEach(function(i) {
+    var af = i.area_funcional || 'Sin área';
+    if (!seen[af]) {
+      seen[af] = true;
+      groups.push({
+        id: af.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
+        label: af,
+        desc: '',
+        filter: function(ini) { return (ini.area_funcional || 'Sin área') === af; }
+      });
+    }
+  });
+  return groups;
+}
+
+var initiativeGroups = [];
 
 var currentGroupFilter = null;
 
@@ -3365,6 +3373,15 @@ function openEditModal(id) {
       // ── TAB 1: Identificación ──────────────────────────────
       _setVal('edt-name',            d.name || '');
       _setVal('edt-dept',            d.dept || '');
+      // Poblar select de áreas funcionales
+      var afSel = document.getElementById('edt-area-funcional');
+      if (afSel) {
+        afSel.innerHTML = '<option value="">— Sin área —</option>';
+        _areasFromAPI.forEach(function(a) {
+          afSel.innerHTML += '<option value="' + a.nombre + '">' + a.nombre + '</option>';
+        });
+      }
+      _setVal('edt-area-funcional',  d.area_funcional || '');
       _setVal('edt-desc',            d.desc || '');
       _setVal('edt-objetivo',        d.objetivo || '');
       _setVal('edt-dominio',         d.dominio || '');
@@ -3480,6 +3497,7 @@ function saveEditModal() {
   var payload = {
     name:                    gv('edt-name'),
     dept:                    gv('edt-dept'),
+    area_funcional:          gv('edt-area-funcional'),
     desc:                    gv('edt-desc'),
     objetivo:                gv('edt-objetivo'),
     dominio:                 gv('edt-dominio'),
@@ -3917,6 +3935,10 @@ function kanbanDrop(e, col) {
           <div class="edit-field">
             <label class="edit-label">Departamento</label>
             <input id="edt-dept" class="edit-input" type="text">
+          </div>
+          <div class="edit-field">
+            <label class="edit-label">Área funcional</label>
+            <select id="edt-area-funcional" class="edit-select"></select>
           </div>
           <div class="edit-field">
             <label class="edit-label">Dominio funcional IA</label>

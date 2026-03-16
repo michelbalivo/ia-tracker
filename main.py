@@ -140,6 +140,7 @@ def row_to_initiative(row: dict) -> dict:
         "name":                   row["name"],
         "dept":                   row["dept"],
         "estado":                 row["estado"] or "Pendiente",
+        "area_funcional":         safe_get(row, "area_funcional"),
         "desc":                   row["desc_ejecutiva"],
 
         # ── Proceso ─────────────────────────────────────────────────
@@ -263,6 +264,7 @@ class InitiativeCreate(BaseModel):
     proceso: str | None = None
     dominio: str | None = None
     estado: str = "Pendiente"
+    area_funcional: str | None = None
     desc: str | None = None
     tipo_retorno: str | None = None
     objetivo: str | None = None
@@ -297,7 +299,7 @@ def create_initiative(body: InitiativeCreate):
         new_id = cur.fetchone()["next_id"]
         cur.execute("""
             INSERT INTO initiatives (
-                id, name, dept, proceso, dominio, estado,
+                id, name, dept, proceso, dominio, estado, area_funcional,
                 desc_ejecutiva, tipo_retorno, objetivo, ahorro, usuarios,
                 equipo, responsable, modelo_ia, prioridad,
                 reach, impact, confidence, effort, ai_complexity, tier,
@@ -305,10 +307,11 @@ def create_initiative(body: InitiativeCreate):
                 fase_piloto, fase_iteracion, fase_produccion, fecha_fin
             ) VALUES (
                 %s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,
-                %s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s
+                %s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s
             )
         """, (
             new_id, body.name, body.dept, body.proceso, body.dominio, body.estado,
+            body.area_funcional,
             body.desc, body.tipo_retorno, body.objetivo, body.ahorro, body.usuarios,
             body.equipo, body.responsable, body.modelo_ia, body.prioridad,
             body.reach, body.impact, body.confidence, body.effort, body.ai_complexity,
@@ -327,6 +330,7 @@ class InitiativeUpdate(BaseModel):
     # Identificación
     name:                     str | None = None
     dept:                     str | None = None
+    area_funcional:           str | None = None
     desc:                     str | None = None   # → desc_ejecutiva
     objetivo:                 str | None = None
     dominio:                  str | None = None
@@ -496,7 +500,7 @@ def _build_context(conn) -> str:
         estado = r.get("estado") or "Pendiente"
         lines.append(
             f"- ID {r['id']}: {r['name'] or '(sin nombre)'} | "
-            f"Dept: {r['dept'] or '—'} | Estado: {estado} | "
+            f"Dept: {r['dept'] or '—'} | Área: {r.get('area_funcional') or '—'} | Estado: {estado} | "
             f"Prioridad: {r['prioridad'] or '—'} | "
             f"Dominio: {r['dominio'] or '—'} | "
             f"Proceso: {r['proceso'] or '—'} | "
@@ -589,6 +593,22 @@ def chat_endpoint(body: ChatMessage):
         tb = traceback.format_exc()
         print(f"[chat] ERROR: {e}\n{tb}")
         raise HTTPException(status_code=500, detail=str(e))
+
+
+# ── Áreas funcionales ──────────────────────────────────────────────
+
+@app.get("/api/areas")
+def get_areas():
+    try:
+        conn = get_conn()
+        cur  = conn.cursor()
+        cur.execute("SELECT id, nombre, descripcion, color, orden FROM areas_funcionales ORDER BY orden")
+        rows = cur.fetchall()
+        cur.close(); conn.close()
+        return [dict(r) for r in rows]
+    except Exception:
+        # Si la tabla aún no existe, devolver lista vacía
+        return []
 
 
 # ── Servir frontend ─────────────────────────────────────────────────
