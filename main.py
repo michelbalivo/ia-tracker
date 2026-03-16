@@ -750,16 +750,14 @@ def chat_endpoint(body: ChatMessage):
         actions = body.confirm_actions or ([body.confirm_action] if body.confirm_action else None)
         if actions:
             results = []
-            all_ok = True
             for action in actions:
                 result = _execute_tool(action["tool"], action["input"])
                 is_error = result.startswith("Error")
                 if is_error:
-                    all_ok = False
                     results.append(f"❌ {result}")
                 else:
                     results.append(f"✅ {result}")
-            return {"reply": "\n".join(results), "action_executed": all_ok}
+            return {"reply": "\n".join(results), "action_executed": True}
 
         # ── Flujo normal: preguntar a Claude ──
         conn = get_conn()
