@@ -3840,7 +3840,7 @@ function chatConfirmAction(confirmed) {
     typingBub.parentNode.remove();
     chatAppend('assistant', data.reply);
     _chatHistory.push({ role: 'assistant', content: data.reply });
-    if (data.action_executed) syncData();
+    if (data.action_executed) loadFromAPI();
   })
   .catch(function(err) {
     typingBub.parentNode.remove();
@@ -3912,7 +3912,7 @@ function chatSend() {
 
     // Si se ejecutó una acción, recargar datos
     if (data.action_executed) {
-      syncData();
+      loadFromAPI();
     }
   })
   .catch(function(err) {

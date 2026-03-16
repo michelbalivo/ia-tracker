@@ -677,17 +677,60 @@ def _execute_tool(tool_name: str, tool_input: dict) -> str:
         conn.close()
 
 
+# Mapa de nombres de campo BD → nombre legible para el usuario
+FIELD_LABELS = {
+    "name": "Nombre",
+    "dept": "Departamento",
+    "area_funcional": "Área funcional",
+    "desc": "Descripción ejecutiva",
+    "desc_ejecutiva": "Descripción ejecutiva",
+    "objetivo": "Objetivo",
+    "dominio": "Dominio",
+    "proceso": "Proceso",
+    "clasificacion_proceso": "Clasificación proceso",
+    "criticidad_proceso": "Criticidad proceso",
+    "volumen_proceso": "Volumen proceso",
+    "tipo_ia": "Tipo IA",
+    "modelo_ia": "Modelo IA",
+    "viabilidad": "Viabilidad",
+    "viabilidad_puntos": "Viabilidad (puntos)",
+    "datos_requeridos": "Datos requeridos",
+    "disponibilidad": "Disponibilidad",
+    "madurez_funcional": "Madurez funcional",
+    "time_to_value": "Time to value",
+    "complejidad": "Complejidad",
+    "complejidad_tecnica": "Complejidad técnica",
+    "complejidad_organizativa": "Complejidad organizativa",
+    "retorno": "Retorno",
+    "tipo_retorno": "Tipo retorno",
+    "impacto_negocio": "Impacto negocio",
+    "ahorro": "Ahorro",
+    "roi_business_case": "ROI / Business case",
+    "prioridad": "Prioridad",
+    "usuarios": "Usuarios",
+    "estado": "Estado",
+    "equipo": "Equipo",
+    "responsable": "Responsable",
+    "riesgos": "Riesgos",
+    "compliance": "Compliance",
+    "fecha_fin": "Fecha fin",
+    "fecha_inicio": "Fecha inicio",
+    "fecha_registro": "Fecha registro",
+    "link_devhub": "Link DevHub",
+}
+
+
 def _describe_action(tool_name: str, tool_input: dict, context_lines: str) -> str:
     """Genera un resumen legible de la acción que se va a ejecutar."""
     if tool_name == "update_initiative":
         iid = tool_input["id"]
         fields = tool_input.get("fields", {})
-        changes = "\n".join([f"  • **{k}** → {v}" for k, v in fields.items()])
+        changes = "\n".join([f"  • **{FIELD_LABELS.get(k, k)}** → {v}" for k, v in fields.items()])
         return f"Actualizar la iniciativa **#{iid}**:\n{changes}"
     elif tool_name == "create_initiative":
         name = tool_input["name"]
         fields = tool_input.get("fields", {})
-        extras = "\n".join([f"  • **{k}**: {v}" for k, v in fields.items()])
+        extras = "\n".join([f"  • **{FIELD_LABELS.get(k, k)}**: {v}" for k, v in fields.items()])
         return f"Crear nueva iniciativa: **{name}**" + (f"\n{extras}" if extras else "")
     elif tool_name == "delete_initiative":
         return f"Eliminar la iniciativa **#{tool_input['id']}**"
