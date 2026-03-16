@@ -483,10 +483,6 @@ def update_status(iid: int, body: StatusUpdate):
 
 # ── Asistente IA ────────────────────────────────────────────────────
 
-class ChatMessage(BaseModel):
-    message: str
-    history: list[dict] = []   # [{role, content}, ...]
-
 def _build_context(conn) -> str:
     """Serializa todas las iniciativas a texto estructurado para el contexto."""
     cur = conn.cursor()
@@ -555,6 +551,135 @@ Reglas para gráficos:
 - Los valores deben ser siempre numéricos y basados en datos reales del contexto.
 - Puedes añadir texto markdown antes o después del bloque chart para dar contexto."""
 
+# ── Definición de tools para el asistente ──────────────────────────
+CHAT_TOOLS = [
+    {
+        "name": "update_initiative",
+        "description": "Actualiza uno o más campos de una iniciativa existente. Usa esta herramienta cuando el usuario pida cambiar, actualizar o modificar datos de una iniciativa.",
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "id": {"type": "integer", "description": "ID de la iniciativa a actualizar"},
+                "fields": {
+                    "type": "object",
+                    "description": "Campos a actualizar con sus nuevos valores. Claves válidas: name, dept, area_funcional, desc (descripción ejecutiva), objetivo, dominio, proceso, clasificacion_proceso, criticidad_proceso, volumen_proceso, tipo_ia, modelo_ia, viabilidad, viabilidad_puntos, datos_requeridos, disponibilidad, madurez_funcional, time_to_value, complejidad, complejidad_tecnica, complejidad_organizativa, retorno, tipo_retorno, impacto_negocio, ahorro, roi_business_case, prioridad, usuarios, estado, equipo, responsable, riesgos, compliance, fecha_fin, fecha_inicio, fecha_registro, link_devhub"
+                }
+            },
+            "required": ["id", "fields"]
+        }
+    },
+    {
+        "name": "create_initiative",
+        "description": "Crea una nueva iniciativa. Usa esta herramienta cuando el usuario pida crear o añadir una iniciativa nueva.",
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "name": {"type": "string", "description": "Nombre de la iniciativa"},
+                "fields": {
+                    "type": "object",
+                    "description": "Campos opcionales: dept, area_funcional, desc, estado, dominio, proceso, equipo, responsable, prioridad, etc."
+                }
+            },
+            "required": ["name"]
+        }
+    },
+    {
+        "name": "delete_initiative",
+        "description": "Elimina una iniciativa. Usa esta herramienta solo cuando el usuario pida explícitamente eliminar o borrar una iniciativa.",
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "id": {"type": "integer", "description": "ID de la iniciativa a eliminar"}
+            },
+            "required": ["id"]
+        }
+    }
+]
+
+
+class ChatMessage(BaseModel):
+    message: str
+    history: list[dict] = []
+    confirm_action: dict | None = None   # Si viene, ejecutar la acción pendiente
+
+
+def _execute_tool(tool_name: str, tool_input: dict) -> str:
+    """Ejecuta una herramienta contra la BD y devuelve resultado como texto."""
+    conn = get_conn()
+    cur = conn.cursor()
+    try:
+        if tool_name == "update_initiative":
+            iid = tool_input["id"]
+            fields = tool_input.get("fields", {})
+            if not fields:
+                return "Error: no se especificaron campos a actualizar."
+            col_map = {"desc": "desc_ejecutiva"}
+            sets, vals = [], []
+            for k, v in fields.items():
+                col = col_map.get(k, k)
+                sets.append(f"{col} = %s")
+                vals.append(v)
+            sets.append("updated_at = NOW()")
+            vals.append(iid)
+            cur.execute(f"UPDATE initiatives SET {', '.join(sets)} WHERE id = %s", vals)
+            if cur.rowcount == 0:
+                conn.rollback()
+                return f"Error: no se encontró la iniciativa con ID {iid}."
+            conn.commit()
+            return f"Iniciativa {iid} actualizada correctamente."
+
+        elif tool_name == "create_initiative":
+            name = tool_input["name"]
+            fields = tool_input.get("fields", {})
+            cur.execute("SELECT COALESCE(MAX(id), 0) + 1 AS next_id FROM initiatives")
+            new_id = cur.fetchone()["next_id"]
+            cols = ["id", "name"]
+            vals = [new_id, name]
+            col_map = {"desc": "desc_ejecutiva"}
+            for k, v in fields.items():
+                cols.append(col_map.get(k, k))
+                vals.append(v)
+            placeholders = ", ".join(["%s"] * len(vals))
+            cur.execute(f"INSERT INTO initiatives ({', '.join(cols)}) VALUES ({placeholders})", vals)
+            conn.commit()
+            return f"Iniciativa creada con ID {new_id}."
+
+        elif tool_name == "delete_initiative":
+            iid = tool_input["id"]
+            cur.execute("DELETE FROM initiatives WHERE id = %s", (iid,))
+            if cur.rowcount == 0:
+                conn.rollback()
+                return f"Error: no se encontró la iniciativa con ID {iid}."
+            conn.commit()
+            return f"Iniciativa {iid} eliminada."
+
+        else:
+            return f"Herramienta desconocida: {tool_name}"
+    except Exception as e:
+        conn.rollback()
+        return f"Error al ejecutar: {e}"
+    finally:
+        cur.close()
+        conn.close()
+
+
+def _describe_action(tool_name: str, tool_input: dict, context_lines: str) -> str:
+    """Genera un resumen legible de la acción que se va a ejecutar."""
+    if tool_name == "update_initiative":
+        iid = tool_input["id"]
+        fields = tool_input.get("fields", {})
+        changes = "\n".join([f"  • **{k}** → {v}" for k, v in fields.items()])
+        return f"Actualizar la iniciativa **#{iid}**:\n{changes}"
+    elif tool_name == "create_initiative":
+        name = tool_input["name"]
+        fields = tool_input.get("fields", {})
+        extras = "\n".join([f"  • **{k}**: {v}" for k, v in fields.items()])
+        return f"Crear nueva iniciativa: **{name}**" + (f"\n{extras}" if extras else "")
+    elif tool_name == "delete_initiative":
+        return f"Eliminar la iniciativa **#{tool_input['id']}**"
+    return "Acción desconocida"
+
+
 @app.post("/api/chat")
 def chat_endpoint(body: ChatMessage):
     import traceback
@@ -563,13 +688,20 @@ def chat_endpoint(body: ChatMessage):
         raise HTTPException(status_code=503, detail="ANTHROPIC_API_KEY no configurada")
     try:
         import anthropic
+
+        # ── Si viene una confirmación, ejecutar la acción directamente ──
+        if body.confirm_action:
+            action = body.confirm_action
+            result = _execute_tool(action["tool"], action["input"])
+            return {"reply": f"✅ {result}", "action_executed": True}
+
+        # ── Flujo normal: preguntar a Claude ──
         conn = get_conn()
         context = _build_context(conn)
         conn.close()
 
         client = anthropic.Anthropic(api_key=api_key)
 
-        # Historial + mensaje actual
         messages = []
         for h in body.history[-10:]:
             role    = h.get("role")    if isinstance(h, dict) else getattr(h, "role",    None)
@@ -584,9 +716,34 @@ def chat_endpoint(body: ChatMessage):
             model="claude-haiku-4-5-20251001",
             max_tokens=1024,
             system=system,
-            messages=messages
+            messages=messages,
+            tools=CHAT_TOOLS
         )
-        return {"reply": resp.content[0].text}
+
+        # ── Procesar respuesta ──
+        text_parts = []
+        pending_action = None
+
+        for block in resp.content:
+            if block.type == "text":
+                text_parts.append(block.text)
+            elif block.type == "tool_use":
+                pending_action = {
+                    "tool": block.name,
+                    "input": block.input
+                }
+
+        reply_text = "\n".join(text_parts)
+
+        if pending_action:
+            summary = _describe_action(pending_action["tool"], pending_action["input"], context)
+            return {
+                "reply": reply_text + ("\n\n" if reply_text else "") + summary,
+                "pending_action": pending_action
+            }
+
+        return {"reply": reply_text}
+
     except HTTPException:
         raise
     except Exception as e:

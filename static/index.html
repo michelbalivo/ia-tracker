@@ -1203,6 +1203,11 @@
   }
   .chat-send:disabled { opacity: 0.35; cursor: not-allowed; }
   .chat-send:hover:not(:disabled) { opacity: 0.8; }
+  .chat-confirm-buttons { display: flex; gap: 8px; padding: 4px 0; }
+  .chat-btn-confirm { padding: 6px 16px; border-radius: 6px; border: none; background: #0047BB; color: #fff; font-size: 12px; font-weight: 500; cursor: pointer; transition: opacity 0.15s; }
+  .chat-btn-confirm:hover { opacity: 0.85; }
+  .chat-btn-cancel { padding: 6px 16px; border-radius: 6px; border: 1px solid #d4d4d4; background: #fff; color: #525252; font-size: 12px; font-weight: 500; cursor: pointer; transition: opacity 0.15s; }
+  .chat-btn-cancel:hover { background: #f5f5f5; }
 
   /* ── Kanban drag & drop ── */
   .kanban-card { cursor: grab; }
@@ -3798,6 +3803,52 @@ function chatAppend(role, text, typing) {
   return bub;
 }
 
+var _chatPendingAction = null;
+
+function chatConfirmAction(confirmed) {
+  // Quitar botones
+  var btns = document.querySelectorAll('.chat-confirm-buttons');
+  btns.forEach(function(b) { b.parentNode.remove(); });
+
+  if (!confirmed || !_chatPendingAction) {
+    _chatPendingAction = null;
+    chatAppend('assistant', 'Operación cancelada.');
+    return;
+  }
+
+  var action = _chatPendingAction;
+  _chatPendingAction = null;
+
+  var typingBub = chatAppend('assistant', '…', true);
+  _chatBusy = true;
+  document.getElementById('chatSend').disabled = true;
+
+  fetch('/api/chat', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      message: '',
+      history: _chatHistory,
+      confirm_action: { tool: action.tool, input: action.input }
+    })
+  })
+  .then(function(r) { return r.json(); })
+  .then(function(data) {
+    typingBub.parentNode.remove();
+    chatAppend('assistant', data.reply);
+    _chatHistory.push({ role: 'assistant', content: data.reply });
+    if (data.action_executed) syncData();
+  })
+  .catch(function() {
+    typingBub.parentNode.remove();
+    chatAppend('assistant', 'Error al ejecutar la acción.');
+  })
+  .finally(function() {
+    _chatBusy = false;
+    document.getElementById('chatSend').disabled = false;
+  });
+}
+
 function chatSend() {
   if (_chatBusy) return;
   var input = document.getElementById('chatInput');
@@ -3831,6 +3882,24 @@ function chatSend() {
     _chatHistory.push({ role: 'user',      content: msg });
     _chatHistory.push({ role: 'assistant', content: data.reply });
     if (_chatHistory.length > 20) _chatHistory = _chatHistory.slice(-20);
+
+    // Si hay acción pendiente, mostrar botones de confirmación
+    if (data.pending_action) {
+      _chatPendingAction = data.pending_action;
+      var btnDiv = document.createElement('div');
+      btnDiv.className = 'chat-msg assistant';
+      btnDiv.innerHTML = '<div class="chat-confirm-buttons">' +
+        '<button class="chat-btn-confirm" onclick="chatConfirmAction(true)">Confirmar</button>' +
+        '<button class="chat-btn-cancel" onclick="chatConfirmAction(false)">Cancelar</button>' +
+        '</div>';
+      document.getElementById('chatMessages').appendChild(btnDiv);
+      document.getElementById('chatMessages').scrollTop = 99999;
+    }
+
+    // Si se ejecutó una acción, recargar datos
+    if (data.action_executed) {
+      syncData();
+    }
   })
   .catch(function(err) {
     typingBub.textContent = 'Error al conectar con el asistente. Inténtalo de nuevo.';
