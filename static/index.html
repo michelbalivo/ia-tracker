@@ -3848,7 +3848,7 @@ function chatConfirmAction(confirmed) {
           var activeBtn = document.querySelector('.header-nav-btn.active');
           var view = activeBtn ? activeBtn.textContent.toLowerCase().trim() : 'portfolio';
           _renderView(view);
-          chatAppend('assistant', '🔄 Datos actualizados.');
+          // refresh silencioso
         }).catch(function(e) {
           chatAppend('assistant', '⚠️ Error al refrescar: ' + e.message);
         });
@@ -3930,7 +3930,7 @@ function chatSend() {
           var activeBtn = document.querySelector('.header-nav-btn.active');
           var view = activeBtn ? activeBtn.textContent.toLowerCase().trim() : 'portfolio';
           _renderView(view);
-          chatAppend('assistant', '🔄 Datos actualizados.');
+          // refresh silencioso
         }).catch(function(e) {
           chatAppend('assistant', '⚠️ Error al refrescar: ' + e.message);
         });
