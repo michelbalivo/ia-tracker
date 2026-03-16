@@ -3842,11 +3842,17 @@ function chatConfirmAction(confirmed) {
     chatAppend('assistant', data.reply);
     _chatHistory.push({ role: 'assistant', content: data.reply });
     if (data.action_executed) {
-      loadFromAPI().then(function() {
-        chatAppend('assistant', '🔄 Datos actualizados en el portfolio.');
-      }).catch(function(e) {
-        chatAppend('assistant', '⚠️ Error al refrescar datos: ' + e.message);
-      });
+      setTimeout(function() {
+        loadFromAPI().then(function() {
+          // Forzar re-render de la vista activa
+          var activeBtn = document.querySelector('.header-nav-btn.active');
+          var view = activeBtn ? activeBtn.textContent.toLowerCase().trim() : 'portfolio';
+          _renderView(view);
+          chatAppend('assistant', '🔄 Datos actualizados.');
+        }).catch(function(e) {
+          chatAppend('assistant', '⚠️ Error al refrescar: ' + e.message);
+        });
+      }, 300);
     }
   })
   .catch(function(err) {
@@ -3919,11 +3925,16 @@ function chatSend() {
 
     // Si se ejecutó una acción, recargar datos
     if (data.action_executed) {
-      loadFromAPI().then(function() {
-        chatAppend('assistant', '🔄 Datos actualizados en el portfolio.');
-      }).catch(function(e) {
-        chatAppend('assistant', '⚠️ Error al refrescar datos: ' + e.message);
-      });
+      setTimeout(function() {
+        loadFromAPI().then(function() {
+          var activeBtn = document.querySelector('.header-nav-btn.active');
+          var view = activeBtn ? activeBtn.textContent.toLowerCase().trim() : 'portfolio';
+          _renderView(view);
+          chatAppend('assistant', '🔄 Datos actualizados.');
+        }).catch(function(e) {
+          chatAppend('assistant', '⚠️ Error al refrescar: ' + e.message);
+        });
+      }, 300);
     }
   })
   .catch(function(err) {
