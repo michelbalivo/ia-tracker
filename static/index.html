@@ -1267,7 +1267,7 @@
 <!-- GROUP CARDS -->
 <div class="groups-section" id="groups-home">
   <div class="groups-section-header">
-    <span class="groups-section-title">Áreas de actuación</span>
+    <span class="groups-section-title">Plataforma Tecnológica</span>
     <a class="ver-todo" onclick="showAllInitiatives()">Ver todas las iniciativas →</a>
   </div>
   <div class="groups-grid" id="groups-grid"></div>
@@ -1340,12 +1340,12 @@
       <div class="filter-panel" id="segFilterPanel">
         <div class="filter-panel-title">Estado</div>
         <div class="filter-options-row">
-          <div class="seg-filter-option active" data-val="all" onclick="setSegEstadoFilter('all',this)">Todas</div>
+          <div class="seg-filter-option active" data-val="all" onclick="setSegEstadoFilter('all',this)">Iniciativas</div>
           <div class="seg-filter-option" data-val="Pendiente" onclick="setSegEstadoFilter('Pendiente',this)">Pendiente</div>
-          <div class="seg-filter-option" data-val="Priorización" onclick="setSegEstadoFilter('Priorización',this)">Priorización</div>
           <div class="seg-filter-option" data-val="Análisis" onclick="setSegEstadoFilter('Análisis',this)">Análisis</div>
-          <div class="seg-filter-option" data-val="Diseño" onclick="setSegEstadoFilter('Diseño',this)">Diseño</div>
+          <div class="seg-filter-option" data-val="Priorización" onclick="setSegEstadoFilter('Priorización',this)">Priorización</div>
           <div class="seg-filter-option" data-val="Piloto" onclick="setSegEstadoFilter('Piloto',this)">Piloto</div>
+          <div class="seg-filter-option" data-val="Diseño" onclick="setSegEstadoFilter('Diseño',this)">Diseño</div>
           <div class="seg-filter-option" data-val="Iteración" onclick="setSegEstadoFilter('Iteración',this)">Iteración</div>
           <div class="seg-filter-option" data-val="Producción" onclick="setSegEstadoFilter('Producción',this)">Producción</div>
           <div class="seg-filter-option" data-val="Descartada" onclick="setSegEstadoFilter('Descartada',this)">Descartada</div>
@@ -1864,7 +1864,7 @@ function renderCard(ini) {
     </div>
     <div class="card-title">${ini.name}</div>
     <div class="card-meta">
-      <div class="meta-row"><span class="meta-label">Área</span><span class="meta-value">${ini.dept}</span></div>
+      <div class="meta-row"><span class="meta-label">Departamento</span><span class="meta-value">${ini.dept}</span></div>
       <div class="meta-row"><span class="meta-label">Proceso</span><span class="meta-value">${ini.proceso}</span></div>
     </div>
     <div class="card-tags"><span class="tag">${ini.dominio}</span></div>
@@ -2251,7 +2251,7 @@ function switchSegView(view, btn) {
 }
 
 // ── SEG FILTERS (search bar + dropdown) ──
-var segEstadoFilter = 'all';
+var segEstadoFilter = [];  // empty = all; array of selected states for multi-select
 var segTeamFilter = 'all';
 var segCompFilter = 'all';
 var segSearchQuery = '';
@@ -2272,9 +2272,27 @@ document.addEventListener('click', function(e) {
 });
 
 function setSegEstadoFilter(val, el) {
-  segEstadoFilter = val;
-  document.querySelectorAll('.seg-filter-option:not([data-group])').forEach(function(o) { o.classList.remove('active'); });
-  if (el) el.classList.add('active');
+  if (val === 'all') {
+    segEstadoFilter = [];
+  } else {
+    var idx = segEstadoFilter.indexOf(val);
+    if (idx >= 0) {
+      segEstadoFilter.splice(idx, 1);
+    } else {
+      segEstadoFilter.push(val);
+    }
+  }
+  // Update button active states
+  document.querySelectorAll('.seg-filter-option:not([data-group])').forEach(function(o) {
+    var v = o.getAttribute('data-val');
+    if (v === 'all') {
+      o.classList.toggle('active', segEstadoFilter.length === 0);
+    } else {
+      o.classList.toggle('active', segEstadoFilter.indexOf(v) >= 0);
+    }
+  });
+  // Sync summary items
+  renderSegSummary();
   updateSegFilterLabel();
   renderSegView();
 }
@@ -2297,7 +2315,7 @@ function setSegCompFilter(val, el) {
 
 function updateSegFilterLabel() {
   var parts = [];
-  if (segEstadoFilter !== 'all') parts.push(segEstadoFilter);
+  if (segEstadoFilter.length > 0) parts = parts.concat(segEstadoFilter);
   if (segTeamFilter !== 'all') parts.push(segTeamFilter);
   if (segCompFilter !== 'all') parts.push(segCompFilter);
   var label = document.getElementById('segFilterActiveLabel');
@@ -2342,7 +2360,7 @@ function populateSegTeamOptions() {
 
 function getSegFilteredInitiatives() {
   var filtered = initiatives.slice();
-  if (segEstadoFilter !== 'all') filtered = filtered.filter(function(i) { return getEstadoClass(i.estado) === segEstadoFilter; });
+  if (segEstadoFilter.length > 0) filtered = filtered.filter(function(i) { return segEstadoFilter.indexOf(getEstadoClass(i.estado)) >= 0; });
   if (segTeamFilter !== 'all') filtered = filtered.filter(function(i) { return i.equipo === segTeamFilter; });
   if (segCompFilter !== 'all') filtered = filtered.filter(function(i) { return i.complejidad && i.complejidad.startsWith(segCompFilter); });
   if (segSearchQuery) {
@@ -2598,7 +2616,7 @@ function renderInsights() {
   all.forEach(function(i){ var e = getEstadoClass(i.estado); estadoCounts[e] = (estadoCounts[e]||0)+1; });
   var estadoBarEl = document.getElementById('insEstadoBar');
   if (estadoBarEl) {
-    var estadoOrder = ['Pendiente','Priorización','Análisis','Diseño','Piloto','Iteración','Producción','Descartada'];
+    var estadoOrder = ['Pendiente','Análisis','Priorización','Piloto','Diseño','Iteración','Producción','Descartada'];
     var barHtml = '<div class="ins-sec-title">Distribución por Estado</div>';
     barHtml += '<div class="ins-estado-bar">';
     estadoOrder.forEach(function(e){
@@ -2747,10 +2765,10 @@ function renderInsights() {
 // ── KANBAN BOARD ──
 var kanbanColumns = [
   { id: 'Pendiente', label: 'Pendiente', color: 'var(--gray-200)' },
-  { id: 'Priorización', label: 'Priorización', color: 'var(--gray-500)' },
   { id: 'Análisis', label: 'Análisis', color: 'var(--gray-400)' },
-  { id: 'Diseño', label: 'Diseño', color: '#93b4e8' },
+  { id: 'Priorización', label: 'Priorización', color: 'var(--gray-500)' },
   { id: 'Piloto', label: 'Piloto', color: '#5a9cf5' },
+  { id: 'Diseño', label: 'Diseño', color: '#93b4e8' },
   { id: 'Iteración', label: 'Iteración', color: '#a8c4f0' },
   { id: 'Producción', label: 'Producción', color: 'var(--blue)' },
   { id: 'Descartada', label: 'Descartada', color: 'var(--red)' }
@@ -2998,7 +3016,7 @@ var admStatusColors = {
   'Pendiente':     { bg: '#fafafa', border: '#e5e5e5',     text: '#a3a3a3',     dot: '#d4d4d4' },
   'Descartada':    { bg: '#fef2f2', border: '#dc2626',     text: '#dc2626',     dot: '#dc2626' },
 };
-var admAllStatuses = ['Pendiente','Priorización','Análisis','Diseño','Piloto','Iteración','Producción','Descartada'];
+var admAllStatuses = ['Pendiente','Análisis','Priorización','Piloto','Diseño','Iteración','Producción','Descartada'];
 
 function admOnSearch() {
   var q = (document.getElementById('admSearch').value || '').trim();
@@ -3308,11 +3326,10 @@ document.addEventListener('keydown', function(e) {
 // Renderiza el summary siempre con conteos del total global (no del filtro activo)
 function renderSegSummary() {
   var all  = initiatives;
-  var active = segEstadoFilter; // filtro actual para marcar la métrica activa
   var pendientes = all.filter(function(i) { return getEstadoClass(i.estado) === 'Pendiente' || getEstadoClass(i.estado) === 'Priorización'; });
 
   function item(estado, label, count, extraStyle) {
-    var isActive = active === estado;
+    var isActive = estado === 'all' ? segEstadoFilter.length === 0 : segEstadoFilter.indexOf(estado) >= 0;
     return '<div class="seg-summary-item' + (isActive ? ' active' : '') +
            '" data-estado="' + estado + '" onclick="segSummaryFilter(\'' + estado + '\')">' +
            '<div class="s-num"' + (extraStyle ? ' style="' + extraStyle + '"' : '') + '>' + count + '</div>' +
@@ -3322,22 +3339,18 @@ function renderSegSummary() {
   document.getElementById('seg-summary').innerHTML =
     item('all',          'Iniciativas',   all.length) +
     item('Pendiente',    'Pendientes',    all.filter(function(i){return getEstadoClass(i.estado)==='Pendiente';}).length) +
-    item('Priorización', 'Priorización', all.filter(function(i){return getEstadoClass(i.estado)==='Priorización';}).length) +
     item('Análisis',     'Análisis',      all.filter(function(i){return getEstadoClass(i.estado)==='Análisis';}).length) +
-    item('Diseño',       'Diseño',        all.filter(function(i){return getEstadoClass(i.estado)==='Diseño';}).length) +
+    item('Priorización', 'Priorización', all.filter(function(i){return getEstadoClass(i.estado)==='Priorización';}).length) +
     item('Piloto',       'Piloto',        all.filter(function(i){return getEstadoClass(i.estado)==='Piloto';}).length) +
+    item('Diseño',       'Diseño',        all.filter(function(i){return getEstadoClass(i.estado)==='Diseño';}).length) +
     item('Iteración',    'Iteración',     all.filter(function(i){return getEstadoClass(i.estado)==='Iteración';}).length) +
     item('Producción',   'Producción',    all.filter(function(i){return getEstadoClass(i.estado)==='Producción';}).length) +
     item('Descartada',   'Descartadas',   all.filter(function(i){return getEstadoClass(i.estado)==='Descartada';}).length, 'color:var(--red)');
 }
 
 function segSummaryFilter(val) {
-  // Toggle: si ya está activo, volver a "all"
-  var next = (segEstadoFilter === val) ? 'all' : val;
-  // Sincronizar con el panel de filtros
-  var filterEl = document.querySelector('.seg-filter-option[data-val="' + next + '"]:not([data-group])');
-  setSegEstadoFilter(next, filterEl || null);
-  // El summary se re-renderiza dentro de renderSegView → renderGantt/renderKanban
+  // Delegate to setSegEstadoFilter which handles multi-select toggle
+  setSegEstadoFilter(val, null);
 }
 
 // ── ARRANQUE ──

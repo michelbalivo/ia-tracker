@@ -569,7 +569,7 @@ CHAT_TOOLS = [
                 "id": {"type": "integer", "description": "ID de la iniciativa a actualizar"},
                 "fields": {
                     "type": "object",
-                    "description": "Campos a actualizar con sus nuevos valores. Claves válidas: name, dept, area_funcional, desc (descripción ejecutiva), objetivo, dominio, proceso, clasificacion_proceso, criticidad_proceso, volumen_proceso, tipo_ia, modelo_ia, viabilidad, viabilidad_puntos, datos_requeridos, disponibilidad, madurez_funcional, time_to_value, complejidad, complejidad_tecnica, complejidad_organizativa, retorno, tipo_retorno, impacto_negocio, ahorro, roi_business_case, prioridad, usuarios, estado, equipo, responsable, riesgos, compliance, fecha_fin, fecha_inicio, fecha_registro, link_devhub"
+                    "description": "Campos a actualizar con sus nuevos valores. Claves válidas: name, dept, area_funcional, desc (descripción ejecutiva), objetivo, dominio, proceso, clasificacion_proceso, criticidad_proceso, volumen_proceso, tipo_ia, tip_ocr (bool), tip_generativa (bool), tip_analitica (bool), tip_predictiva (bool), modelo_ia, viabilidad, viabilidad_puntos, datos_requeridos, disponibilidad, madurez_funcional, time_to_value, complejidad, complejidad_tecnica, complejidad_organizativa, retorno, tipo_retorno, impacto_negocio, ahorro, roi_business_case, prioridad, usuarios, estado, equipo, responsable, riesgos, compliance, reach, impact, confidence, effort, ai_complexity, ric, tier (decimal 0-1), alerta (bool), fecha_fin, fecha_inicio, fecha_registro, link_devhub, powerapps_id, fase_inicio, fase_analisis, fase_priorizacion, fase_diseno, fase_piloto, fase_iteracion, fase_produccion, comp_ocr, comp_frontend, comp_modelo, comp_bbdd, comp_api, comp_cluster, comp_backend, comp_mcp, comp_rag, comp_prompting"
                 }
             },
             "required": ["id", "fields"]
@@ -584,7 +584,7 @@ CHAT_TOOLS = [
                 "name": {"type": "string", "description": "Nombre de la iniciativa"},
                 "fields": {
                     "type": "object",
-                    "description": "Campos opcionales: dept, area_funcional, desc, estado, dominio, proceso, equipo, responsable, prioridad, etc."
+                    "description": "Campos opcionales: dept, area_funcional, desc (descripción ejecutiva), estado, dominio, proceso, clasificacion_proceso, criticidad_proceso, volumen_proceso, tipo_ia, tip_ocr (bool), tip_generativa (bool), tip_analitica (bool), tip_predictiva (bool), modelo_ia, viabilidad, viabilidad_puntos, datos_requeridos, disponibilidad, madurez_funcional, time_to_value, complejidad, complejidad_tecnica, complejidad_organizativa, retorno, tipo_retorno, impacto_negocio, ahorro, roi_business_case, prioridad, usuarios, equipo, responsable, riesgos, compliance, reach, impact, confidence, effort, ai_complexity, ric, tier (decimal 0-1), alerta (bool), fecha_fin, fecha_inicio, fecha_registro, link_devhub, powerapps_id, fase_inicio, fase_analisis, fase_priorizacion, fase_diseno, fase_piloto, fase_iteracion, fase_produccion, comp_ocr, comp_frontend, comp_modelo, comp_bbdd, comp_api, comp_cluster, comp_backend, comp_mcp, comp_rag, comp_prompting"
                 }
             },
             "required": ["name"]
@@ -711,6 +711,36 @@ FIELD_LABELS = {
     "fecha_inicio": "Fecha inicio",
     "fecha_registro": "Fecha registro",
     "link_devhub": "Link DevHub",
+    "powerapps_id": "PowerApps ID",
+    "tier": "Tier",
+    "ric": "RIC",
+    "reach": "Reach",
+    "impact": "Impact",
+    "confidence": "Confidence",
+    "effort": "Effort",
+    "ai_complexity": "Complejidad IA",
+    "alerta": "Alerta",
+    "tip_ocr": "Tipología OCR",
+    "tip_generativa": "Tipología Generativa",
+    "tip_analitica": "Tipología Analítica",
+    "tip_predictiva": "Tipología Predictiva",
+    "fase_inicio": "Fase Inicio",
+    "fase_analisis": "Fase Análisis",
+    "fase_priorizacion": "Fase Priorización",
+    "fase_diseno": "Fase Diseño",
+    "fase_piloto": "Fase Piloto",
+    "fase_iteracion": "Fase Iteración",
+    "fase_produccion": "Fase Producción",
+    "comp_ocr": "Comp. OCR",
+    "comp_frontend": "Comp. Frontend",
+    "comp_modelo": "Comp. Modelo IA",
+    "comp_bbdd": "Comp. BBDD",
+    "comp_api": "Comp. API",
+    "comp_cluster": "Comp. Cluster",
+    "comp_backend": "Comp. Backend",
+    "comp_mcp": "Comp. MCP",
+    "comp_rag": "Comp. RAG",
+    "comp_prompting": "Comp. Prompting",
 }
 
 
